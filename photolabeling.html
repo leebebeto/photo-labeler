@@ -6,109 +6,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Photo labeling</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Merriweather|Roboto+Condensed:300,400&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <style>
+      body{
+        padding: 15px;
+      }
+      .red-blue{
+        width: 579px;
+        height: 440px;
+        color: #707070;
+        border: inset;
+      }
+      .neutral{
+        width: 310px;
+        height: 440px;
+        color: #707070;
+        border: inset;
+      }
+      .adjective{
+        height: 53px;
+      font-size:40px;
+      font-family: RobotoCondensed-Light, Roboto;
+      font-weight: 300; 
+      color: #707070; 
+      /*border: solid;*/
+    }
+      .grids {
+        height: 440px; 
+        border: solid;
+      }
+      .explain {
+        height: 150px; 
+        border: solid;
+      }
+      div.left1{        
+        float: left;
+      }
+    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Merriweather', serif;
+    </style>              
   </head>
-  <body>
-    <svg xmlns="http://www.w3.org/2000/svg" width="2127" height="685" viewBox="0 0 2127 685">
-      <g id="사각형_64" data-name="사각형 64" transform="translate(1526 67)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="601" height="440" stroke="none"/>
-        <rect x="0.5" y="0.5" width="600" height="439" fill="none"/>
-      </g>
-      <g id="사각형_66" data-name="사각형 66" transform="translate(0 67)" fill="rgba(65,122,255,0.2)" stroke="#707070" stroke-width="1">
-        <rect width="579" height="440" stroke="none"/>
-        <rect x="0.5" y="0.5" width="578" height="439" fill="none"/>
-      </g>
-      <g id="사각형_74" data-name="사각형 74" transform="translate(927 67)" fill="rgba(242,108,108,0.2)" stroke="#707070" stroke-width="1">
-        <rect width="579" height="440" stroke="none"/>
-        <rect x="0.5" y="0.5" width="578" height="439" fill="none"/>
-      </g>
-      <g id="사각형_67" data-name="사각형 67" transform="translate(597 67)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="310" height="440" stroke="none"/>
-        <rect x="0.5" y="0.5" width="309" height="439" fill="none"/>
-      </g>
-      <text id="T-SNE_VIEW" data-name="T-SNE VIEW" transform="translate(1721 304)" fill="#707070" font-size="40" font-family="SegoeUI, Segoe UI"><tspan x="0" y="0">T-SNE VIEW</tspan></text>
-      <text id="NEUTRAL" transform="translate(752 42)" fill="#707070" font-size="40" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="-75.332" y="0">NEUTRAL</tspan></text>
-      <g id="사각형_63" data-name="사각형 63" transform="translate(637 635)" fill="#2d2d2d" stroke="#a9a9a9" stroke-linejoin="round" stroke-width="1">
-        <rect width="260" height="50" rx="8" stroke="none"/>
-        <rect x="0.5" y="0.5" width="259" height="49" rx="7.5" fill="none"/>
-      </g>
-      <text id="CONFIRM" transform="translate(723 668)" fill="#fff" font-size="20" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">CONFIRM</tspan></text>
-      <text id="Please_review_the_images_above_in_a_way_that_the_images_are_placed_in_the_right_category._Images_in_the_left_box_will_be_labeled_as_ADJECTIVE_1_in_the_middle_box_as_NEUTRAL_and_in_the_right_box_as_ADJECTIVE2_._You_can_change_the_category_of_an_image_" data-name="Please review the images above in a way that the images are placed in the right category.
-    Images in the left box will be labeled as &quot;ADJECTIVE 1, in the middle box as &quot;NEUTRAL&quot;, and in the right box as &quot;ADJECTIVE2&quot;.
-    You can change the category of an image " transform="translate(760 545)" fill="#707070" font-size="18" font-family="Merriweather"><tspan x="-404.798" y="0">Please review the images above in a way that the images are placed in the right category.</tspan><tspan x="-582.579" y="26">Images in the left box will be labeled as &quot;ADJECTIVE 1, in the middle box as &quot;NEUTRAL&quot;, and in the right box as &quot;ADJECTIVE2&quot;.</tspan><tspan x="-433.586" y="52">You can change the category of an image by hovering over. When you ready, </tspan><tspan y="52" font-family="Merriweather-Bold, Merriweather" font-weight="700">confirm</tspan><tspan y="52" xml:space="preserve"> your label</tspan></text>
-      <g id="사각형_2" data-name="사각형 2" transform="translate(20 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_77" data-name="사각형 77" transform="translate(947 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_45" data-name="사각형 45" transform="translate(439 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_80" data-name="사각형 80" transform="translate(1366 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_42" data-name="사각형 42" transform="translate(160 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_78" data-name="사각형 78" transform="translate(1087 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_46" data-name="사각형 46" transform="translate(617 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_43" data-name="사각형 43" transform="translate(300 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_79" data-name="사각형 79" transform="translate(1227 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_47" data-name="사각형 47" transform="translate(767 87)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_44" data-name="사각형 44" transform="translate(300 227)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_75" data-name="사각형 75" transform="translate(1227 227)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_52" data-name="사각형 52" transform="translate(300 367)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <g id="사각형_76" data-name="사각형 76" transform="translate(1227 367)" fill="#fff" stroke="#707070" stroke-width="1">
-        <rect width="120" height="120" stroke="none"/>
-        <rect x="0.5" y="0.5" width="119" height="119" fill="none"/>
-      </g>
-      <text id="more_likely_ADJECTIVE_1_" data-name="more likely ADJECTIVE 1 " transform="translate(0 44)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">more likely </tspan><tspan y="0" font-size="40">ADJECTIVE 1 </tspan></text>
-      <text id="Labeled_adjective_1_" data-name="Labeled (adjective 1)" transform="translate(1554 544)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">Labeled (adjective 1)</tspan></text>
-      <text id="Unlabeled" transform="translate(1776 544)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">Unlabeled</tspan></text>
-      <text id="Currently_shown" data-name="Currently shown" transform="translate(1776 570)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">Currently shown</tspan></text>
-      <text id="Labeled_adjective_2_" data-name="Labeled (adjective 2)" transform="translate(1554 570)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">Labeled (adjective 2)</tspan></text>
-      <text id="more_likely_ADJECTIVE_2" data-name="more likely ADJECTIVE 2" transform="translate(1506 44)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="-285.735" y="0">more likely </tspan><tspan y="0" font-size="40">ADJECTIVE 2</tspan></text>
-      <rect id="사각형_69" data-name="사각형 69" width="18" height="22" transform="translate(1526 527)" fill="#417aff"/>
-      <g id="사각형_72" data-name="사각형 72" transform="translate(1748 527)" fill="none" stroke="#707070" stroke-width="1">
-        <rect width="18" height="22" stroke="none"/>
-        <rect x="0.5" y="0.5" width="17" height="21" fill="none"/>
-      </g>
-      <g id="사각형_73" data-name="사각형 73" transform="translate(1748 553)" fill="none" stroke="#8af52d" stroke-width="1">
-        <rect width="18" height="22" stroke="none"/>
-        <rect x="0.5" y="0.5" width="17" height="21" fill="none"/>
-      </g>
-      <rect id="사각형_70" data-name="사각형 70" width="18" height="22" transform="translate(1526 553)" fill="#f26c6c"/>
-    </svg>
+  <body style="width: 150%">
+    <div class="row">
+      <div class="col-md-12">
+        <div class=left1 style="width: 579px; height: 503px; margin:10px">
+          <!-- 286 / 53 -->
+        <div class =adjective style= "text-align: left">
+          more likely ADJECTIVE 1 
+        </div>
+        <div class = "red-blue" style=" background-color: rgba(65,122,255,0.2);">
+        </div>
+        </div>
+        <!-- 152 / 53 -->
+        <div class = left1 style="width: 310px; height: 503px; margin:10px">
+        <div class =adjective style= "text-align: center">
+          NEUTRAL 
+        </div>
+        <div class="neutral">
+        </div>
+      </div>
+        <!-- 286 / 53 -->
+      <div class= left1 style="margin:10px">
+        <div class =adjective style= "text-align: right">
+          more likely ADJECTIVE 2 
+        </div>
+        <div class = "red-blue" style="background-color: rgba(242,108,108,0.2)">
+        </div>
+      </div>
+
+      <div class= left1 style="width: 601px; height: 503px; margin:10px">
+        <div class =adjective >
+        </div>
+        <div style="height: 440px; border: solid; text-align: center">
+        T-SNE
+        </div>
+      </div>
+
+    </div>
+    </div>
+    <div class="row">
+      <div class= "col-md-12 grids">
+      </div>
+    </div>
+
+
   </body>
 </html>
+
+
+
+<!-- 
+크게 좌우로 나눈 다음에 진행을 하여야 한다 
+ -->
