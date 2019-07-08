@@ -1,0 +1,75 @@
+      body{
+        padding: 15px;
+      }
+      .red-blue{
+        width: 579px;
+        height: 440px;
+        border: inset;
+        border-color: #707070;
+        border-width: 1px;
+      }
+      .description{
+        width: 100%; 
+        text-align: center; 
+        font-family: Merriweather-Bold, Merriweather; 
+        font-weight:300
+      }
+      .tsne{
+        height: 440px; 
+        color: #707070; 
+        text-align: center; 
+        border: inset;
+        border-color: #707070;
+        border-width: 1px;
+
+      }
+      .neutral{
+        width: 310px;
+        height: 440px;
+        border: inset;
+        border-color: #707070;
+        border-width: 1px;
+
+      }
+
+      .box{
+        width: 120px;
+        height: 120px;
+        background-color: #fff;
+        border-color: #707070;
+        border: inset;
+        border-width: 1px;        
+      }
+      .adjective{
+        height: 53px;
+        font-size:40px;
+        font-family: RobotoCondensed-Light, Roboto;
+        font-weight: 300; 
+        color: #707070; 
+        border-width: 1px;
+    }
+      .grids {
+        height: 440px; 
+        border: solid;
+      }
+      .explain {
+        height: 150px; 
+        border: solid;
+      }
+      div.left1{        
+        float: left;
+      }
+      .button-confirm{
+        width: 260px;
+        height: 50px;
+        background-color: #2d2d2d;
+        border-color:  #a9a9a9;
+        border-radius: 8px;
+        border-width: 1px;
+        text-align: center; 
+        color: white;
+        font-size: 20px;
+        font-family: Roboto;
+      }
+    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Merriweather', serif;
