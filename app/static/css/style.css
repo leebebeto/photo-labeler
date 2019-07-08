@@ -23,6 +23,11 @@
         border-width: 1px;
 
       }
+      .smallbox{
+        width: 25%; 
+        height: 100%; 
+        margin: 10px; 
+      }
       .neutral{
         width: 310px;
         height: 440px;
@@ -50,11 +55,9 @@
     }
       .grids {
         height: 440px; 
-        border: solid;
       }
       .explain {
         height: 150px; 
-        border: solid;
       }
       div.left1{        
         float: left;

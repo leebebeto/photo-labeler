@@ -17,11 +17,10 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 @app.route('/')
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
-    images = os.listdir(os.path.join(APP_ROOT,'static/image/IU'))
     keyword_list = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
-    images = os.listdir(os.path.join(APP_ROOT,'image/FFHQ_SAMPLE'))	
-    
-    for i in range(len(images)):
-        images[i] = os.path.join(APP_ROOT,'image/FFHQ_SAMPLE/') + images[i]
+    images = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE'))	
+    print(len(images))
+    # for i in range(len(images)):
+    #     images[i] = os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE/') + images[i]
         
-    return render_template('photolabeling.html', images = images, keyword_list = keyword_list, , images = images)
+    return render_template('photolabeling.html', keyword_list = keyword_list,images = images)
