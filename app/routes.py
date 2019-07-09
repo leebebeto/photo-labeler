@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 24 11:25:14 2019
-
-@author: Kyungmin Park
-"""
-
 from flask import render_template, request, url_for, jsonify
 from app import app
 import os
@@ -25,9 +18,4 @@ def index():
 
     keywords = json.dumps(dictOfKey)
     images = json.dumps(dictOfImg)
-    
-
-    # for i in range(len(images)):
-    #     images[i] = os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE/') + images[i]
-        
     return render_template('photolabeling.html', keywords = keywords,images = images)
