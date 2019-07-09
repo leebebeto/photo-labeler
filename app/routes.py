@@ -18,9 +18,16 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
     keyword_list = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
-    images = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE'))	
-    print(len(images))
+    image_list = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE'))	
+
+    dictOfKey = { i : keyword_list[i] for i in range(0, len(keyword_list) ) }
+    dictOfImg = { i : image_list[i] for i in range(0, len(image_list) ) }
+
+    keywords = json.dumps(dictOfKey)
+    images = json.dumps(dictOfImg)
+    
+
     # for i in range(len(images)):
     #     images[i] = os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE/') + images[i]
         
-    return render_template('photolabeling.html', keyword_list = keyword_list,images = images)
+    return render_template('photolabeling.html', keywords = keywords,images = images)
