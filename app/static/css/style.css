@@ -26,7 +26,8 @@
       .smallbox{
         width: 25%; 
         height: 100%; 
-        margin: 10px; 
+        margin: 10px;
+        border: solid; 
       }
       .neutral{
         width: 310px;
