@@ -1,5 +1,9 @@
  /* create queues */
  
+function confirm_click(){
+  init();
+}
+
 function getSyncScriptParams() {
          var scripts = document.getElementsByTagName('script');
          var lastScript = scripts[scripts.length-1];
@@ -10,12 +14,10 @@ function getSyncScriptParams() {
          };
  }
 
-document.addEventListener("DOMContentLoaded", function(event) { 
-
 
  var params = new getSyncScriptParams();
  var images = JSON.parse(params.images);
- console.log(images)
+ console.log(Object.values(images));
       /* create queues */
       class Queue {
         constructor() {
@@ -37,8 +39,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
           return this.cnt;
         }
       }
-      
-  const total_queue = new Queue();
+
+  
+  
+  var total_queue = new Queue();
+  total_queue._arr = Object.values(images);
+  total_queue.cnt = total_queue._arr.length;
+  console.log(total_queue);
+
+
   const neutral_queue = new Queue();
   const blue_queue = new Queue();
   const red_queue = new Queue();
@@ -55,12 +64,41 @@ document.addEventListener("DOMContentLoaded", function(event) {
         $('#description2').append(sec_description);
       }
 
-      function selectList(){
-        return [[images[0], images[1], images[2], images[3], images[4], images[5]], 
-                [images[6], images[7]],
-                [images[8], images[9], images[10], images[11], images[12], images[13]]];
+      function selectList(total_queue,b,n,r)
+        {
+          blue_temp = []
+          neutral_temp = []
+          red_temp = []
+          
+          for(var i=0;i<b;i++){
+            blue_temp.push(total_queue.dequeue());
+          }
+          for(var i=0;i<n;i++){
+            neutral_temp.push(total_queue.dequeue());
+          }
+          for(var i=0;i<r;i++){
+            red_temp.push(total_queue.dequeue());
+          }
+          
+          return [blue_temp, neutral_temp, red_temp]
+        }
+      /* selectList에서 연산 결과값 반환*/
+
+        
+      function clearQueue(queue){
+        queue._arr = [];
+        queue.cnt = 0;
         }
       
+      
+      function clearAll(){
+        clearQueue(blue_queue);
+        clearQueue(neutral_queue);
+        clearQueue(red_queue);
+        
+        $('.current_img').remove();
+
+      }
 
       function reloadQueue(queue, nextComponents){
         for(var i=0; i < nextComponents.length; i++){
@@ -104,11 +142,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
           $(ID).append(img_node);
       }
     }
+
+    
       
     function init(){
-        description();
-        
-        var getLists = new selectList();
+
+        clearAll();
+        var getLists = new selectList(total_queue,6,2,6);
 
         var blue_list = getLists[0];
         var neutral_list = getLists[1];
@@ -122,5 +162,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
         displayImages(red_queue);
         displayImages(neutral_queue);
       }
+      description();
       init();
-  });
+ 
