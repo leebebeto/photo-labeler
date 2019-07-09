@@ -1,7 +1,12 @@
  /* create queues */
  
 function confirm_click(){
+  if(total_queue.cnt > 0){
   init();
+  }
+  else{
+    alert("done!")
+  }
 }
 
 function getSyncScriptParams() {
@@ -14,7 +19,9 @@ function getSyncScriptParams() {
          };
  }
 
-
+ var blue_test_number = 6;
+ var red_test_number = 6;
+ var neutral_test_number = 2;
  var params = new getSyncScriptParams();
  var images = JSON.parse(params.images);
  console.log(Object.values(images));
@@ -118,28 +125,30 @@ function getSyncScriptParams() {
 
       function displayImages(queue){
         for(var i=1;i<=queue.cnt;i++){
-          var img_node = document.createElement('img');
-          img_node.setAttribute("class","current_img");
-          img_node.style.width = '100%';
-          img_node.style.height = '100%';
-          // img_node.style.border = 'solid';
-          img_node.style.padding = '10px';
-          img_node.src = 'static/image/FFHQ_SAMPLE/' + queue._arr[i-1];
-
-          var side = ""
-
-          if(queue == blue_queue){
-            side = "L"
+          if(queue._arr[i-1] != null){
+            var img_node = document.createElement('img');
+            img_node.setAttribute("class","current_img");
+            img_node.style.width = '100%';
+            img_node.style.height = '100%';
+            // img_node.style.border = 'solid';
+            img_node.style.padding = '10px';
+            img_node.src = 'static/image/FFHQ_SAMPLE/' + queue._arr[i-1];
+  
+            var side = ""
+  
+            if(queue == blue_queue){
+              side = "L"
+            }
+            else if(queue == red_queue){
+              side = "R"
+            }
+            else{
+              side = "N"
+            }
+            var ID = '#'.concat(side,String(i))
+            console.log(ID)
+            $(ID).append(img_node);
           }
-          else if(queue == red_queue){
-            side = "R"
-          }
-          else{
-            side = "N"
-          }
-          var ID = '#'.concat(side,String(i))
-          console.log(ID)
-          $(ID).append(img_node);
       }
     }
 
@@ -148,7 +157,7 @@ function getSyncScriptParams() {
     function init(){
 
         clearAll();
-        var getLists = new selectList(total_queue,6,2,6);
+        var getLists = new selectList(total_queue,blue_test_number,neutral_test_number,red_test_number);
 
         var blue_list = getLists[0];
         var neutral_list = getLists[1];
