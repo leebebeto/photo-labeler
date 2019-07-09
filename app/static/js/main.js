@@ -12,6 +12,7 @@ function getSyncScriptParams() {
 
 document.addEventListener("DOMContentLoaded", function(event) { 
 
+
  var params = new getSyncScriptParams();
  var images = JSON.parse(params.images);
  console.log(images)
@@ -36,10 +37,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
           return this.cnt;
         }
       }
+      
+  const total_queue = new Queue();
+  const neutral_queue = new Queue();
+  const blue_queue = new Queue();
+  const red_queue = new Queue();
 
-        const neutral_queue = new Queue();
-        const blue_queue = new Queue();
-        const red_queue = new Queue();
 
       function description(){
         var keyword_list = JSON.parse(params.keywords);
@@ -52,105 +55,72 @@ document.addEventListener("DOMContentLoaded", function(event) {
         $('#description2').append(sec_description);
       }
 
-      function createQueues(blue_queue, neutral_queue, red_queue) {
-        /* 나중에 백엔드 구축 나눠야함*/
-        var blue_images = [images[0], images[1], images[2], images[3], images[4], images[5]];
-        var neutral_images = [images[6], images[7]];
-        var red_images = [images[8], images[9], images[10], images[11], images[12], images[13]];
-        for(var i=0; i< blue_images.length;i++){
-          blue_queue.enqueue(blue_images[i]);
+      function selectList(){
+        return [[images[0], images[1], images[2], images[3], images[4], images[5]], 
+                [images[6], images[7]],
+                [images[8], images[9], images[10], images[11], images[12], images[13]]];
         }
-        for(var i=0; i< neutral_images.length;i++){
-          neutral_queue.enqueue(neutral_images[i]);
+      
+
+      function reloadQueue(queue, nextComponents){
+        for(var i=0; i < nextComponents.length; i++){
+          queue.enqueue(nextComponents[i]);
         }
-        for(var i=0; i< red_images.length;i++){
-          red_queue.enqueue(red_images[i]);
-        }
-        return blue_queue, neutral_queue, red_queue
       }
 
+      function enQueues(blue_queue, blue_list, neutral_queue, neutral_list, red_queue,red_list) {
+        /* 나중에 백엔드 구축 나눠야함*/
+
+        reloadQueue(blue_queue, blue_list);
+        reloadQueue(red_queue, red_list);
+        reloadQueue(neutral_queue, neutral_list);
+
+        return blue_queue, neutral_queue, red_queue;
+      }
 
       function displayImages(queue){
-        for (var i=0; i< queue.length(); i++){
+        for(var i=1;i<=queue.cnt;i++){
           var img_node = document.createElement('img');
           img_node.setAttribute("class","current_img");
           img_node.style.width = '100%';
           img_node.style.height = '100%';
           // img_node.style.border = 'solid';
           img_node.style.padding = '10px';
-          img_node.src = 'static/image/FFHQ_SAMPLE/' + queue._arr[i];
-        
-        if (queue == blue_queue){
-          switch(i){
-            case 0:
-              $('#L1').append(img_node);
-              break;
-            case 1:
-              $('#L2').append(img_node);
-              break;
-            case 2:
-              $('#L3').append(img_node);
-              break;
-            case 3:
-              $('#L4').append(img_node);
-              break;
-            case 4:
-              $('#L5').append(img_node);
-              break;
-            case 5:
-              $('#L6').append(img_node);
-              break;
-           }
-        }
-        else if ( queue == red_queue){
-          switch(i){
-            case 0:
-              $('#R1').append(img_node);
-              break;
-            case 1:
-              $('#R2').append(img_node);
-              break;
-            case 2:
-              $('#R3').append(img_node);
-              break;
-            case 3:
-              $('#R4').append(img_node);
-              break;
-            case 4:
-              $('#R5').append(img_node);
-              break;
-            case 5:
-              $('#R15').append(img_node);
-              break;
-           }
-        }
-        else {
-          switch(i){
-            case 0:
-              $('#N1').append(img_node);
-              break;
-            case 1:
-              $('#N2').append(img_node);
-              break;
-            case 2:
-              $('#N3').append(img_node);
-              break;
-            case 3:
-              $('#N4').append(img_node);
-              break;
-            case 4:
-              $('#N5').append(img_node);
-              break;
-           }
-        }
+          img_node.src = 'static/image/FFHQ_SAMPLE/' + queue._arr[i-1];
+
+          var side = ""
+
+          if(queue == blue_queue){
+            side = "L"
+          }
+          else if(queue == red_queue){
+            side = "R"
+          }
+          else{
+            side = "N"
+          }
+          var ID = '#'.concat(side,String(i))
+          console.log(ID)
+          $(ID).append(img_node);
       }
     }
+      
     function init(){
         description();
-        createQueues(blue_queue, neutral_queue, red_queue);
+        
+        var getLists = new selectList();
+
+        var blue_list = getLists[0];
+        var neutral_list = getLists[1];
+        var red_list = getLists[2];
+
+        enQueues(blue_queue,blue_list,
+          neutral_queue,neutral_list,
+          red_queue,red_list);
+
         displayImages(blue_queue);
-        displayImages(neutral_queue);
         displayImages(red_queue);
+        displayImages(neutral_queue);
       }
       init();
   });
