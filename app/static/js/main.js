@@ -159,42 +159,18 @@ function dragStart(event) {
 
 function dragging(event) {
   var target = event.target;
-  $('[column]').find('[chosen = true]');
-
-  // if (!target){
   target.setAttribute("chosen", "true");
-        // img_list = []
-  /*
-    var chosen_img = $('[column]').find('[chosen = true]');
-    if (column == 'blue'){
-      img_list
-    }  
-        
-    for (var i =0; i< $('[column]').find('[chosen=true]').length;i++){
-    console.log($('[column]').find('[chosen=true]')[i]);
-    }
-    target.removeAttribute("chosen");
-  */
-
-    // console.log(target);
-    // console.log(event.target.parentNode);
-    // console.log(event.target.parentNode.parentNode);  
-    // console.log(event.target.parentNode.parentNode.parentNode);
-    // console.log(event.target.parentNode.childNodes);
   }
-
-  // event.target.parentNode.removeChild(event.target.parentNode.childNodes[0]);
-
-// }
 
 function allowDrop(event) {
   event.preventDefault();
 }
 
 function drop(event) {
+  var bidx=0, nidx=0, ridx=0;
   var cloned_img = $('[column]').find('[chosen = true]')[0];
-  console.log(cloned_img);
-  $('[column]').find('[chosen = true]').empty();
+  console.log(cloned_img);  
+  $('[column]').find('[chosen = true]')[0].removeAttribute('chosen');
   console.log($('[column]').find('[chosen = true]'));
   event.preventDefault();
   var x = event.clientX;
@@ -202,16 +178,29 @@ function drop(event) {
   console.log(x,y)
   if( y > 100 && y < rb[0].offsetHeight){
       if (x > 30 && x < 30 + rb[0].offsetWidth) {
-          $('[column=blue]').find(".left1").children().parent().last().next().append(cloned_img);
+          bidx += 1;
+          if ( $('[column=blue]').find(".left1").children().parent().last()[0].id == "L12"){
+             $('[column=blue]').find(".left1").children().parent().last().parent().next().append(cloned_img);
+          }
+          else if ( $('[column=blue]').find(".left1").children().parent().last()[0].id == "L16"){
+             $('[column=blue]').find(".left1").children().parent().last().parent().next().last().parent().next().append(cloned_img);
+          }
+          else{
+            $('[column=blue]').find(".left1").children().parent().last().next().append(cloned_img);
+          }
+          console.log($('[column=blue]').find(".left1").children().parent().last());
           console.log("blue");
           
       }
       else if (x > 620 && x < 620 + n[0].offsetWidth) {
+          console.log(cloned_img);
           $('[column=neutral]').find(".left1").children().parent().last().next().append(cloned_img);
+          console.log($('[column=neutral]').find(".left1").children().parent().last());
           console.log("neutral");
       }
       else if (x >  930&& x < 930 + rb[0].offsetWidth) {
           $('[column=red]').find(".left1").children().parent().last().next().append(cloned_img);
+          console.log($('[column=red]').find(".left1").children().parent().last());
           console.log("red");
       }
   }
