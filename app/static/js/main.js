@@ -20,6 +20,7 @@ class Queue {
 }
 
 function confirm_click(){
+  // 경민이형 여기에 ajax 기능 추가해줘
   if(total_queue.cnt > 0){
   init();
   }
@@ -29,13 +30,13 @@ function confirm_click(){
 }
 
 function getSyncScriptParams() {
-         var scripts = document.getElementsByTagName('script');
-         var lastScript = scripts[scripts.length-1];
-         var scriptName = lastScript;
-         return {
-             keywords : scriptName.getAttribute('keywords'),
-             images : scriptName.getAttribute('images'),
-         };
+   var scripts = document.getElementsByTagName('script');
+   var lastScript = scripts[scripts.length-1];
+   var scriptName = lastScript;
+   return {
+       keywords : scriptName.getAttribute('keywords'),
+       images : scriptName.getAttribute('images'),
+   };
  }
 
 var blue_test_number = 6;
@@ -106,13 +107,13 @@ function reloadQueue(queue, nextComponents){
 
 function enQueues(blue_queue, blue_list, neutral_queue, neutral_list, red_queue,red_list) {
   /* 나중에 백엔드 구축 나눠야함*/
-
   reloadQueue(blue_queue, blue_list);
   reloadQueue(red_queue, red_list);
   reloadQueue(neutral_queue, neutral_list);
-
   return blue_queue, neutral_queue, red_queue;
 }
+
+
 function displayImages(queue){
     
   for(var i=1;i<=queue.cnt;i++){
@@ -157,31 +158,60 @@ function dragStart(event) {
 }
 
 function dragging(event) {
-  // var target = event.target;
-  // console.log(event.target.parentNode.parentNode.parentNode);
-  // console.log(event.target.parentNode.childNodes[0]);
+  var target = event.target;
+  $('[column]').find('[chosen = true]');
+
+  // if (!target){
+  target.setAttribute("chosen", "true");
+        // img_list = []
+  /*
+    var chosen_img = $('[column]').find('[chosen = true]');
+    if (column == 'blue'){
+      img_list
+    }  
+        
+    for (var i =0; i< $('[column]').find('[chosen=true]').length;i++){
+    console.log($('[column]').find('[chosen=true]')[i]);
+    }
+    target.removeAttribute("chosen");
+  */
+
+    // console.log(target);
+    // console.log(event.target.parentNode);
+    // console.log(event.target.parentNode.parentNode);  
+    // console.log(event.target.parentNode.parentNode.parentNode);
+    // console.log(event.target.parentNode.childNodes);
+  }
+
   // event.target.parentNode.removeChild(event.target.parentNode.childNodes[0]);
 
-}
+// }
 
 function allowDrop(event) {
   event.preventDefault();
 }
 
 function drop(event) {
+  var cloned_img = $('[column]').find('[chosen = true]')[0];
+  console.log(cloned_img);
+  $('[column]').find('[chosen = true]').empty();
+  console.log($('[column]').find('[chosen = true]'));
   event.preventDefault();
   var x = event.clientX;
   var y = event.clientY;
   console.log(x,y)
   if( y > 100 && y < rb[0].offsetHeight){
       if (x > 30 && x < 30 + rb[0].offsetWidth) {
+          $('[column=blue]').find(".left1").children().parent().last().next().append(cloned_img);
           console.log("blue");
           
       }
       else if (x > 620 && x < 620 + n[0].offsetWidth) {
+          $('[column=neutral]').find(".left1").children().parent().last().next().append(cloned_img);
           console.log("neutral");
       }
       else if (x >  930&& x < 930 + rb[0].offsetWidth) {
+          $('[column=red]').find(".left1").children().parent().last().next().append(cloned_img);
           console.log("red");
       }
   }
@@ -195,6 +225,7 @@ function init(){
   var neutral_list = getLists[1];
   var red_list = getLists[2];
   enQueues(blue_queue,blue_list,neutral_queue,neutral_list, red_queue,red_list);
+
   displayImages(blue_queue);
   displayImages(red_queue);
   displayImages(neutral_queue);
@@ -202,3 +233,7 @@ function init(){
 description();
 init();
  
+
+
+
+
