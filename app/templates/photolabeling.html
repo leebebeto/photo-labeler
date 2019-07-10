@@ -146,7 +146,7 @@
       You can change the category of an image by hovering over. When you ready, confirm your label"
       </div>
       <div style="width: 100%; text-align: center; margin: 10px">
-        <button class= "button-confirm" onclick="confirm_click();" style="">
+        <button class= "button-confirm" onclick="confirm_click();" onclick="addCSS('pageloader-points.css')" style="">
         CONFIRM
          </button>
       </div>
@@ -180,6 +180,27 @@
       </div>
     </div>
     <script type = "text/javascript" src = "{{ url_for('static', filename='js/main.js') }}" keywords = "{{keywords}}" images = "{{images}}">
+    </script>
+    <script type="text/javascript">
+          function addCSS (href)
+    { // Remove previous css
+      Array.prototype.forEach.call(document.querySelectorAll('[rel="stylesheet"],[type="text/css"]'),
+        function(element)
+        { try{
+            element.parentNode.removeChild(element)
+          }catch(err){}
+        });
+      // Add new one
+      var head  = document.getElementsByTagName('head')[0];
+      var link  = document.createElement('link');
+      link.rel  = 'stylesheet';
+      link.type = 'text/css';
+      link.href = href;
+      link.media = 'all';
+      head.appendChild(link);
+      pageLoader.show();
+    }
+
     </script>
  </body>
 </html>
