@@ -1,3 +1,127 @@
+/*마우스 기능 */
+let itemsContainer = document.getElementById("items-container");
+let todosContainer = document.getElementById("todos-container");
+
+let mouseOffset = {x:0, y:0};
+let isMouseDown = false;
+let currentTodo = null;
+
+let doElsCollide = function(el1, el2) { 
+     el1.offsetBottom= el1.offsetTop + el1.offsetHeight;
+     el1.offsetRight = el1.offsetLeft + el1.offsetWidth;
+     el2.offsetBottom = el2.offsetTop + el2.offsetHeight;
+     el2.offsetRight = el2.offsetLeft + el2.offsetWidth;
+
+     return !((el1.offsetBottom < el2.offsetTop) ||
+               (el1.offsetTop > el2.offsetBottom) ||
+               (el1.offsetRight < el2.offsetLeft) ||
+               (el1.offsetLeft > el2.offsetRight))
+};
+
+
+function onMouseDown(e, item) {
+  isMouseDown = true;
+  currentTodo = item;
+
+  mouseOffset = {x: item.offsetLeft - e.clientX, y: item.offsetTop - e.clientY};
+  
+  item.style.filter = "brightness(50%)";
+}
+
+function onMouseMove(e) {
+  e.preventDefault();  
+  if(isMouseDown) {
+    currentTodo.style.left = e.clientX + mouseOffset.x + "px";
+    currentTodo.style.top = e.clientY + mouseOffset.y + "px";
+    }
+}
+
+function onMouseUp(e, item) {
+  isMouseDown = false;
+  item.style.filter = "brightness(100%)";
+}
+
+function onMouseOver(e, item) {
+  if(!isMouseDown){
+    item.style.filter = "brightness(130%)";
+  }
+}
+function onMouseOut(e, item) {
+  if(!isMouseDown){
+    item.style.filter = "brightness(100%)";
+  }
+}
+
+function setListeners(todoItems) {
+  for(let i = 0; i < todoItems.length; i++) {
+  let item = todoItems[i];
+  item.addEventListener("mousedown", (e) => { onMouseDown(e, item); });
+  item.addEventListener("mouseover", (e) => { onMouseOver(e, item); });
+  item.addEventListener("mouseout", (e) => { onMouseOut(e, item); });
+  document.body.addEventListener("mousemove", (e) => {
+    onMouseMove(e);
+  });
+  item.addEventListener("mouseup", (e) => {
+    onMouseUp(e, item);
+  });
+  
+}}
+
+function setListener(todoItem) {
+  
+  todoItem.addEventListener("mousedown", (e) => { onMouseDown(e, todoItem); });
+  todoItem.addEventListener("mouseover", (e) => { onMouseOver(e, todoItem); });
+  todoItem.addEventListener("mouseout", (e) => { onMouseOut(e, todoItem); });
+  document.body.addEventListener("mousemove", (e) => {
+    onMouseMove(e);
+  });
+  todoItem.addEventListener("mouseup", (e) => {
+    onMouseUp(e, todoItem);
+  });
+  
+}
+
+setInterval(() => {
+  let areas = document.getElementsByClassName("red-blue");
+  for(let i = 0; i < areas.length; i++) {
+       
+    areas[i].className = areas[i].className.replace("over", "");
+    if(doElsCollide(currentTodo, areas[i])) {
+      areas[i].className += " over"; 
+      if(!isMouseDown) {
+        snapTodo(currentTodo, areas[i], i);
+      }
+    }
+  }
+}, 100);
+
+function snapTodo(todo, container,index) {
+  area_list = ["left","right"];
+    temp_list = document.getElementsByClassName(area_list[index]);
+    for(let i=0;i<temp_list.length;i++){
+      let item = temp_list[i];
+      if(!item.hasChildNodes()){
+        let box = item.getBoundingClientRect();
+        todo_clone = todo.cloneNode();
+        todo.remove();
+        item.append(todo_clone);
+        setListener(todo_clone);
+        todo_clone.style.left = box.x + "px";
+        todo_clone.style.top = box.y - 10 + "px";
+        currentTodo = null;
+        
+
+        break;
+      }
+    }
+
+  }
+
+
+
+
+/*------------------------------------------------------------------*/
+
 class Queue {
   constructor() {
     this._arr = [];
@@ -96,7 +220,7 @@ function clearAll(){
   clearQueue(neutral_queue);
   clearQueue(red_queue);
   
-  $('.current_img').remove();
+  $('.todo-item').remove();
 }
 
 function reloadQueue(queue, nextComponents){
@@ -119,13 +243,7 @@ function displayImages(queue){
   for(var i=1;i<=queue.cnt;i++){
     if(queue._arr[i-1] != null){
       var img_node = document.createElement('img');
-      img_node.setAttribute("class","current_img");
-      img_node.setAttribute("ondragstart", "dragStart(event)");
-      img_node.setAttribute("ondrag", "dragging(event)");
-      img_node.setAttribute("draggable", "true");
-      img_node.style.width = '100%';
-      img_node.style.height = '100%';
-      img_node.style.padding = '10px';
+      img_node.setAttribute("class","todo-item");
       img_node.src = 'static/image/FFHQ_SAMPLE/' + queue._arr[i-1];
       var side = ""
 
@@ -144,68 +262,6 @@ function displayImages(queue){
   }
 }
 
-var n = document.getElementsByClassName("neutral");
-var rb = document.getElementsByClassName("red-blue");
-n[0].setAttribute("ondrop","drop(event)");
-n[0].setAttribute("ondragover","allowDrop(event)");
-rb[0].setAttribute("ondrop","drop(event)");
-rb[0].setAttribute("ondragover","allowDrop(event)");
-rb[1].setAttribute("ondrop","drop(event)");
-rb[1].setAttribute("ondragover","allowDrop(event)");
-
- 
-function dragStart(event) {
-}
-
-function dragging(event) {
-  var target = event.target;
-  target.setAttribute("chosen", "true");
-  }
-
-function allowDrop(event) {
-  event.preventDefault();
-}
-
-function drop(event) {
-  var bidx=0, nidx=0, ridx=0;
-  var cloned_img = $('[column]').find('[chosen = true]')[0];
-  console.log(cloned_img);  
-  $('[column]').find('[chosen = true]')[0].removeAttribute('chosen');
-  console.log($('[column]').find('[chosen = true]'));
-  event.preventDefault();
-  var x = event.clientX;
-  var y = event.clientY;
-  console.log(x,y)
-  if( y > 100 && y < rb[0].offsetHeight){
-      if (x > 30 && x < 30 + rb[0].offsetWidth) {
-          bidx += 1;
-          if ( $('[column=blue]').find(".left1").children().parent().last()[0].id == "L12"){
-             $('[column=blue]').find(".left1").children().parent().last().parent().next().append(cloned_img);
-          }
-          else if ( $('[column=blue]').find(".left1").children().parent().last()[0].id == "L16"){
-             $('[column=blue]').find(".left1").children().parent().last().parent().next().last().parent().next().append(cloned_img);
-          }
-          else{
-            $('[column=blue]').find(".left1").children().parent().last().next().append(cloned_img);
-          }
-          console.log($('[column=blue]').find(".left1").children().parent().last());
-          console.log("blue");
-          
-      }
-      else if (x > 620 && x < 620 + n[0].offsetWidth) {
-          console.log(cloned_img);
-          $('[column=neutral]').find(".left1").children().parent().last().next().append(cloned_img);
-          console.log($('[column=neutral]').find(".left1").children().parent().last());
-          console.log("neutral");
-      }
-      else if (x >  930&& x < 930 + rb[0].offsetWidth) {
-          $('[column=red]').find(".left1").children().parent().last().next().append(cloned_img);
-          console.log($('[column=red]').find(".left1").children().parent().last());
-          console.log("red");
-      }
-  }
-}
-
 
 function init(){
   clearAll();
@@ -218,10 +274,36 @@ function init(){
   displayImages(blue_queue);
   displayImages(red_queue);
   displayImages(neutral_queue);
+  
+  todoItems = document.getElementsByClassName("todo-item");
+  setListeners(todoItems);
+
 }
+
+
 description();
 init();
- 
+
+
+
+   setInterval(() => {
+     let snaps = document.getElementsByClassName("snap");
+     for(let i = 0; i < snaps.length; i++) {
+          
+       //Clear the Over class every time (Hide Elements are not under collision)
+       snaps[i].className = snaps[i].className.replace("over", "");
+       if(doElsCollide(currentTodo, snaps[i])) {
+         //There is a collision then we are good to
+         snaps[i].className += " over"; ///< Over class will show the snap container 
+     
+         if(!isMouseDown) {
+          //Snap Current Todo under Current Snap Container :)
+          snapTodo(currentTodo, snaps[i]);
+          
+        }
+     }
+     }
+  }, 100);
 
 
 

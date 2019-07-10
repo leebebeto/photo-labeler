@@ -60,6 +60,26 @@
       .explain {
         height: 150px; 
       }
+      div.left{        
+        float: left;
+        width: 25%;
+        height: 100%;
+      }
+      div.left1{        
+        float: left;
+      }
+      div.center{        
+        float: left;
+        width: 50%;
+        height: 100%;
+      }
+      div.right{        
+        float: left;
+        width: 25%;
+        height: 100%;
+      }
+
+      
       div.left1{        
         float: left;
       }
@@ -75,5 +95,7 @@
         font-size: 20px;
         font-family: Roboto;
       }
+      
+
     font-family: 'Roboto Condensed', sans-serif;
     font-family: 'Merriweather', serif;
