@@ -153,12 +153,57 @@ function confirm_click(){
 
   // 경민이형 여기에 ajax 기능 추가해줘
   if(total_queue.cnt > 0){
-  init();
+    classifyImages();
+    init();
   }
   else{
     alert("done!")
   }
-}
+}  
+
+function classifyImages(){
+  
+  let todo_list =  document.getElementsByClassName("todo-item");
+  let Jarray = new Array();
+  for(let i=0;i<todo_list.length;i++){
+    let left_right = 0
+    if(todo_list[i].parentNode.className=='left'){
+      left_right = 1;
+    }
+    else if(todo_list[i].parentNode.className=='right'){
+      left_right = -1;
+    }
+    else{
+      left_right = 0;
+    }
+    let jObject = new Object();
+    jObject.image_id = '('.concat(todo_list[i].src.split(/[(]+/).pop());
+    jObject.adjective = keyword_list[0];
+    jObject.label = left_right;
+    Jarray.push(jObject);
+    
+  }
+
+  let outParam = JSON.stringify(Jarray);
+  jQuery.ajaxSettings.traditional = true;
+  $.ajax({
+    url : "/getData",
+    type: 'POST',
+    data: {"jsonData" : outParam},
+    dataType:'json',
+    success: function(data) {
+
+    },
+    error: function(x, e) {
+        alert("error");
+    }
+});
+  
+
+};
+
+
+
 
 function getSyncScriptParams() {
    var scripts = document.getElementsByTagName('script');
@@ -178,7 +223,8 @@ var images = JSON.parse(params.images);
 var batch_count=1;
 var batch_size = parseInt(Object.keys(images).length/12) + 1;
 
-  
+
+
 /* create queues */  
 var total_queue = new Queue();
 total_queue._arr = Object.values(images);
@@ -186,9 +232,8 @@ total_queue.cnt = total_queue._arr.length;
 const neutral_queue = new Queue();
 const blue_queue = new Queue();
 const red_queue = new Queue();
-
+var keyword_list = JSON.parse(params.keywords);
 function description(){
-  var keyword_list = JSON.parse(params.keywords);
   var left_word = "more likely "+ keyword_list[0];
   var right_word = "more likely not " + keyword_list[0];
   $('#description0').append("1 / "+batch_size);
@@ -320,27 +365,6 @@ var pageLoader = (function()
 
 description();
 init();
-
-
-
-   setInterval(() => {
-     let snaps = document.getElementsByClassName("snap");
-     for(let i = 0; i < snaps.length; i++) {
-          
-       //Clear the Over class every time (Hide Elements are not under collision)
-       snaps[i].className = snaps[i].className.replace("over", "");
-       if(doElsCollide(currentTodo, snaps[i])) {
-         //There is a collision then we are good to
-         snaps[i].className += " over"; ///< Over class will show the snap container 
-     
-         if(!isMouseDown) {
-          //Snap Current Todo under Current Snap Container :)
-          snapTodo(currentTodo, snaps[i]);
-          
-        }
-     }
-     }
-  }, 100);
 
 
 

@@ -5,8 +5,24 @@ import json
 import pickle
 import time
 import datetime
+import csv
+
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
+@app.route('/getData', methods = ['GET','POST'])
+def getData():
+    if request.method == "POST":
+        json_received = request.form
+        data = json_received.to_dict(flat=False)
+        data_list = json.loads(data['jsonData'][0])
+        print(data_list[0])
+        outfile = open('labelData.csv', 'a', newline='')
+        csvwriter = csv.writer(outfile)
+        
+        for item in data_list:
+              csvwriter.writerow(item.values())
+        return jsonify(request.json)
+    
 @app.route('/')
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
