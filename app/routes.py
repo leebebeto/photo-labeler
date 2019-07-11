@@ -8,7 +8,7 @@ import datetime
 import csv
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-
+result = []
 @app.route('/getData', methods = ['GET','POST'])
 def getData():
     if request.method == "POST":
@@ -17,8 +17,10 @@ def getData():
         data_list = json.loads(data['jsonData'][0])
         outfile = open('labelData.csv', 'a', newline='')
         csvwriter = csv.writer(outfile)
+        result.append(data)
         with open('pickle_file.pickle', 'wb') as f:
-            pickle.dump(data,f)
+            pickle.dump(result,f)
+        print(result)
         for item in data_list:
             if type(item) == str:
         	    csvwriter.writerow(item)	
