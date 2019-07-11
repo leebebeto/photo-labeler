@@ -147,12 +147,13 @@ class Queue {
 
 
 function confirm_click(){
+  timeEnd = Date.now();
   batch_count += 1;
   $("#description0").empty();
   $('#description0').append(batch_count + ' / ' + batch_size);
 
-  // 경민이형 여기에 ajax 기능 추가해줘
   if(total_queue.cnt > 0){
+    // timeStamp();
     classifyImages();
     init();
   }
@@ -161,10 +162,35 @@ function confirm_click(){
   }
 }  
 
+// function timeStamp(){
+  
+
+//   jQuery.ajaxSettings.traditional = true;
+//   $.ajax({
+//     url : "/getData",
+//     type: 'POST',
+//     data: {"timeStamp" : timeStamp},
+//     dataType:'json',
+//     success: function(data) {
+
+//     },
+//     error: function(x, e) {
+//         alert("error");
+//     }
+// });
+
+// }
+
 function classifyImages(){
   
   let todo_list =  document.getElementsByClassName("todo-item");
   let Jarray = new Array();
+  let timeStamp= timeEnd - timeStart;
+  timeStamp = JSON.stringify(timeStamp);
+  console.log(timeStart);
+  console.log(timeEnd);
+  console.log(timeStamp);
+
   for(let i=0;i<todo_list.length;i++){
     let left_right = 0
     if(todo_list[i].parentNode.className=='left'){
@@ -183,7 +209,7 @@ function classifyImages(){
     Jarray.push(jObject);
     
   }
-
+  Jarray.push(timeStamp);
   let outParam = JSON.stringify(Jarray);
   jQuery.ajaxSettings.traditional = true;
   $.ajax({
@@ -222,6 +248,9 @@ var params = new getSyncScriptParams();
 var images = JSON.parse(params.images);
 var batch_count=1;
 var batch_size = parseInt(Object.keys(images).length/12) + 1;
+var timeEnd = 0;
+var timeStart = 0;
+
 
 
 
@@ -322,6 +351,7 @@ function displayImages(queue){
 
 function init(){
   clearAll();
+  timeStart = Date.now();
   var getLists = new selectList(total_queue,blue_test_number,neutral_test_number,red_test_number);
   var blue_list = getLists[0];
   var neutral_list = getLists[1];
@@ -361,7 +391,6 @@ var pageLoader = (function()
     }
   };
 })();
-
 
 description();
 init();
