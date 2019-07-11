@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Photo labeling</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Merriweather|Roboto+Condensed:300,400&display=swap" rel="stylesheet">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='image/ku.png') }}" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/drag.css') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Merriweather|Roboto+Condensed:300,400&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='image/ku.png') }}" />
   </head>
-  <body style="width: 150%">
+  <body style="width: 2000px">
     <div class="row">
       <div class="col-sm-9" style="width: 1600px; height: 700px">
         <div class=left1 style="width: 579px; height: 503px; margin:10px">
@@ -104,22 +104,22 @@
           </div>
         <div class = "red-blue" column="red" style="background-color: rgba(242,108,108,0.2); overflow:auto">
             <div style="width: 100%; height: 33.3%">
-              <div class="right" id = "R1"></div>
-              <div class="right" id = "R4"></div>
-              <div class="right" id = "R7"></div>
-              <div class="right" id = "R10"></div>
-            </div>
-            <div style="width: 100%; height: 33.3%">
-              <div class="right" id = "R2"></div>
-              <div class="right" id = "R5"></div>
-              <div class="right" id = "R8"></div>
-              <div class="right" id = "R11"></div>
-            </div>
-            <div style="width: 100%; height: 33.3%">
-              <div class="right" id = "R3"></div>
-              <div class="right" id = "R6"></div>
-              <div class="right" id = "R9"></div>
               <div class="right" id = "R12"></div>
+              <div class="right" id = "R9"></div>
+              <div class="right" id = "R6"></div>
+              <div class="right" id = "R3"></div>
+            </div>
+            <div style="width: 100%; height: 33.3%">
+              <div class="right" id = "R11"></div>
+              <div class="right" id = "R8"></div>
+              <div class="right" id = "R5"></div>
+              <div class="right" id = "R2"></div>
+            </div>
+            <div style="width: 100%; height: 33.3%">
+              <div class="right" id = "R10"></div>
+              <div class="right" id = "R7"></div>
+              <div class="right" id = "R4"></div>
+              <div class="right" id = "R1"></div>
             </div>
             <div style="width: 100%; height: 33.3%">
               <div class="right" id = "R13"></div>
@@ -137,6 +137,7 @@
       </div>
       <div style="width: 100%; height:530px; text-align: center">
       </div>
+      <div class=description id = "description0" style="text-align: left"></div>
       <div class=description id = "description1">
         Please review the images above in a way that the images are placed in the right category.
       </div>
@@ -146,7 +147,7 @@
       You can change the category of an image by hovering over. When you ready, confirm your label"
       </div>
       <div style="width: 100%; text-align: center; margin: 10px">
-        <button class= "button-confirm" onclick="confirm_click();" onclick="addCSS('pageloader-points.css')" style="">
+        <button class= "button-confirm" onclick="confirm_click();">
         CONFIRM
          </button>
       </div>
@@ -180,27 +181,6 @@
       </div>
     </div>
     <script type = "text/javascript" src = "{{ url_for('static', filename='js/main.js') }}" keywords = "{{keywords}}" images = "{{images}}">
-    </script>
-    <script type="text/javascript">
-          function addCSS (href)
-    { // Remove previous css
-      Array.prototype.forEach.call(document.querySelectorAll('[rel="stylesheet"],[type="text/css"]'),
-        function(element)
-        { try{
-            element.parentNode.removeChild(element)
-          }catch(err){}
-        });
-      // Add new one
-      var head  = document.getElementsByTagName('head')[0];
-      var link  = document.createElement('link');
-      link.rel  = 'stylesheet';
-      link.type = 'text/css';
-      link.href = href;
-      link.media = 'all';
-      head.appendChild(link);
-      pageLoader.show();
-    }
-
     </script>
  </body>
 </html>
