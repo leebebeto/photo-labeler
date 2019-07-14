@@ -9,7 +9,7 @@ let currentTodo = null;
 let tempTodo = null;
 
 let doElsCollide = function(el1, el2) { 
-  if(el1 !=null && el2 != null){
+  if(el1 != null && el2 != null){
  
     el1.offsetBottom= el1.offsetTop + el1.offsetHeight;
     el1.offsetRight = el1.offsetLeft + el1.offsetWidth;
@@ -30,7 +30,6 @@ function onMouseDown(e, item) {
   currentTodo = item;
   currentTodo.style.zIndex = "2";
   mouseOffset = {x: item.offsetLeft - e.clientX, y: item.offsetTop - e.clientY};
-  
   item.style.filter = "brightness(50%)";
 }
 
@@ -40,6 +39,7 @@ function onMouseDown_clone(e, item) {
   currentTodo = item;
   currentTodo.style.zIndex = "2";
   mouseOffset = {x: item.offsetLeft - e.clientX, y: item.offsetTop - e.clientY};
+  console.log(item.parentNode.className);
   tempTodo.remove();
 
   item.style.filter = "brightness(50%)";
@@ -77,15 +77,20 @@ function onMouseOver(e, item) {
   if(!isMouseDown){
     todo_clone = item.cloneNode();
     todo_clone.position = "absolute";
-    console.log($('.blue').scrollTop());
     
     todo_clone.style.left = item.parentNode.offsetLeft - 15 + "px";
     
     if(item.parentNode.className == "left"){
       todo_clone.style.top = item.parentNode.offsetTop - $('.blue').scrollTop() + "px";
+      todo_clone.setAttribute('id', 0);
+    }
+    else if(item.parentNode.className == "right"){
+      todo_clone.style.top = item.parentNode.offsetTop - $('.red').scrollTop() + "px";
+      todo_clone.setAttribute('id', 2);
     }
     else{
-      todo_clone.style.top = item.parentNode.offsetTop - $('.red').scrollTop() + "px";
+      todo_clone.style.top = item.parentNode.offsetTop - $('.neutral').scrollTop() + "px";
+      todo_clone.setAttribute('id', 1);
     }
     tempTodo = item;
     
@@ -99,12 +104,14 @@ function onMouseOver(e, item) {
 function onMouseOver_clone(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(130%)";
+
   }
 }
 
 function onMouseOut(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(100%)";
+    
   }
 }
 
@@ -112,6 +119,9 @@ function onMouseOut_clone(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(100%)";
     item.remove();
+
+    if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
+    
   }
 }
 
@@ -159,21 +169,31 @@ function setListener_clone(todoItem) {
 
 setInterval(() => {
   let areas = document.getElementsByClassName("red-blue");
+  let check = 0;
   for(let i = 0; i < areas.length; i++) {
        
     areas[i].className = areas[i].className.replace("over", "");
     if(doElsCollide(currentTodo, areas[i])) {
-      areas[i].className += " over"; 
-      console.log(isMouseDown);
+      areas[i].className += " over";
+      console.log("good");
+      check = check + 1;
       if(!isMouseDown) {
         snapTodo(currentTodo, areas[i], i);
       }
     }
-  }
+  }  
+    
+    if(check == 0 && currentTodo != null) {
+      if(!isMouseDown) {
+        let i = currentTodo.getAttribute('id');
+        snapTodo(currentTodo, areas[i], i);
+      }
+    }
+  
 }, 100);
 
 function snapTodo(todo, container,index) {
-  area_list = ["left","right"];
+  area_list = ["left","center","right"];
     temp_list = document.getElementsByClassName(area_list[index]);
     for(let i=0;i<temp_list.length;i++){
       let item = temp_list[i];
@@ -193,7 +213,6 @@ function snapTodo(todo, container,index) {
     }
 
   }
-
 
 
 

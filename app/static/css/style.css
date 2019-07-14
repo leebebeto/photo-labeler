@@ -73,6 +73,7 @@
         float: left;
         width: 50%;
         height: 100%;
+        position: relative;
       }
       div.right{        
         float: left;
