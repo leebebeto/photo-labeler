@@ -1,38 +1,60 @@
 /*마우스 기능 */
 let itemsContainer = document.getElementById("items-container");
 let todosContainer = document.getElementById("todos-container");
+let temp = document.getElementsByClassName("img_temp")[0];
 
 let mouseOffset = {x:0, y:0};
 let isMouseDown = false;
 let currentTodo = null;
+let tempTodo = null;
 
 let doElsCollide = function(el1, el2) { 
   if(el1 !=null && el2 != null){
+ 
+    el1.offsetBottom= el1.offsetTop + el1.offsetHeight;
+    el1.offsetRight = el1.offsetLeft + el1.offsetWidth;
+    el2.offsetBottom = el2.offsetTop + el2.offsetHeight;
+    el2.offsetRight = el2.offsetLeft + el2.offsetWidth;
 
-     el1.offsetBottom= el1.offsetTop + el1.offsetHeight;
-     el1.offsetRight = el1.offsetLeft + el1.offsetWidth;
-     el2.offsetBottom = el2.offsetTop + el2.offsetHeight;
-     el2.offsetRight = el2.offsetLeft + el2.offsetWidth;
-
-     return !((el1.offsetBottom < el2.offsetTop) ||
-               (el1.offsetTop > el2.offsetBottom) ||
-               (el1.offsetRight < el2.offsetLeft) ||
-               (el1.offsetLeft > el2.offsetRight))
-  }
+    return !((el1.offsetBottom < el2.offsetTop) ||
+              (el1.offsetTop > el2.offsetBottom) ||
+              (el1.offsetRight < el2.offsetLeft) ||
+              (el1.offsetLeft > el2.offsetRight))
+            }
 
 };
 
 function onMouseDown(e, item) {
+  e.preventDefault();  
   isMouseDown = true;
   currentTodo = item;
-
+  currentTodo.style.zIndex = "2";
   mouseOffset = {x: item.offsetLeft - e.clientX, y: item.offsetTop - e.clientY};
   
   item.style.filter = "brightness(50%)";
 }
 
-function onMouseMove(e) {
+function onMouseDown_clone(e, item) {
   e.preventDefault();  
+  isMouseDown = true;
+  currentTodo = item;
+  currentTodo.style.zIndex = "2";
+  mouseOffset = {x: item.offsetLeft - e.clientX, y: item.offsetTop - e.clientY};
+  tempTodo.remove();
+
+  item.style.filter = "brightness(50%)";
+}
+
+function onMouseMove(e) {
+  e.preventDefault();
+  if(isMouseDown) {
+    currentTodo.style.left = e.clientX + mouseOffset.x + "px";
+    currentTodo.style.top = e.clientY + mouseOffset.y + "px";
+    }
+}
+
+function onMouseMove_clone(e) {
+  e.preventDefault();
   if(isMouseDown) {
     currentTodo.style.left = e.clientX + mouseOffset.x + "px";
     currentTodo.style.top = e.clientY + mouseOffset.y + "px";
@@ -40,20 +62,59 @@ function onMouseMove(e) {
 }
 
 function onMouseUp(e, item) {
+  currentTodo.style.zIndex = "1";
+  isMouseDown = false;
+  item.style.filter = "brightness(100%)";
+}
+
+function onMouseUp_clone(e, item) {
+  currentTodo.style.zIndex = "1";
   isMouseDown = false;
   item.style.filter = "brightness(100%)";
 }
 
 function onMouseOver(e, item) {
   if(!isMouseDown){
+    todo_clone = item.cloneNode();
+    todo_clone.position = "absolute";
+    console.log($('.blue').scrollTop());
+    
+    todo_clone.style.left = item.parentNode.offsetLeft - 15 + "px";
+    
+    if(item.parentNode.className == "left"){
+      todo_clone.style.top = item.parentNode.offsetTop - $('.blue').scrollTop() + "px";
+    }
+    else{
+      todo_clone.style.top = item.parentNode.offsetTop - $('.red').scrollTop() + "px";
+    }
+    tempTodo = item;
+    
+    if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
+    
+    $(".img_temp").append(todo_clone);
+    setListener_clone(todo_clone);
+  }
+}
+
+function onMouseOver_clone(e, item) {
+  if(!isMouseDown){
     item.style.filter = "brightness(130%)";
   }
 }
+
 function onMouseOut(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(100%)";
   }
 }
+
+function onMouseOut_clone(e, item) {
+  if(!isMouseDown){
+    item.style.filter = "brightness(100%)";
+    item.remove();
+  }
+}
+
 
 function setListeners(todoItems) {
   for(let i = 0; i < todoItems.length; i++) {
@@ -67,21 +128,33 @@ function setListeners(todoItems) {
   item.addEventListener("mouseup", (e) => {
     onMouseUp(e, item);
   });
+  }
+}
+ 
+  function setListener(todoItem) {
   
-}}
-
-function setListener(todoItem) {
+    todoItem.addEventListener("mousedown", (e) => { onMouseDown(e, todoItem); });
+    todoItem.addEventListener("mouseover", (e) => { onMouseOver(e, todoItem); });
+    todoItem.addEventListener("mouseout", (e) => { onMouseOut(e, todoItem); });
+    document.body.addEventListener("mousemove", (e) => {
+      onMouseMove(e);
+    });
+    todoItem.addEventListener("mouseup", (e) => {
+      onMouseUp(e, todoItem);
+    }); 
+  }
   
-  todoItem.addEventListener("mousedown", (e) => { onMouseDown(e, todoItem); });
-  todoItem.addEventListener("mouseover", (e) => { onMouseOver(e, todoItem); });
-  todoItem.addEventListener("mouseout", (e) => { onMouseOut(e, todoItem); });
+function setListener_clone(todoItem) {
+  
+  todoItem.addEventListener("mousedown", (e) => { onMouseDown_clone(e, todoItem); });
+  todoItem.addEventListener("mouseover", (e) => { onMouseOver_clone(e, todoItem); });
+  todoItem.addEventListener("mouseout", (e) => { onMouseOut_clone(e, todoItem); });
   document.body.addEventListener("mousemove", (e) => {
-    onMouseMove(e);
+    onMouseMove_clone(e);
   });
   todoItem.addEventListener("mouseup", (e) => {
-    onMouseUp(e, todoItem);
-  });
-  
+    onMouseUp_clone(e, todoItem);
+  }); 
 }
 
 setInterval(() => {
@@ -91,6 +164,7 @@ setInterval(() => {
     areas[i].className = areas[i].className.replace("over", "");
     if(doElsCollide(currentTodo, areas[i])) {
       areas[i].className += " over"; 
+      console.log(isMouseDown);
       if(!isMouseDown) {
         snapTodo(currentTodo, areas[i], i);
       }
@@ -109,8 +183,8 @@ function snapTodo(todo, container,index) {
         todo.remove();
         item.append(todo_clone);
         setListener(todo_clone);
-        todo_clone.style.left = box.x + "px";
-        todo_clone.style.top = box.y - 10 + "px";
+        todo_clone.style.left = 0 + "px";
+        todo_clone.style.top = 0 + "px";
         currentTodo = null;
         
 
@@ -394,7 +468,3 @@ var pageLoader = (function()
 
 description();
 init();
-
-
-
-
