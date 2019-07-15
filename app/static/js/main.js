@@ -39,10 +39,11 @@ function onMouseDown_clone(e, item) {
   currentTodo = item;
   currentTodo.style.zIndex = "2";
   mouseOffset = {x: item.offsetLeft - e.clientX, y: item.offsetTop - e.clientY};
-  console.log(item.parentNode.className);
   tempTodo.remove();
-
   item.style.filter = "brightness(50%)";
+  item.setAttribute('multi', 'true');
+  console.log(item.attributes.multi);
+
 }
 
 function onMouseMove(e) {
@@ -50,7 +51,7 @@ function onMouseMove(e) {
   if(isMouseDown) {
     currentTodo.style.left = e.clientX + mouseOffset.x + "px";
     currentTodo.style.top = e.clientY + mouseOffset.y + "px";
-    }
+    }  
 }
 
 function onMouseMove_clone(e) {
@@ -65,6 +66,7 @@ function onMouseUp(e, item) {
   currentTodo.style.zIndex = "1";
   isMouseDown = false;
   item.style.filter = "brightness(100%)";
+  console.log('up1');
 }
 
 function onMouseUp_clone(e, item) {
@@ -104,14 +106,12 @@ function onMouseOver(e, item) {
 function onMouseOver_clone(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(130%)";
-
   }
 }
 
 function onMouseOut(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(100%)";
-    
   }
 }
 
@@ -119,16 +119,19 @@ function onMouseOut_clone(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(100%)";
     item.remove();
-
     if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
-    
   }
+}
+
+function multiChoice(e, item){
+ 
 }
 
 
 function setListeners(todoItems) {
   for(let i = 0; i < todoItems.length; i++) {
   let item = todoItems[i];
+  item.setAttribute('multi', 'false');
   item.addEventListener("mousedown", (e) => { onMouseDown(e, item); });
   item.addEventListener("mouseover", (e) => { onMouseOver(e, item); });
   item.addEventListener("mouseout", (e) => { onMouseOut(e, item); });
@@ -141,18 +144,20 @@ function setListeners(todoItems) {
   }
 }
  
-  function setListener(todoItem) {
-  
-    todoItem.addEventListener("mousedown", (e) => { onMouseDown(e, todoItem); });
-    todoItem.addEventListener("mouseover", (e) => { onMouseOver(e, todoItem); });
-    todoItem.addEventListener("mouseout", (e) => { onMouseOut(e, todoItem); });
-    document.body.addEventListener("mousemove", (e) => {
-      onMouseMove(e);
-    });
-    todoItem.addEventListener("mouseup", (e) => {
-      onMouseUp(e, todoItem);
-    }); 
-  }
+function setListener(todoItem) {
+
+  todoItem.addEventListener("mousedown", (e) => { onMouseDown(e, todoItem); });
+  todoItem.addEventListener("mouseover", (e) => { onMouseOver(e, todoItem); });
+  todoItem.addEventListener("mouseout", (e) => { onMouseOut(e, todoItem); });
+  document.body.addEventListener("mousemove", (e) => {
+    onMouseMove(e);
+  });
+  todoItem.addEventListener("mouseup", (e) => {
+    onMouseUp(e, todoItem);
+  });
+  console.log(0);
+
+}
   
 function setListener_clone(todoItem) {
   
@@ -165,6 +170,8 @@ function setListener_clone(todoItem) {
   todoItem.addEventListener("mouseup", (e) => {
     onMouseUp_clone(e, todoItem);
   }); 
+
+
 }
 
 setInterval(() => {
@@ -200,6 +207,7 @@ function snapTodo(todo, container,index) {
       if(!item.hasChildNodes()){
         let box = item.getBoundingClientRect();
         todo_clone = todo.cloneNode();
+        console.log(todo_clone);
         todo.remove();
         item.append(todo_clone);
         setListener(todo_clone);
@@ -254,25 +262,6 @@ function confirm_click(){
     alert("done!")
   }
 }  
-
-// function timeStamp(){
-  
-
-//   jQuery.ajaxSettings.traditional = true;
-//   $.ajax({
-//     url : "/getData",
-//     type: 'POST',
-//     data: {"timeStamp" : timeStamp},
-//     dataType:'json',
-//     success: function(data) {
-
-//     },
-//     error: function(x, e) {
-//         alert("error");
-//     }
-// });
-
-// }
 
 function classifyImages(){
   
@@ -340,9 +329,6 @@ var batch_size = parseInt(Object.keys(images).length/12) + 1;
 var timeEnd = 0;
 var timeStart = 0;
 
-
-
-
 /* create queues */  
 var total_queue = new Queue();
 total_queue._arr = Object.values(images);
@@ -351,6 +337,7 @@ const neutral_queue = new Queue();
 const blue_queue = new Queue();
 const red_queue = new Queue();
 var keyword_list = JSON.parse(params.keywords);
+
 function description(){
   var left_word = "more likely "+ keyword_list[0];
   var right_word = "more likely not " + keyword_list[0];
@@ -446,11 +433,9 @@ function init(){
   var neutral_list = getLists[1];
   var red_list = getLists[2];
   enQueues(blue_queue,blue_list,neutral_queue,neutral_list, red_queue,red_list);
-
   displayImages(blue_queue);
   displayImages(red_queue);
   displayImages(neutral_queue);
-  
   todoItems = document.getElementsByClassName("todo-item");
   setListeners(todoItems);
 
