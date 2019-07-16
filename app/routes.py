@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, jsonify, Flask
+from flask import render_template, request, url_for, jsonify, redirect, flash
 from app import app
 import pymongo
 import os
@@ -7,6 +7,8 @@ import pickle
 import time
 import datetime
 import csv
+
+
 
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +40,14 @@ def add():
     client.close()
     return render_template('add.html', data=results)
 
+@app.route('/logIn', methods = ['GET','POST'])
+def logIn():
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    return render_template('logout.html')
 
 @app.route('/getData', methods = ['GET','POST'])
 def getData():
@@ -54,7 +64,7 @@ def getData():
         print(result)
         for item in data_list:
             if type(item) == str:
-                # csvwriter.writerow(item)    
+                csvwriter.writerow(item)    
             else:
                 csvwriter.writerow(item.values())
         return jsonify(request.json)
