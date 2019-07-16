@@ -285,7 +285,10 @@ function classifyImages(){
     jObject.adjective = keyword_list[0];
     jObject.label = left_right;
 <<<<<<< HEAD
+<<<<<<< HEAD
     jObject.time = timeStamp;
+=======
+>>>>>>> parent of ce097c8... scroll function added
 =======
 >>>>>>> parent of ce097c8... scroll function added
     Jarray.push(jObject);
