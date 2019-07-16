@@ -268,6 +268,10 @@ function classifyImages(){
   let todo_list =  document.getElementsByClassName("todo-item");
   let Jarray = new Array();
   let timeStamp= timeEnd - timeStart;
+  timeStamp = JSON.stringify(timeStamp);
+  console.log(timeStart);
+  console.log(timeEnd);
+  console.log(timeStamp);
 
   for(let i=0;i<todo_list.length;i++){
     let left_right = 0
@@ -284,10 +288,10 @@ function classifyImages(){
     jObject.image_id = '('.concat(todo_list[i].src.split(/[(]+/).pop());
     jObject.adjective = keyword_list[0];
     jObject.label = left_right;
-    jObject.timeStamp = timeStamp;
-    console.log(timeStamp);
     Jarray.push(jObject);
+    
   }
+  Jarray.push(timeStamp);
   let outParam = JSON.stringify(Jarray);
   jQuery.ajaxSettings.traditional = true;
   $.ajax({
