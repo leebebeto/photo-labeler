@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 (1).png,ATTRACTIVE,1,1946
 (101).png,ATTRACTIVE,1,1946
 (10).png,ATTRACTIVE,1,1946
@@ -28,6 +29,8 @@
 (107).png,ATTRACTIVE,-1,35056
 (106).png,ATTRACTIVE,-1,35056
 =======
+=======
+>>>>>>> parent of ce097c8... scroll function added
 (1).png,ATTRACTIVE,1
 (101).png,ATTRACTIVE,1
 (10).png,ATTRACTIVE,1
@@ -720,4 +723,7 @@
 (106).png,ATTRACTIVE,-1
 (107).png,ATTRACTIVE,-1
 1,8,3,0,9,4
+<<<<<<< HEAD
+>>>>>>> parent of ce097c8... scroll function added
+=======
 >>>>>>> parent of ce097c8... scroll function added
