@@ -45,6 +45,7 @@ def getData():
         json_received = request.form
         data = json_received.to_dict(flat=False)
         data_list = json.loads(data['jsonData'][0])
+        print(data_list)
         outfile = open('labelData.csv', 'a', newline='')
         csvwriter = csv.writer(outfile)
         result.append(data)
@@ -52,7 +53,10 @@ def getData():
             pickle.dump(result,f)
         print(result)
         for item in data_list:
-            csvwriter.writerow(item.values())
+            if type(item) == str:
+                # csvwriter.writerow(item)    
+            else:
+                csvwriter.writerow(item.values())
         return jsonify(request.json)
 
 @app.route('/')

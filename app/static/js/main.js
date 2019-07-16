@@ -280,8 +280,9 @@ function classifyImages(){
     jObject.image_id = '('.concat(todo_list[i].src.split(/[(]+/).pop());
     jObject.adjective = keyword_list[0];
     jObject.label = left_right;
-    jObject.timeStamp = timeStamp;
+    jObject.time = timeStamp;
     Jarray.push(jObject);
+    
   }
   let outParam = JSON.stringify(Jarray);
   jQuery.ajaxSettings.traditional = true;
