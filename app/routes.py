@@ -1,5 +1,6 @@
-from flask import render_template, request, url_for, jsonify
+from flask import render_template, request, url_for, jsonify, Flask
 from app import app
+import pymongo
 import os
 import json
 import pickle
@@ -7,8 +8,37 @@ import time
 import datetime
 import csv
 
+
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 result = []
+
+@app.route('/add', methods = ['GET','POST'])
+def add():
+    client = pymongo.MongoClient('mongodb://localhost:27017/')
+    db = client.newDatabase
+    collection = db.blog_test
+    results = collection.find()
+    new_documents = [
+      {
+        "_id" : "130",
+        "name" : "asd",
+        "content" : "12345"
+      }, {
+        "_id" : "131",
+        "name" : "asd",
+        "content" : "12346"
+      },{
+        "_id" : "1232",
+        "name" : "asd",
+        "content" : "12347"
+      }
+    ]
+    # collection.insert(new_documents)
+    print(results)
+    client.close()
+    return render_template('add.html', data=results)
+
+
 @app.route('/getData', methods = ['GET','POST'])
 def getData():
     if request.method == "POST":
@@ -22,12 +52,9 @@ def getData():
             pickle.dump(result,f)
         print(result)
         for item in data_list:
-            if type(item) == str:
-        	    csvwriter.writerow(item)	
-            else:
-                csvwriter.writerow(item.values())
+            csvwriter.writerow(item.values())
         return jsonify(request.json)
-    
+
 @app.route('/')
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
@@ -40,3 +67,4 @@ def index():
     keywords = json.dumps(dictOfKey)
     images = json.dumps(dictOfImg)
     return render_template('photolabeling.html', keywords = keywords,images = images)
+

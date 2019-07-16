@@ -41,8 +41,6 @@ function onMouseDown_clone(e, item) {
   mouseOffset = {x: item.offsetLeft - e.clientX, y: item.offsetTop - e.clientY};
   tempTodo.remove();
   item.style.filter = "brightness(50%)";
-  item.setAttribute('multi', 'true');
-  console.log(item.attributes.multi);
 
 }
 
@@ -122,11 +120,6 @@ function onMouseOut_clone(e, item) {
     if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
   }
 }
-
-function multiChoice(e, item){
- 
-}
-
 
 function setListeners(todoItems) {
   for(let i = 0; i < todoItems.length; i++) {
@@ -209,6 +202,7 @@ function snapTodo(todo, container,index) {
         todo_clone = todo.cloneNode();
         console.log(todo_clone);
         todo.remove();
+        console.log(todo);
         item.append(todo_clone);
         setListener(todo_clone);
         todo_clone.style.left = 0 + "px";
@@ -263,15 +257,13 @@ function confirm_click(){
   }
 }  
 
+
+
 function classifyImages(){
   
   let todo_list =  document.getElementsByClassName("todo-item");
   let Jarray = new Array();
   let timeStamp= timeEnd - timeStart;
-  timeStamp = JSON.stringify(timeStamp);
-  console.log(timeStart);
-  console.log(timeEnd);
-  console.log(timeStamp);
 
   for(let i=0;i<todo_list.length;i++){
     let left_right = 0
@@ -288,10 +280,9 @@ function classifyImages(){
     jObject.image_id = '('.concat(todo_list[i].src.split(/[(]+/).pop());
     jObject.adjective = keyword_list[0];
     jObject.label = left_right;
+    jObject.timeStamp = timeStamp;
     Jarray.push(jObject);
-    
   }
-  Jarray.push(timeStamp);
   let outParam = JSON.stringify(Jarray);
   jQuery.ajaxSettings.traditional = true;
   $.ajax({
