@@ -264,6 +264,10 @@ function classifyImages(){
   let todo_list =  document.getElementsByClassName("todo-item");
   let Jarray = new Array();
   let timeStamp= timeEnd - timeStart;
+  timeStamp = JSON.stringify(timeStamp);
+  console.log(timeStart);
+  console.log(timeEnd);
+  console.log(timeStamp);
 
   for(let i=0;i<todo_list.length;i++){
     let left_right = 0
@@ -284,6 +288,7 @@ function classifyImages(){
     Jarray.push(jObject);
     
   }
+  Jarray.push(timeStamp);
   let outParam = JSON.stringify(Jarray);
   jQuery.ajaxSettings.traditional = true;
   $.ajax({
