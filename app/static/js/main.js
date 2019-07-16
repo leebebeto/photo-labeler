@@ -286,7 +286,10 @@ function classifyImages(){
     jObject.label = left_right;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     jObject.time = timeStamp;
+=======
+>>>>>>> parent of ce097c8... scroll function added
 =======
 >>>>>>> parent of ce097c8... scroll function added
 =======
