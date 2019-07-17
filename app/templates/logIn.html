@@ -14,10 +14,10 @@
 body{
 	margin: 0;
 	padding: 0;
-	background: #fff;
+/*	background: #fff;
 
 	color: #fff;
-	font-family: Arial;
+*/	font-family: Arial;
 	font-size: 12px;
 }
 
@@ -29,22 +29,22 @@ body{
 	bottom: -40px;
 	width: auto;
 	height: auto;
-	background-image: url(http://ginva.com/wp-content/uploads/2012/07/city-skyline-wallpapers-008.jpg);
-	background-size: cover;
-	-webkit-filter: blur(5px);
+/*	background-image: url(http://ginva.com/wp-content/uploads/2012/07/city-skyline-wallpapers-008.jpg);
+*/	background-size: cover;
+	/*-webkit-filter: blur(5px);*/
 	z-index: 0;
 }
 
 .grad{
 	position: absolute;
-	top: -20px;
-	left: -20px;
-	right: -40px;
-	bottom: -40px;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
 	width: auto;
 	height: auto;
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.65))); /* Chrome,Safari4+ */
-	z-index: 1;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.2))); /* Chrome,Safari4+ 
+*/	z-index: 1;
 	opacity: 0.7;
 }
 
@@ -81,9 +81,11 @@ body{
 	width: 250px;
 	height: 30px;
 	background: transparent;
-	border: 1px solid rgba(255,255,255,0.6);
+	/*border: 1px solid rgba(255,255,255,0.6);*/
+	border: 1px solid rgba(0,0,0,0.6);
 	border-radius: 2px;
-	color: #fff;
+	/*color: #fff;*/
+	color: #000;
 	font-family: 'Exo', sans-serif;
 	font-size: 16px;
 	font-weight: 400;
@@ -94,9 +96,11 @@ body{
 	width: 250px;
 	height: 30px;
 	background: transparent;
-	border: 1px solid rgba(255,255,255,0.6);
+	/*border: 1px solid rgba(255,255,255,0.6);*/
+	border: 1px solid rgba(0,0,0,0.6);
 	border-radius: 2px;
-	color: #fff;
+	/*color: #fff;*/
+	color: #000;
 	font-family: 'Exo', sans-serif;
 	font-size: 16px;
 	font-weight: 400;
@@ -104,14 +108,14 @@ body{
 	margin-top: 10px;
 }
 
-.login input[type=button]{
+.login input[type=submit]{
 	width: 260px;
 	height: 35px;
-	background: #fff;
-	border: 1px solid #fff;
+	background: #080808;
+	border: 1px solid #080808;
 	cursor: pointer;
 	border-radius: 2px;
-	color: #a18d6c;
+	color: #fff;
 	font-family: 'Exo', sans-serif;
 	font-size: 16px;
 	font-weight: 400;
@@ -119,11 +123,11 @@ body{
 	margin-top: 10px;
 }
 
-.login input[type=button]:hover{
+.login input[type=submit]:hover{
 	opacity: 0.8;
 }
 
-.login input[type=button]:active{
+.login input[type=submit]:active{
 	opacity: 0.6;
 }
 
@@ -137,30 +141,33 @@ body{
 	border: 1px solid rgba(255,255,255,0.9);
 }
 
-.login input[type=button]:focus{
+.login input[type=submit]:focus{
 	outline: none;
 }
 
+
 ::-webkit-input-placeholder{
-   color: rgba(255,255,255,0.6);
+   /*color: rgba(255,255,255,0.6);*/
+color: rgba(0,0,0,0.6);
 }
 
 ::-moz-input-placeholder{
-   color: rgba(255,255,255,0.6);
+   /*color: rgba(255,255,255,0.6);*/
+color: rgba(0,0,0,0.6);
 }
 	</style>            
   </head>
   <body>
-	<div class="body"></div>
-		<div class="grad"></div>
+	<div class="body" style ="width: 100%; height: 100%"></div>
+		<div class="grad" style ="width: 100%; height: 100%"></div>
 		<div class="header">
-			<div>DAVIAN'S<span> Photo Labeler</span></div>
+			<div style="color: #000">DAVIAN'S<span> Photo Labeler</span></div>
 		</div>
 		<br>
 		<div class="login">
 				<input type="text" placeholder="username" name="user"><br>
 				<input type="password" placeholder="password" name="password"><br>
-				<input type="button" value="Login">
+				<input type="submit" value="Login">
 		</div>
   </body>
 </html>
