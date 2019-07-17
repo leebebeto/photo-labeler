@@ -281,11 +281,14 @@ function classifyImages(){
       left_right = 0;
     }
     let jObject = new Object();
+    console.log(user_id);
+    jObject.user_id = user_id;
     jObject.image_id = '('.concat(todo_list[i].src.split(/[(]+/).pop());
     jObject.adjective = keyword_list[0];
     jObject.label = left_right;
     jObject.time = timeStamp;
     Jarray.push(jObject);
+    console.log(jObject);
   }
   let outParam = JSON.stringify(Jarray);
   jQuery.ajaxSettings.traditional = true;
@@ -315,6 +318,7 @@ function getSyncScriptParams() {
    return {
        keywords : scriptName.getAttribute('keywords'),
        images : scriptName.getAttribute('images'),
+       user_id : scriptName.getAttribute('user_id'),
    };
  }
 
@@ -323,8 +327,9 @@ var red_test_number = 6;
 var neutral_test_number = 2;
 var params = new getSyncScriptParams();
 var images = JSON.parse(params.images);
+var user_id = params.user_id;
 var batch_count=1;
-var batch_size = parseInt(Object.keys(images).length/12) + 1;
+var batch_size = parseInt(Object.keys(images).length/(blue_test_number+red_test_number+neutral_test_number)) + 1;
 var timeEnd = 0;
 var timeStart = 0;
 

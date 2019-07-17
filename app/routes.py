@@ -25,21 +25,19 @@ result = []
 client = pymongo.MongoClient('mongodb://localhost:27017/')
 db = client.davian
 collection_user = db.user
-id_list = [items['id'] for items in collection_user.find()]
+collection_content = db.content
+id_list = [items['_id'] for items in collection_user.find()]
 pwd_list = [items['pwd'] for items in collection_user.find()]
 # for items in collection_user.find():
 #     print(items['pwd'])
+print(id_list)
 print(pwd_list)
+
 client.close()
 
 
 @app.route('/logIn', methods = ['GET','POST'])
 def logIn():
-    id = request.form.get('id')
-    password = request.form.get('password')
-    if (password in db.davian.user.pwd)
-
-
     return render_template('login.html')
 
 @app.route('/logout')
@@ -52,6 +50,7 @@ def getData():
         json_received = request.form
         data = json_received.to_dict(flat=False)
         data_list = json.loads(data['jsonData'][0])
+        collection_content.insert(data_list)
         outfile = open('labelData.csv', 'a', newline='')
         csvwriter = csv.writer(outfile)
         result.append(data)
@@ -67,13 +66,24 @@ def getData():
 @app.route('/')
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
-    keyword_list = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
-    image_list = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE'))	
-
-    dictOfKey = { i : keyword_list[i] for i in range(0, len(keyword_list) ) }
-    dictOfImg = { i : image_list[i] for i in range(0, len(image_list) ) }
-
-    keywords = json.dumps(dictOfKey)
-    images = json.dumps(dictOfImg)
-    return render_template('photolabeling.html', keywords = keywords,images = images)
-
+    if request.method == 'POST':
+        user_id = request.form['user']
+        password = request.form['password']
+        result = [item for item in collection_user.find({'_id': str(user_id)})]
+        try:
+            check = result[0]['pwd']
+            if (password == check):
+                keyword_list = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
+                image_list = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE'))  
+                dictOfKey = { i : keyword_list[i] for i in range(0, len(keyword_list) ) }
+                dictOfImg = { i : image_list[i] for i in range(0, len(image_list) ) }
+                user_id = str(user_id)
+                keywords = json.dumps(dictOfKey)
+                images = json.dumps(dictOfImg)
+                return render_template('photolabeling.html', keywords = keywords, images = images, user_id = user_id)
+            else:
+                return render_template('loginFail.html')   
+        except:
+            return render_template('loginFail.html')
+    else:
+        return render_template('photolabeling.html')
