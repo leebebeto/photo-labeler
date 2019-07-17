@@ -11,56 +11,35 @@ import time
 import datetime
 import csv
 
-# app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
-# mongo = PyMongo(app)
-# app.secret_key = os.urandom(24)
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 result = []
 
+# USERS = [
+#     {"_id": "user101", "pwd": "davian101"},
+#     {"_id": "user102", "pwd": "davian102"},
+#     {"_id": "user103", "pwd": "davian103"},
+#     {"_id": "user104", "pwd": "davian104"},
+#     {"_id": "user105", "pwd": "davian105"}
+# ]
 
-# class User:
-#     def __init__(self, user_id,passwd_hash=None, authenticated=False):
-#         self.user_id = user_id
-#         self.passwd_hash = passwd_hash
-#         self.authenticated = authenticated
+client = pymongo.MongoClient('mongodb://localhost:27017/')
+db = client.davian
+collection_user = db.user
+id_list = [items['id'] for items in collection_user.find()]
+pwd_list = [items['pwd'] for items in collection_user.find()]
+# for items in collection_user.find():
+#     print(items['pwd'])
+print(pwd_list)
+client.close()
 
-#     def __repr__(self):
-#         r = {
-#             'user_id': self.user_id,
-#             'passwd_hash': self.passwd_hash,
-#             'authenticated': self.authenticated,
-#         }
-#         return str(r)
-
-#     def can_login(self, passwd_hash):
-#         return self.passwd_hash == passwd_hash
-
-#     def is_active(self):
-#         return True
-
-#     def get_id(self):
-#         return self.user_id
-
-#     def is_authenticated(self):
-#         return self.authenticated
-
-#     def is_anonymous(self):
-#         return False
-
-# USERS = {
-#     "user99": User("user99", passwd_hash='davian99'),
-#     "user98": User("user98", passwd_hash='davian98'),
-#     "user97": User("user97", passwd_hash='davian97'),
-# }
-
-# @app.route('/api/login', methods=['POST'])
-# def login():
 
 @app.route('/logIn', methods = ['GET','POST'])
 def logIn():
+    id = request.form.get('id')
+    password = request.form.get('password')
+    if (password in db.davian.user.pwd)
+
+
     return render_template('login.html')
 
 @app.route('/logout')
@@ -73,17 +52,11 @@ def getData():
         json_received = request.form
         data = json_received.to_dict(flat=False)
         data_list = json.loads(data['jsonData'][0])
-        client = pymongo.MongoClient('mongodb://localhost:27017/')
-        db = client.newDatabase
-        collection = db.blog_test
-        collection.insert(data_list)
-        client.close()
         outfile = open('labelData.csv', 'a', newline='')
         csvwriter = csv.writer(outfile)
         result.append(data)
         with open('pickle_file.pickle', 'wb') as f:
             pickle.dump(result,f)
-        print(result)
         for item in data_list:
             if type(item) == str:
                 csvwriter.writerow(item)    
