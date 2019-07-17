@@ -284,26 +284,9 @@ function classifyImages(){
     jObject.image_id = '('.concat(todo_list[i].src.split(/[(]+/).pop());
     jObject.adjective = keyword_list[0];
     jObject.label = left_right;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     jObject.time = timeStamp;
-=======
->>>>>>> parent of ce097c8... scroll function added
-=======
->>>>>>> parent of ce097c8... scroll function added
-=======
->>>>>>> parent of ce097c8... scroll function added
-=======
->>>>>>> parent of ce097c8... scroll function added
-=======
->>>>>>> parent of ce097c8... scroll function added
     Jarray.push(jObject);
-    
   }
-  Jarray.push(timeStamp);
   let outParam = JSON.stringify(Jarray);
   jQuery.ajaxSettings.traditional = true;
   $.ajax({
