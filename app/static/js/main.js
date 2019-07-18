@@ -53,22 +53,20 @@ function onMouseDown_clone(e, item) {
     }
     else{
       multiChoice = true;
-      
       tempTodo.className +=' over';
     }
   }
   else{
     if(isOver){
-
   e.preventDefault();  
   isMouseDown = true;
   currentTodo = item;
   currentList = [];
-
   let multi_items = document.getElementsByClassName('over');
   tempTodo_list = [];
   for(let i=0;i<multi_items.length;i++){
     tempTodo_list.push(multi_items[i]);
+    
     let multi_clone = cloneImage(multi_items[i]);
     if(multi_clone.getAttribute('slot') != item.getAttribute('slot')){
       $(".img_temp").append(multi_clone);
@@ -266,10 +264,10 @@ setInterval(() => {
     
 
     //check : 아이템이 속한 container의 수를 체크하는 변수
-    areas[i].className = areas[i].className.replace("over", "");
+    areas[i].className = areas[i].className.replace("over2", "");
     
       if(doElsCollide(currentTodo, areas[i])) {
-        areas[i].className += " over";
+        areas[i].className += " over2";
         check = check + 1;
         if(!isMouseDown) {
           for(let j=0; j < currentList.length; j++){
@@ -286,9 +284,7 @@ setInterval(() => {
     if(check == 0 && currentTodo != null) {
       if(!isMouseDown) {
         let i = currentTodo.getAttribute('id');
-        for(let j=0; j < currentList.length; j++){
-          snapTodo(currentList[j], areas[i], i);
-        }
+        snapTodo(currentTodo, areas[i], i);
         currentList = [];
       }
     }
