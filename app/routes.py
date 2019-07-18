@@ -35,10 +35,6 @@ print(pwd_list)
 
 client.close()
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 24f06c7464bfbe51cd9ee99f7f54032403d61494
 @app.route('/')
 @app.route('/logIn', methods = ['GET','POST'])
 def logIn():
@@ -67,10 +63,6 @@ def getData():
                 csvwriter.writerow(item.values())
         return jsonify(request.json)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 24f06c7464bfbe51cd9ee99f7f54032403d61494
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
     if request.method == 'POST':
