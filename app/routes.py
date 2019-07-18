@@ -64,7 +64,6 @@ def getData():
                 csvwriter.writerow(item.values())
         return jsonify(request.json)
 
-
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
     if request.method == 'POST':
