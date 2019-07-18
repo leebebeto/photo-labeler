@@ -284,7 +284,9 @@ setInterval(() => {
     if(check == 0 && currentTodo != null) {
       if(!isMouseDown) {
         let i = currentTodo.getAttribute('id');
-        snapTodo(currentTodo, areas[i], i);
+        for(let j=0; j < currentList.length; j++){
+          snapTodo(currentList[j], areas[i], i);
+        }
         currentList = [];
       }
     }
