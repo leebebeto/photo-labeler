@@ -94,6 +94,7 @@ function onMouseDown_clone(e, item) {
   console.log(multiChoice);
   isMouseDown = true;
   item.style.zIndex = "2";
+  currentList = [];
   currentList.push(item);
   currentTodo = item;
   mouseOffset_list = [];
