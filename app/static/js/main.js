@@ -380,6 +380,7 @@ function checkMousedown(e) {
 function checkKeyPressed(e) {
   if (e.keyCode == "17") {
       ctrlPressed = true;
+      console.log(ctrlPressed);
   }
 }
 function checkKeyUp(e) {

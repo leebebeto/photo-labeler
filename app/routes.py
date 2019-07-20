@@ -161,6 +161,7 @@ def logout():
 
 @app.route('/getData', methods = ['GET','POST'])
 def getData():
+    #data 추가하는 것 try except 문으로 또 걸어주기 (id, pwd)까지
     if request.method == "POST":
         global blue_list
         global red_list
