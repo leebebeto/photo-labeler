@@ -14,6 +14,7 @@ let tempTodo = null;
 let tempTodo_list = [];
 let ctrlPressed = false;
 let multiChoice = false;
+let outData = null;
 
 let doElsCollide = function(el1, el2) { 
   if(el1 != null && el2 != null){
@@ -34,7 +35,7 @@ let doElsCollide = function(el1, el2) {
 
 
 function onMouseDown(e, item) {
-  console.log("down");
+  console.log("bug?");
   e.preventDefault();  
   isMouseDown = true;
   currentTodo = item;
@@ -44,20 +45,23 @@ function onMouseDown(e, item) {
 }
 
 function onMouseDown_clone(e, item) {
-  console.log("clone_down");
+  
   let isOver = tempTodo.className.includes("over");
   if(ctrlPressed){
     if(isOver){
+      console.log("ctrl down over");
       tempTodo.className = tempTodo.className.replace(" over","");
       item.className = tempTodo.className.replace(" over","");
     }
     else{
+      console.log("ctrl down");
       multiChoice = true;
       tempTodo.className +=' over';
     }
   }
   else{
     if(isOver){
+      console.log("over");
   e.preventDefault();  
   isMouseDown = true;
   currentTodo = item;
@@ -88,6 +92,7 @@ function onMouseDown_clone(e, item) {
   }
 }
     else{
+  console.log("down");
   e.preventDefault();
   console.log(multiChoice);
   isMouseDown = true;
@@ -264,10 +269,10 @@ setInterval(() => {
     
 
     //check : 아이템이 속한 container의 수를 체크하는 변수
-    areas[i].className = areas[i].className.replace("over2", "");
+    areas[i].className = areas[i].className.replace("cont_on", "");
     
       if(doElsCollide(currentTodo, areas[i])) {
-        areas[i].className += " over2";
+        areas[i].className += " cont_on";
         check = check + 1;
         if(!isMouseDown) {
           for(let j=0; j < currentList.length; j++){
@@ -362,7 +367,6 @@ document.addEventListener("mousedown", checkMousedown, false);
 
 function checkMousedown(e) {
   if(multiChoice && !ctrlPressed){
-    console.log('down?');
     let multi_list = document.getElementsByClassName('over');
     let multi_length = multi_list.length;
     console.log(multi_length);
@@ -417,18 +421,12 @@ function confirm_click(){
   $("#description0").empty();
   $('#description0').append(batch_count + ' / ' + batch_size);
 
-  if(total_queue.cnt > 0){
-    // timeStamp();
     classifyImages();
-    init();
-  }
-  else{
-    alert("done!")
-  }
+  
 }  
 
 
-
+// 백엔드 ajax 통신 
 function classifyImages(){
   
   let todo_list =  document.getElementsByClassName("todo-item");
@@ -453,8 +451,8 @@ function classifyImages(){
     let jObject = new Object();
     console.log(user_id);
     jObject.user_id = user_id;
-    jObject.image_id = '('.concat(todo_list[i].src.split(/[(]+/).pop());
-    jObject.adjective = keyword_list[0];
+    jObject.image_id = todo_list[i].src.split(/[/]+/).pop();
+    jObject.adjective = keyword;
     jObject.label = left_right;
     jObject.time = timeStamp;
     Jarray.push(jObject);
@@ -468,7 +466,8 @@ function classifyImages(){
     data: {"jsonData" : outParam},
     dataType:'json',
     success: function(data) {
-
+      console.log(data);
+      init(data);
     },
     error: function(x, e) {
         alert("error");
@@ -489,6 +488,7 @@ function getSyncScriptParams() {
        keywords : scriptName.getAttribute('keywords'),
        images : scriptName.getAttribute('images'),
        user_id : scriptName.getAttribute('user_id'),
+       test : scriptName.getAttribute("test")
    };
  }
 
@@ -502,6 +502,7 @@ var batch_count=1;
 var batch_size = parseInt(Object.keys(images).length/(blue_test_number+red_test_number+neutral_test_number)) + 1;
 var timeEnd = 0;
 var timeStart = 0;
+console.log(params.test);
 
 /* create queues */  
 var total_queue = new Queue();
@@ -510,16 +511,16 @@ total_queue.cnt = total_queue._arr.length;
 const neutral_queue = new Queue();
 const blue_queue = new Queue();
 const red_queue = new Queue();
-var keyword_list = JSON.parse(params.keywords);
+var keyword =params.keywords;
 
 function description(){
-  var left_word = "more likely "+ keyword_list[0];
-  var right_word = "more likely not " + keyword_list[0];
+  var left_word = "more likely "+ keyword;
+  var right_word = "more likely not " + keyword;
   $('#description0').append("1 / "+batch_size);
   $('#adjective1').append(left_word);
   $('#adjective2').append(right_word);
-  var sec_description = "Images in the left box will be labeled as \"" + keyword_list[0] +
-  "\", in the middle box as \"NEUTRAL\", and in the right box as \"not "+ keyword_list[0]+"\"."
+  var sec_description = "Images in the left box will be labeled as \"" + keyword +
+  "\", in the middle box as \"NEUTRAL\", and in the right box as \"not "+ keyword+"\"."
   $('#description2').append(sec_description);
 
 }
@@ -580,7 +581,7 @@ function displayImages(queue){
     if(queue._arr[i-1] != null){
       var img_node = document.createElement('img');
       img_node.setAttribute("class","todo-item");
-      img_node.src = 'static/image/FFHQ_SAMPLE/' + queue._arr[i-1];
+      img_node.src = 'static/image/FFHQ_SAMPLE2/' + queue._arr[i-1];
       var side = ""
 
       if(queue == blue_queue){
@@ -612,7 +613,38 @@ function init(){
   displayImages(neutral_queue);
   todoItems = document.getElementsByClassName("todo-item");
   setListeners(todoItems);
+}
 
+function init(data){
+  clearAll();
+  timeStart = Date.now();
+  var getLists = null;
+  var blue_list = null;
+  var neutral_list = null;
+  var red_list = null;
+  
+  if(typeof data != "undefined"){
+    
+    blue_list = data['blue'];
+    neutral_list = data['neutral'];  
+    red_list = data['red'];
+    
+  }
+  else{
+  
+    getLists = new selectList(total_queue,blue_test_number,neutral_test_number,red_test_number);
+    blue_list = getLists[0];
+    neutral_list = getLists[1];
+    red_list = getLists[2];
+
+  }
+  enQueues(blue_queue,blue_list,neutral_queue,neutral_list, red_queue,red_list);
+  
+  displayImages(blue_queue);
+  displayImages(red_queue);
+  displayImages(neutral_queue);
+  todoItems = document.getElementsByClassName("todo-item");
+  setListeners(todoItems);
 }
 
 var pageLoader = (function()
