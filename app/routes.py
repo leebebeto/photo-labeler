@@ -27,6 +27,7 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 result = []
 
 
+
 client = pymongo.MongoClient('mongodb://localhost:27017/')
 db = client.davian
 collection_user = db.user
@@ -36,6 +37,19 @@ pwd_list = [items['pwd'] for items in collection_user.find()]
 
 keyword_list = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
 total_image_list = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2')) 
+
+# resnet = InceptionResnetV1(pretrained='vggface2').eval()
+# print(resnet)
+
+# train = {}
+# for each_img_name in tqdm(total_image_list):
+#     img = Image.open(os.path.join(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2'), each_img_name))
+#     img = transforms.ToTensor()(img)
+#     img_embedding = resnet(img.unsqueeze(0))
+#     # print("img_embedding : {}".format(img_embedding.shape))
+#     train[each_img_name] = img_embedding.squeeze(0).data.numpy()
+
+
 
 image_name_list = []
 feature_list = []
