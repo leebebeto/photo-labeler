@@ -414,6 +414,7 @@ class Queue {
   }
 }
 
+console.log(batch_size);
 
 function confirm_click(){
   timeEnd = Date.now();
@@ -488,7 +489,9 @@ function getSyncScriptParams() {
        keywords : scriptName.getAttribute('keywords'),
        images : scriptName.getAttribute('images'),
        user_id : scriptName.getAttribute('user_id'),
-       test : scriptName.getAttribute("test")
+       test : scriptName.getAttribute("test"),
+       total_num : scriptName.getAttribute("total_num")
+       
    };
  }
 
@@ -499,10 +502,10 @@ var params = new getSyncScriptParams();
 var images = JSON.parse(params.images);
 var user_id = params.user_id;
 var batch_count=1;
-var batch_size = parseInt(Object.keys(images).length/(blue_test_number+red_test_number+neutral_test_number)) + 1;
+var total_num = JSON.parse(params.total_num);
+var batch_size = parseInt(total_num/(blue_test_number+red_test_number+neutral_test_number)) + 1;
 var timeEnd = 0;
 var timeStart = 0;
-console.log(params.test);
 
 /* create queues */  
 var total_queue = new Queue();
