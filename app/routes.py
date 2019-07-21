@@ -17,10 +17,10 @@ import csv
 import pandas as pd
 import numpy as np
 import os
-from facenet_pytorch import InceptionResnetV1
+# from facenet_pytorch import InceptionResnetV1
 from PIL import Image
-from torchvision import transforms
-from tqdm import tqdm
+# from torchvision import transforms
+# from tqdm import tqdm
 from sklearn.metrics.pairwise import cosine_similarity
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -251,9 +251,8 @@ def index():
                 # 형용사 결정
                 user_id = str(user_id)
                 images = json.dumps(dictOfImg)
-
-
-                return render_template('photolabeling.html', keywords = keyword_list[0], images = images, user_id = user_id, test="abc")
+                total_num = str(feature_np.shape[0])
+                return render_template('photolabeling.html', keywords = keyword_list[0], images = images, user_id = user_id, test="abc", total_num = total_num)
             else:
                 return render_template('loginFail.html')   
         except:
