@@ -146,7 +146,7 @@ client.close()
 @app.route('/')
 @app.route('/logIn', methods = ['GET','POST'])
 def logIn():
-    return render_template('login.html')
+    return render_template('logIn.html')
 
 @app.route('/logout')
 def logout():
