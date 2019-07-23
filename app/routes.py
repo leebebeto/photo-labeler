@@ -1,7 +1,4 @@
 from flask import render_template, request, url_for, jsonify, redirect, flash
-import flask_login
-from flask_login import LoginManager
-from flask_pymongo import PyMongo
 from app import app
 import pymongo
 import os
@@ -18,7 +15,7 @@ import pandas as pd
 import numpy as np
 import os
 # from facenet_pytorch import InceptionResnetV1
-from PIL import Image
+# from PIL import Image
 # from torchvision import transforms
 # from tqdm import tqdm
 from sklearn.metrics.pairwise import cosine_similarity
@@ -26,12 +23,21 @@ from sklearn.metrics.pairwise import cosine_similarity
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 result = []
 
-client = pymongo.MongoClient('mongodb://localhost:27017/')
+
+
+client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.davian
 collection_user = db.user
 collection_labeled = db.labeled
 id_list = [items['_id'] for items in collection_user.find()]
 pwd_list = [items['pwd'] for items in collection_user.find()]
+USERS = [
+    {"_id": "user101", "pwd": "davian101"},
+    {"_id": "user102", "pwd": "davian102"},
+    {"_id": "user103", "pwd": "davian103"},
+    {"_id": "user104", "pwd": "davian104"},
+    {"_id": "user105", "pwd": "davian105"}
+]
 
 keyword_list = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
 total_image_list = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2')) 
@@ -57,7 +63,6 @@ features = read_pck("ffhq600_facenet_vggface2.pkl")[0]
 for each_key in sorted(features):
     feature_list.append(features[each_key])
 feature_np = np.array(feature_list)
-print(feature_np.shape)
 
     
 def get_similar_images(image_name,k):
@@ -130,23 +135,12 @@ def choosingImage(data, adjective):
 
 
 
-# a = get_similar_images("00340.png",5)
-# appended_features(blue_list,a)
-
-# b = get_similar_images("00340.png",5)
-
-# for items in collection_user.find():
-#     print(items['pwd'])
-
-# USERS = [
-#     {"_id": "user101", "pwd": "davian101"},
-#     {"_id": "user102", "pwd": "davian102"},
-#     {"_id": "user103", "pwd": "davian103"},
-#     {"_id": "user104", "pwd": "davian104"},
-#     {"_id": "user105", "pwd": "davian105"}
-# ]
-
-
+def check():
+    if (collection_user.count() == 0):
+        collection_user.insert(USERS)
+    else:
+        pass
+check()
 client.close()
 
 @app.route('/')
@@ -252,6 +246,5 @@ def concat_images(sort_ret, top_k=4, image_size=160):
     for i in range(1, 5):
         img = Image.open(os.path.join('selectedffhq600', total_image_list[sort_ret[i]]))
         img = img.resize((160, 160))
-        dst.paste(img, (img.width*(i-1), 0))
-    
+        dst.paste(img, (img.width*(i-1), 0))    
     return dst
