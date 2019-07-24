@@ -1,4 +1,4 @@
-from flask import render_template, request, url_for, jsonify, redirect, flash
+from flask import render_template, request, url_for, jsonify, redirect, flash, session
 import flask_login
 from flask_login import LoginManager
 from flask_pymongo import PyMongo
@@ -35,8 +35,25 @@ collection_labeled = db.labeled
 id_list = [items['_id'] for items in collection_user.find()]
 pwd_list = [items['pwd'] for items in collection_user.find()]
 
+
+collist = db.list_collection_names()
+if "images" in collist:
+    print("check")
+    db.images.drop()
+
+
+collection_image = db.images
+collection_current = db.Current_toLabel
+collection_before = db.Before_toLabel
+
+
 keyword_list = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
-total_image_list = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2')) 
+
+total_image_list = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2'))
+
+collection_image.insert([{"image_id" : total_image_list[i], "image_index" : i} for i in range(len(total_image_list))])
+
+
 
 # resnet = InceptionResnetV1(pretrained='vggface2').eval()
 # print(resnet)
@@ -49,14 +66,8 @@ total_image_list = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2')
 #     # print("img_embedding : {}".format(img_embedding.shape))
 #     train[each_img_name] = img_embedding.squeeze(0).data.numpy()
 
-
-
 image_name_list = []
 feature_list = []
-
-blue_list = []
-red_list = []
-neutral_list = []
 
 def read_pck(filename):
     objects = []
@@ -75,9 +86,9 @@ feature_np = np.array(feature_list)
 print(feature_np.shape)
 
     
-def get_similar_images(image_name,k):
+def get_similar_images(image_name,feature_np,k):
     query_feature = np.expand_dims(np.array(features[image_name]), 0)
-    
+
     ret = cosine_similarity(query_feature, feature_np)
     ret = np.squeeze(ret, 0)
     
@@ -85,46 +96,50 @@ def get_similar_images(image_name,k):
     print([ret[item] for item in sort_ret])
     return sort_ret
 
-def appendImage(toList,query_indexes):
-    global feature_np
-    global total_image_list
-
+def appendImage(toList,possible_temp,Feature, query_indexes):
     for i in sorted(query_indexes):
-        toList.append(total_image_list[i])
-    
-    removeTemp(query_indexes)
+        toList.append(possible_temp[i])    
+    removeTemp(query_indexes,possible_temp,Feature)
 
-def removeImage(data):
+def removeTemp(index,possible_temp,Feature):
+    for i in sorted(index, reverse = True):
+        del possible_temp[i]
+        del Feature[i]
+            
 
-    global feature_np
+
+def removeFeature(Feature, labeledList):
     global total_image_list
 
+    print(len(total_image_list))
     temp = []
-    for item in data:
-        temp.append(total_image_list.index(item['image_id']))
+    for item in labeledList:
+        temp.append(total_image_list.index(item))
+
 
     for i in sorted(temp, reverse = True):
-        del total_image_list[i]
-        del feature_list[i]
+        del Feature[i]
+
+    return np.array(Feature)
+
+
+# def removeImage(data, toDelImage, toDelFeature, total_image_list):
+
+#     global feature_np
+#     global total_image_list
+
+#     temp = []
+#     for item in data:
+#         temp.append(total_image_list.index(item['image_id']))
+
+#     for i in sorted(temp, reverse = True):
+#         del toDelList[i]
+#         del feature_list[i]
             
-    feature_np = np.array(feature_list)
-
-def removeTemp(index):
-
-    global feature_np
-    global total_image_list
-
-    for i in sorted(index, reverse = True):
-        del total_image_list[i]
-        del feature_list[i]
-            
-    feature_np = np.array(feature_list)
+#     feature_np = np.array(feature_list)
 
 
 def choosingImage(data, adjective):
-    global blue_list
-    global red_list
-    global neutral_list
     
     if data[0]['adjective'] == adjective:
         posi_temp = []
@@ -162,12 +177,37 @@ def choosingImage(data, adjective):
 # ]
 
 
+
 client.close()
 
 @app.route('/')
 @app.route('/logIn', methods = ['GET','POST'])
 def logIn():
-    return render_template('login.html')
+    if request.method == 'GET':
+        print("get")
+        session.pop("logged_in",None)
+        session.pop("user_id",None)
+        print(session.get('logged_in'), session.get("user_id"))
+        return render_template('logIn.html')
+    else:
+        user_id = request.form['user']
+        password = request.form['password']
+        print(user_id, password)
+        try:
+            result = [item for item in collection_user.find({'_id': str(user_id), "pwd":str(password)})]
+            print(result)
+            if result:    
+                session['logged_in'] = True 
+                session['user_id'] = user_id
+        
+                print(session.get('logged_in'))
+                return redirect(url_for('index'))
+            else:
+                print("fail")
+                return render_template('loginFail.html')
+        except:
+            print("except")
+            return render_template('loginFail.html')
 
 @app.route('/logout')
 def logout():
@@ -175,14 +215,9 @@ def logout():
 
 @app.route('/getData', methods = ['GET','POST'])
 def getData():
+    user_id = session.get("user_id")
     #data 추가하는 것 try except 문으로 또 걸어주기 (id, pwd)까지
     if request.method == "POST":
-        global blue_list
-        global red_list
-        global neutral_list
-        global total_image_list
-        global feature_list
-
 
         blue_list = []
         red_list = []
@@ -191,42 +226,44 @@ def getData():
         json_received = request.form
         data = json_received.to_dict(flat=False)
         data_list = json.loads(data['jsonData'][0])
-        print(data_list[0])
-        collection_labeled.insert(data_list)
-        outfile = open('labelData.csv', 'a', newline='')
-        csvwriter = csv.writer(outfile)
-        result.append(data)
-        with open('pickle_file.pickle', 'wb') as f:
-            pickle.dump(result,f)
+        # print(data_list[0])
         for item in data_list:
-            if type(item) == str:
-                csvwriter.writerow(item)
-            else:
-                csvwriter.writerow(item.values())
+            item['user_id'] = user_id
 
-        removeImage(data_list)
-        print(len(total_image_list))
+        collection_labeled.insert(data_list)
+        
         imageStandard = choosingImage(data_list,"ATTRACTIVE")
-        # 여기서 모델로 사진 결정
-        total_image_temp = copy.deepcopy(total_image_list)
+
+        db_image_list = [item['image_id'] for item in collection_image.find()]
+        prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id})]
+        
+        possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
+        print("possible_images", len(possible_images))
+        possible_temp = copy.deepcopy(possible_images)
         feature_temp = copy.deepcopy(feature_list)
+        
+        feature_removed = removeFeature(feature_temp, prelabeled_image_list)
+        # print(imageStandard[0])
+        # print(get_similar_images(imageStandard[0],feature_removed,6))
+        # print([possible_temp[item] for item in get_similar_images(imageStandard[0],feature_removed,6)])
 
+        # 여기서 모델로 사진 결정
 
-
-        appendImage(blue_list,get_similar_images(imageStandard[0],6))
-        print(len(total_image_list))
-        appendImage(red_list,get_similar_images(imageStandard[1],6))
-        print(len(total_image_list))
-        appendImage(neutral_list,random.sample(range(len(total_image_list)),2))
-        print(len(total_image_list))
-
-        total_image_list = copy.deepcopy(total_image_temp)
-        feature_list = copy.deepcopy(feature_temp)
-        print(len(total_image_list))
-
-        del total_image_temp
-        del feature_temp
-
+        appendImage(blue_list, possible_temp, feature_temp, get_similar_images(imageStandard[0],feature_removed,6))
+        feature_removed = np.array(feature_temp)
+        # print(len(possible_temp))
+        # print(feature_removed.shape)
+        appendImage(red_list, possible_temp, feature_temp, get_similar_images(imageStandard[1],feature_removed,6))
+        feature_removed = np.array(feature_temp)
+        # print(len(possible_temp))
+        # print(feature_removed.shape)
+        appendImage(neutral_list, possible_temp, feature_temp, random.sample(range(len(possible_temp)),2))
+        # print(len(possible_temp))
+        # print(feature_removed.shape)
+        current_todo = blue_list + neutral_list + red_list
+        for i in range(len(current_todo)):
+            collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i,"image_id" : current_todo[i]})
+        
         return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list})
         
 
@@ -239,34 +276,33 @@ def index():
     blue_list = []
     red_list = []
     neutral_list = []
-    if request.method == 'POST':
-        user_id = request.form['user']
-        password = request.form['password']
-        result = [item for item in collection_user.find({'_id': str(user_id)})]
-        try:
-            check = result[0]['pwd']
-            if (password == check): 
-                dictOfImg = { i : total_image_list[i] for i in range(0, 14) }
-                # 여기서 첫 세트 사진 결정
-                # 형용사 결정
-                user_id = str(user_id)
-                images = json.dumps(dictOfImg)
-                total_num = str(feature_np.shape[0])
-                return render_template('photolabeling.html', keywords = keyword_list[0], images = images, user_id = user_id, test="abc", total_num = total_num)
-            else:
-                return render_template('loginFail.html')   
-        except:
-            return render_template('loginFail.html')
-    else:
-        return render_template('photolabeling.html')
-
-
-def concat_images(sort_ret, top_k=4, image_size=160):
-    dst = Image.new('RGB', (image_size*top_k, image_size))
-
-    for i in range(1, 5):
-        img = Image.open(os.path.join('selectedffhq600', total_image_list[sort_ret[i]]))
-        img = img.resize((160, 160))
-        dst.paste(img, (img.width*(i-1), 0))
     
-    return dst
+    print(session.get('logged_in'))
+    if session.get("logged_in")==True:
+        print(session.get("user_id"), session.get("logged_in"))
+        
+        user_id = session.get("user_id")
+        db_image_list = [item['image_id'] for item in collection_image.find()]
+        
+        todo_images = [item for item in collection_current.find({"user_id" : user_id})]
+        if todo_images:
+            print("old")
+            dictOfImg = { i : todo_images[i]['image_id'] for i in range(0,14)}
+        else:
+            print("new")
+            dictOfImg = { i : db_image_list[i] for i in range(0,14)}
+            collection_current.insert([{'user_id' : user_id,'index' : i, 'image_id' : db_image_list[i]} for i in range(0,14)])
+        
+        # 여기서 첫 세트 사진 결정
+        # 형용사 결정
+        # user_id = str(user_id)
+
+        images = json.dumps(dictOfImg)
+        total_num = str(feature_np.shape[0])
+
+        return render_template('photolabeling.html', keywords = keyword_list[0], images = images, user_id = user_id, test="abc", total_num = total_num)
+    
+    else:
+        return redirect(url_for('logIn'))
+
+

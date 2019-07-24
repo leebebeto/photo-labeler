@@ -480,7 +480,6 @@ function classifyImages(){
 
 
 
-
 function getSyncScriptParams() {
    var scripts = document.getElementsByTagName('script');
    var lastScript = scripts[scripts.length-1];
@@ -631,7 +630,7 @@ function init(data){
     blue_list = data['blue'];
     neutral_list = data['neutral'];  
     red_list = data['red'];
-    
+      
   }
   else{
   
