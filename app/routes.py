@@ -44,6 +44,7 @@ if "images" in collist:
 
 
 collection_image = db.images
+collection_log = db.log
 collection_current = db.Current_toLabel
 collection_before = db.Before_toLabel
 
@@ -212,6 +213,15 @@ def logIn():
 def logout():
     return render_template('logout.html')
 
+@app.route('/getLog', methods = ['GET','POST'])
+def getLog():
+    if request.method == "POST":
+        json_received = request.form
+        data = json_received.to_dict(flat=False)
+        data_list = json.loads(data['jsonData'][0])
+        data_list['user_id'] = session.get('user_id')
+        collection_log.insert(data_list)
+        return jsonify("good")
 @app.route('/getData', methods = ['GET','POST'])
 def getData():
     user_id = session.get("user_id")
@@ -228,7 +238,7 @@ def getData():
         # print(data_list[0])
         for item in data_list:
             item['user_id'] = user_id
-
+        collection_log.insert({"Time":data_list[0]['timeStamp'],"user_id": user_id, "What":"confirm"})
         collection_labeled.insert(data_list)
         
         imageStandard = choosingImage(data_list,"ATTRACTIVE")

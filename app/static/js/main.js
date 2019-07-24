@@ -303,6 +303,35 @@ setInterval(() => {
 function snapTodo(todo, container,index) {
   area_list = ["left","center","right"];
   id_list = ["L","N","R"];
+  
+  let jObject = new Object();
+  jObject.Time = js_yyyy_mm_dd_hh_mm_ss ();
+  jObject.What = todo.src.split(/[/]+/).pop();
+  if(todo.getAttribute('id') == 0){
+    jObject.From = "left"
+  }
+  else if(todo.getAttribute('id') == 1){
+    jObject.From = "center"
+  }
+  else{
+    jObject.From = "right"
+  }
+  jObject.To = area_list[index]
+  logParam = JSON.stringify(jObject)
+  
+  jQuery.ajaxSettings.traditional = true;
+  $.ajax({
+    url : "/getLog",
+    type: 'POST',
+    data: {"jsonData" : logParam},
+    dataType:'json',
+    success: function(data) {
+
+    },
+    error: function(x, e) {
+        alert("error");
+    }
+});
   let fullCount = 0;
   let lastID = "";
   let row_count = container.getElementsByClassName('image_row')[0].childElementCount;
@@ -456,6 +485,7 @@ function classifyImages(){
     jObject.adjective = keyword;
     jObject.label = left_right;
     jObject.time = timeStamp;
+    jObject.timeStamp = js_yyyy_mm_dd_hh_mm_ss ();
     Jarray.push(jObject);
     console.log(jObject);
   }
@@ -574,6 +604,17 @@ function enQueues(blue_queue, blue_list, neutral_queue, neutral_list, red_queue,
   reloadQueue(red_queue, red_list);
   reloadQueue(neutral_queue, neutral_list);
   return blue_queue, neutral_queue, red_queue;
+}
+
+function js_yyyy_mm_dd_hh_mm_ss () {
+  now = new Date();
+  year = "" + now.getFullYear();
+  month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+  day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+  hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+  minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
+  second = "" + now.getSeconds(); if (second.length == 1) { second = "0" + second; }
+  return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
 }
 
 
