@@ -11,12 +11,13 @@ import time
 import random
 import copy
 
-import datetime
+from datetime import datetime
 import csv
 
 import pandas as pd
 import numpy as np
 import os
+
 # from facenet_pytorch import InceptionResnetV1
 # from PIL import Image
 # from torchvision import transforms
@@ -25,11 +26,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 result = []
+batch_number = 14
 
 
-
-client = pymongo.MongoClient('mongodb://localhost:27017/')
-# client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
+# client = pymongo.MongoClient('mongodb://localhost:27017/')
+client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.davian
 collection_user = db.user
 collection_labeled = db.labeled
@@ -49,9 +50,10 @@ collection_current = db.Current_toLabel
 collection_before = db.Before_toLabel
 
 
-keyword_list = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
+adjective = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
 
 total_image_list = os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2'))
+total_num = len(total_image_list)
 
 collection_image.insert([{"image_id" : total_image_list[i], "image_index" : i} for i in range(len(total_image_list))])
 
@@ -93,8 +95,10 @@ def get_similar_images(image_name,feature_np,k):
     ret = cosine_similarity(query_feature, feature_np)
     ret = np.squeeze(ret, 0)
     
+    print("ret shape",ret.shape, ret.shape[0])
+
     sort_ret = np.argsort(ret)[::-1][1:k+1]
-    print([ret[item] for item in sort_ret])
+    print("sort_ret", sort_ret)
     return sort_ret
 
 def appendImage(toList,possible_temp,Feature, query_indexes):
@@ -140,24 +144,22 @@ def removeFeature(Feature, labeledList):
 #     feature_np = np.array(feature_list)
 
 
-def choosingImage(data, adjective):
-    
-    if data[0]['adjective'] == adjective:
-        posi_temp = []
-        nega_temp = []
-        neu_temp = []
-        for item in data:
-            if item['label']==1:
-                posi_temp.append(item)
-            elif item['label']==-1:
-                nega_temp.append(item)
-            else:
-                neu_temp.append(item)
-        posi_name = posi_temp[random.randint(0,len(posi_temp)-1)]['image_id']
-        print(posi_name)
-        nega_name = nega_temp[random.randint(0,len(nega_temp)-1)]['image_id']
-        print(nega_name)
-        return [posi_name, nega_name]
+def choosingImage(data):
+    posi_temp = []
+    nega_temp = []
+    neu_temp = []
+    for item in data:
+        if item['label']==1:
+            posi_temp.append(item)
+        elif item['label']==-1:
+            nega_temp.append(item)
+        else:
+            neu_temp.append(item)
+    posi_name = posi_temp[random.randint(0,len(posi_temp)-1)]['image_id']
+    print(posi_name)
+    nega_name = nega_temp[random.randint(0,len(nega_temp)-1)]['image_id']
+    print(nega_name)
+    return [posi_name, nega_name]
 
 
 # a = get_similar_images("00340.png",5)
@@ -199,7 +201,10 @@ def logIn():
             if result:    
                 session['logged_in'] = True 
                 session['user_id'] = user_id
-        
+                
+                time = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+                collection_log.insert({"Time":time,"user_id": user_id, "What":"Login"})
+
                 print(session.get('logged_in'))
                 return redirect(url_for('index'))
             else:
@@ -227,10 +232,11 @@ def getData():
     user_id = session.get("user_id")
     #data 추가하는 것 try except 문으로 또 걸어주기 (id, pwd)까지
     if request.method == "POST":
-
         blue_list = []
         red_list = []
         neutral_list = []
+
+        time = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
         json_received = request.form
         data = json_received.to_dict(flat=False)
@@ -238,49 +244,77 @@ def getData():
         # print(data_list[0])
         for item in data_list:
             item['user_id'] = user_id
-        collection_log.insert({"Time":data_list[0]['timeStamp'],"user_id": user_id, "What":"confirm"})
+
+        collection_log.insert({"Time":time,"user_id": user_id, "What":"confirm"})
         collection_labeled.insert(data_list)
-        
-        imageStandard = choosingImage(data_list,"ATTRACTIVE")
+
+        keyword_index = collection_current.find({"user_id": user_id})[0]['adjective']
+        print('main keyword' , keyword_index)
+        imageStandard = choosingImage(data_list)
 
         db_image_list = [item['image_id'] for item in collection_image.find()]
-        prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id})]
-        
+        prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : adjective[keyword_index]})]        
         possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
-        print("possible_images", len(possible_images))
-        possible_temp = copy.deepcopy(possible_images)
-        feature_temp = copy.deepcopy(feature_list)
-        
-        feature_removed = removeFeature(feature_temp, prelabeled_image_list)
-        # print(imageStandard[0])
-        # print(get_similar_images(imageStandard[0],feature_removed,6))
-        # print([possible_temp[item] for item in get_similar_images(imageStandard[0],feature_removed,6)])
 
-        # 여기서 모델로 사진 결정
+        if not possible_images:
+            keyword_index = keyword_index + 1
+            db_image_list = [item['image_id'] for item in collection_image.find()]
+            prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : adjective[keyword_index]})]        
+            possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
 
-        appendImage(blue_list, possible_temp, feature_temp, get_similar_images(imageStandard[0],feature_removed,6))
-        feature_removed = np.array(feature_temp)
-        # print(len(possible_temp))
-        # print(feature_removed.shape)
-        appendImage(red_list, possible_temp, feature_temp, get_similar_images(imageStandard[1],feature_removed,6))
-        feature_removed = np.array(feature_temp)
-        # print(len(possible_temp))
-        # print(feature_removed.shape)
-        appendImage(neutral_list, possible_temp, feature_temp, random.sample(range(len(possible_temp)),2))
-        # print(len(possible_temp))
-        # print(feature_removed.shape)
+            possible_temp = copy.deepcopy(possible_images)
+            feature_temp = copy.deepcopy(feature_list)
+                        
+            appendImage(blue_list, possible_temp, feature_temp, [0,1,2,3,4,5])
+            feature_removed = np.array(feature_temp)
+            appendImage(neutral_list, possible_temp, feature_temp, [0,1])
+            feature_removed = np.array(feature_temp)
+            appendImage(red_list, possible_temp, feature_temp, [0,1,2,3,4,5])
+            
+
+        else:
+
+            print("possible_images", len(possible_images))
+            possible_temp = copy.deepcopy(possible_images)
+            feature_temp = copy.deepcopy(feature_list)
+            print("feature_temp", len(feature_temp))
+
+            feature_removed = removeFeature(feature_temp, prelabeled_image_list)
+            print("feature_removed", len(feature_removed))
+
+            # print(imageStandard[0])
+            # print(get_similar_images(imageStandard[0],feature_removed,6))
+            # print([possible_temp[item] for item in get_similar_images(imageStandard[0],feature_removed,6)])
+
+            # 여기서 모델로 사진 결정
+
+            appendImage(blue_list, possible_temp, feature_temp, get_similar_images(imageStandard[0],feature_removed,6))
+            feature_removed = np.array(feature_temp)
+            # print(len(possible_temp))
+            # print(feature_removed.shape)
+            appendImage(red_list, possible_temp, feature_temp, get_similar_images(imageStandard[1],feature_removed,6))
+            feature_removed = np.array(feature_temp)
+            # print(feature_removed.shape)
+            
+            if len(possible_temp) >= 2:
+                appendImage(neutral_list, possible_temp, feature_temp, random.sample(range(len(possible_temp)),2))
+            else:
+                appendImage(neutral_list, possible_temp, feature_temp, random.sample(range(len(possible_temp)),len(possible_temp)))
+
+            # print(len(possible_temp))
+            # print(feature_removed.shape)
         current_todo = blue_list + neutral_list + red_list
         for i in range(len(current_todo)):
-            collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i,"image_id" : current_todo[i]})
+            collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i, "adjective": keyword_index, "image_id" : current_todo[i]})
         
-        return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list})
+        return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list, "keyword": adjective[keyword_index], "image_count" : (int((total_num - len(possible_images))/batch_number)+1)})
         
 
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
-    global blue_list
-    global red_list
-    global neutral_list
+    # global blue_list
+    # global red_list
+    # global neutral_list
 
     blue_list = []
     red_list = []
@@ -297,19 +331,23 @@ def index():
         if todo_images:
             print("old")
             dictOfImg = { i : todo_images[i]['image_id'] for i in range(0,14)}
+            keyword_index = todo_images[-1]["adjective"]
+            print("keyword",keyword_index)
         else:
             print("new")
             dictOfImg = { i : db_image_list[i] for i in range(0,14)}
-            collection_current.insert([{'user_id' : user_id,'index' : i, 'image_id' : db_image_list[i]} for i in range(0,14)])
+            keyword_index = 0
+            collection_current.insert([{'user_id' : user_id, "adjective" : 0, 'index' : i, 'image_id' : db_image_list[i]} for i in range(0,14)])
         
+        count = int(collection_labeled.find({'user_id':user_id,'adjective':adjective[keyword_index]}).count()/batch_number)+1
+
         # 여기서 첫 세트 사진 결정
         # 형용사 결정
         # user_id = str(user_id)
 
         images = json.dumps(dictOfImg)
-        total_num = str(feature_np.shape[0])
-
-        return render_template('photolabeling.html', keywords = keyword_list[0], images = images, user_id = user_id, test="abc", total_num = total_num)
+        print(adjective[keyword_index])
+        return render_template('photolabeling.html', keyword = adjective[keyword_index], images = images, user_id = user_id, total_num = int(total_num/batch_number)+1, count_num = count)
     
     else:
         return redirect(url_for('logIn'))

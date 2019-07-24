@@ -21,6 +21,7 @@
         <div class=left1 style="width: 579px; height: auto; min-height: 503px; margin:10px">
           <!-- 286 / 53 -->
           <div class =adjective id ="adjective1" style= "text-align: left">
+            <p>more likely <span class = "keyword"></span></p>
           </div>
 
           <div class = "red-blue blue" id="style-3" style=" background-color: rgba(65,122,255,0.2)">
@@ -67,7 +68,9 @@
         <!-- 286 / 53 -->
       <div class= left1 style="margin:10px">
           <div class =adjective id ="adjective2" style= "text-align: right">
+            <p>more likely not <span class = "keyword"></span></p>
           </div>
+
         <div class = "red-blue red" id="style-3" style="background-color: rgba(242,108,108,0.2); overflow:hidden">
             <div class = "image_row" style = "height: 146.7px;">
               <div class="right" id = "R12"></div>
@@ -90,11 +93,12 @@
         </div>
       </div>
       </div>
-      <div class=description id = "description0" style="text-align: left"></div>
+      <div class=description id = "description0" style="text-align: left"><span class="count"></span>/<span class="total"></span></div>
       <div class=description id = "description1">
         Please review the images above in a way that the images are placed in the right category.
       </div>
       <div class=description id = "description2">
+          Images in the left box will be labeled as "<span class="keyword"></span>", in the middle box as "NEUTRAL", and in the right box as "not <span class="keyword"></span>".
       </div>
       <div class=description id = "description3">
       You can change the category of an image by hovering over. When you ready, confirm your label"
@@ -133,7 +137,7 @@
           </div>   
     </div> -->
     </div>
-    <script type = "text/javascript" src = "{{url_for('static', filename='js/main.js') }}" keywords = "{{keywords}}" images = "{{images}}" user_id = "{{user_id}}" test = "{{test}}" total_num = "{{total_num}}">
+    <script type = "text/javascript" src = "{{url_for('static', filename='js/main.js') }}" keyword = "{{keyword}}" images = "{{images}}" user_id = "{{user_id}}" test = "{{test}}" total_num = "{{total_num}}" count_num = "{{count_num}}">
     </script>
  </body>
 </html>

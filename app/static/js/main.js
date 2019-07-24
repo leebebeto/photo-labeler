@@ -443,13 +443,9 @@ class Queue {
   }
 }
 
-console.log(batch_size);
-
 function confirm_click(){
   timeEnd = Date.now();
   batch_count += 1;
-  $("#description0").empty();
-  $('#description0').append(batch_count + ' / ' + batch_size);
 
     classifyImages();
   
@@ -485,7 +481,6 @@ function classifyImages(){
     jObject.adjective = keyword;
     jObject.label = left_right;
     jObject.time = timeStamp;
-    jObject.timeStamp = js_yyyy_mm_dd_hh_mm_ss ();
     Jarray.push(jObject);
     console.log(jObject);
   }
@@ -515,12 +510,12 @@ function getSyncScriptParams() {
    var lastScript = scripts[scripts.length-1];
    var scriptName = lastScript;
    return {
-       keywords : scriptName.getAttribute('keywords'),
+       keyword : scriptName.getAttribute('keyword'),
        images : scriptName.getAttribute('images'),
        user_id : scriptName.getAttribute('user_id'),
        test : scriptName.getAttribute("test"),
-       total_num : scriptName.getAttribute("total_num")
-       
+       total_num : scriptName.getAttribute("total_num"),
+       count_num : scriptName.getAttribute("count_num")
    };
  }
 
@@ -532,7 +527,7 @@ var images = JSON.parse(params.images);
 var user_id = params.user_id;
 var batch_count=1;
 var total_num = JSON.parse(params.total_num);
-var batch_size = parseInt(total_num/(blue_test_number+red_test_number+neutral_test_number)) + 1;
+var count_num = JSON.parse(params.count_num);
 var timeEnd = 0;
 var timeStart = 0;
 
@@ -543,19 +538,8 @@ total_queue.cnt = total_queue._arr.length;
 const neutral_queue = new Queue();
 const blue_queue = new Queue();
 const red_queue = new Queue();
-var keyword =params.keywords;
+var keyword =params.keyword;
 
-function description(){
-  var left_word = "more likely "+ keyword;
-  var right_word = "more likely not " + keyword;
-  $('#description0').append("1 / "+batch_size);
-  $('#adjective1').append(left_word);
-  $('#adjective2').append(right_word);
-  var sec_description = "Images in the left box will be labeled as \"" + keyword +
-  "\", in the middle box as \"NEUTRAL\", and in the right box as \"not "+ keyword+"\"."
-  $('#description2').append(sec_description);
-
-}
 
 function selectList(total_queue,b,n,r)
   {
@@ -665,13 +649,16 @@ function init(data){
   var blue_list = null;
   var neutral_list = null;
   var red_list = null;
-  
+
+
   if(typeof data != "undefined"){
     
     blue_list = data['blue'];
     neutral_list = data['neutral'];  
     red_list = data['red'];
-      
+    keyword = data['keyword'];
+    count_num = data['image_count'];
+
   }
   else{
   
@@ -679,8 +666,14 @@ function init(data){
     blue_list = getLists[0];
     neutral_list = getLists[1];
     red_list = getLists[2];
-
+    
   }
+  console.log(keyword);
+  $('.keyword').text(keyword);
+  $('.count').text(count_num);
+  $('.total').text(total_num);
+
+
   enQueues(blue_queue,blue_list,neutral_queue,neutral_list, red_queue,red_list);
   
   displayImages(blue_queue);
@@ -715,5 +708,4 @@ var pageLoader = (function()
   };
 })();
 
-description();
 init();
