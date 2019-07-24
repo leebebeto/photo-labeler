@@ -32,16 +32,22 @@ batch_number = 14
 # client = pymongo.MongoClient('mongodb://localhost:27017/')
 client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.davian
-collection_user = db.user
+
 collection_labeled = db.labeled
-id_list = [items['_id'] for items in collection_user.find()]
-pwd_list = [items['pwd'] for items in collection_user.find()]
 
 
 collist = db.list_collection_names()
 if "images" in collist:
     print("check")
     db.images.drop()
+if "user" in collist:
+    db.user.drop()
+
+collection_user = db.user
+collection_user.insert([{'_id':'asdf','pwd':'asdf','isDone':False}, {'_id':'user101','pwd':'davian101','isDone':False}])
+id_list = [items['_id'] for items in collection_user.find()]
+pwd_list = [items['pwd'] for items in collection_user.find()]
+
 
 
 collection_image = db.images
