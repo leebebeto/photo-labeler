@@ -52,7 +52,7 @@ function onMouseDown_clone(e, item) {
       console.log("ctrl down over");
       tempTodo.className = tempTodo.className.replace(" over","");
       item.className = tempTodo.className.replace(" over","");
-      
+
     }
     else{
       console.log("ctrl down");
@@ -348,6 +348,7 @@ function snapTodo(todo, container,index) {
         todo_clone = todo.cloneNode();
         todo.remove();
         item.append(todo_clone);
+        console.log("appending" , todo_clone);
         setListener(todo_clone);
         todo_clone.style.left = 0 + "px";
         todo_clone.style.top = 0 + "px";
@@ -414,8 +415,40 @@ function checkKeyPressed(e) {
   }
 }
 function checkKeyUp(e) {
+
   if (e.keyCode == "17") {
     ctrlPressed = false;
+  }
+  else if (e.keyCode == "65"){
+    
+  let multi_list = document.getElementsByClassName('over');  
+  let areas = document.getElementsByClassName("red-blue");
+  
+  for(let i=0;i<multi_list.length;i++){
+      snapTodo(multi_list.item(i),areas[0],0);
+      console.log(multi_list[i]);
+    }
+  }
+  else if (e.keyCode == "83"){
+    
+  let multi_list = document.getElementsByClassName('over');  
+  let areas = document.getElementsByClassName("red-blue");
+    for(let i=0;i<multi_list.length;i++){
+      snapTodo(multi_list.item(i),areas[1],1);
+      console.log(multi_list[i]);
+    }
+  }
+  else if (e.keyCode == "68"){
+    
+  let multi_list = document.getElementsByClassName('over');  
+  let areas = document.getElementsByClassName("red-blue");
+    for(let i=0;i<multi_list.length;i++){
+      snapTodo(multi_list.item(i),areas[2],2);
+      console.log(multi_list[i]);
+    }
+  }
+  else if (e.keyCode == "32"){
+    confirm_click();
   }
 }
 
@@ -446,7 +479,6 @@ class Queue {
 
 function confirm_click(){
   timeEnd = Date.now();
-  batch_count += 1;
 
     classifyImages();
   
