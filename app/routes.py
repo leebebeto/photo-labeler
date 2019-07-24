@@ -18,7 +18,7 @@ import pandas as pd
 import numpy as np
 import os
 # from facenet_pytorch import InceptionResnetV1
-from PIL import Image
+# from PIL import Image
 # from torchvision import transforms
 # from tqdm import tqdm
 from sklearn.metrics.pairwise import cosine_similarity
@@ -29,6 +29,7 @@ result = []
 
 
 client = pymongo.MongoClient('mongodb://localhost:27017/')
+# client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.davian
 collection_user = db.user
 collection_labeled = db.labeled
@@ -83,7 +84,6 @@ features = read_pck("ffhq600_facenet_vggface2.pkl")[0]
 for each_key in sorted(features):
     feature_list.append(features[each_key])
 feature_np = np.array(feature_list)
-print(feature_np.shape)
 
     
 def get_similar_images(image_name,feature_np,k):
@@ -157,7 +157,6 @@ def choosingImage(data, adjective):
         nega_name = nega_temp[random.randint(0,len(nega_temp)-1)]['image_id']
         print(nega_name)
         return [posi_name, nega_name]
-
 
 
 # a = get_similar_images("00340.png",5)
