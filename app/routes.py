@@ -196,7 +196,7 @@ def logIn():
         password = request.form['password']
         print(user_id, password)
         try:
-            result = [item for item in collection_user.find({'_id': str(user_id), "pwd":str(password)})]
+            result = [item for item in collection_user.find({'_id': str(user_id), "pwd":str(password), "isDone":False})]
             print(result)
             if result:    
                 session['logged_in'] = True 
@@ -270,8 +270,6 @@ def getData():
             appendImage(neutral_list, possible_temp, feature_temp, [0,1])
             feature_removed = np.array(feature_temp)
             appendImage(red_list, possible_temp, feature_temp, [0,1,2,3,4,5])
-            
-
         else:
 
             print("possible_images", len(possible_images))
@@ -304,10 +302,16 @@ def getData():
             # print(len(possible_temp))
             # print(feature_removed.shape)
         current_todo = blue_list + neutral_list + red_list
-        for i in range(len(current_todo)):
-            collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i, "adjective": keyword_index, "image_id" : current_todo[i]})
-        
-        return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list, "keyword": adjective[keyword_index], "image_count" : (int((total_num - len(possible_images))/batch_number)+1)})
+        for i in range(batch_number):
+            if len(current_todo) > i:
+                collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i, "adjective": keyword_index, "image_id" : current_todo[i]})
+            else:
+                collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i, "adjective": keyword_index, "image_id" : None})
+        if keyword_index >= 3:
+            collection_user.update({'_id':user_id}, {'$set':{'isDone' : True}})
+
+
+        return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list, "keyword": adjective[keyword_index], "image_count" : (int((total_num - len(possible_images))/batch_number)+1), "index": keyword_index})
         
 
 @app.route('/index', methods = ['GET', 'POST'])

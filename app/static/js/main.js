@@ -52,6 +52,7 @@ function onMouseDown_clone(e, item) {
       console.log("ctrl down over");
       tempTodo.className = tempTodo.className.replace(" over","");
       item.className = tempTodo.className.replace(" over","");
+      
     }
     else{
       console.log("ctrl down");
@@ -492,8 +493,12 @@ function classifyImages(){
     data: {"jsonData" : outParam},
     dataType:'json',
     success: function(data) {
-      console.log(data);
-      init(data);
+      if(data['index'] < 3){
+        init(data);
+      }
+      else{
+        window.location = "http://127.0.0.1:5000/logIn" 
+      }
     },
     error: function(x, e) {
         alert("error");
