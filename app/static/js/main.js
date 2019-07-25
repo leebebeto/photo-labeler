@@ -6,7 +6,10 @@ let confirm_button = document.getElementsByClassName("button-confirm")[0];
 confirm_button.disabled = false;
 console.log("dis",confirm_button.disabled);
 
-let mouseOffset_list = []
+let history_list_left = [];
+let history_list_right = [];
+let history_list_middle = [];
+let mouseOffset_list = [];
 let mouseOffset = {x:0, y:0};
 let isMouseDown = false;
 let currentTodo = null;
@@ -500,7 +503,7 @@ function logout_click(){
   // window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
-function history_visualization(img_history, left_right){
+function history_visualization(list){
   var divNode = document.createElement("div");
   divNode.style.width = "136px";
   divNode.style.height = "146.7px";
@@ -508,19 +511,22 @@ function history_visualization(img_history, left_right){
   divNode.style.border = "solid";
   divNode.style.float = "left";
   console.log('in');
-  if(left_right== 1){
-    $('.history_image_left').append(divNode);
-    console.log($('.history_image_left').children());
-    $('.history_image_left').children().append(img_history);
-  }
-  else if(left_right== -1){
-    $('.history_image_right').append(divNode);
-    console.log($('.history_image_right').children());
-    $('.history_image_right').children().append(img_history);
-  }
-  else{
-    $('.history_image_middle').append(divNode);
-    $('.history_image_middle').children().append(img_history);
+  for (var i=0; i<list.length; i++){
+    var temp = divNode.cloneNode();
+    if (list == history_list_left){
+      $('.history_image_left').append(temp);
+      $('.history_image_left').children().append(list[i]);
+    }
+    if (list == history_list_right){
+      $('.history_image_right').append(temp);
+      $('.history_image_right').children().append(list[i]);
+    }
+    if (list == history_list_middle){
+      $('.history_image_middle').append(temp);
+      $('.history_image_middle').children().append(list[i]);
+    }
+
+    // $('.history_image_left').children().append(list[i]);    
   }
 }
 
@@ -535,25 +541,23 @@ function classifyImages(){
   console.log(timeEnd);
   console.log(timeStamp);
 
+
   for(let i=0;i<todo_list.length;i++){
     let left_right = 0;
     if(todo_list[i].parentNode.className=='left'){
-      // var img_history = todo_list[i].cloneNode();
-      // console.log(img_history);
       left_right = 1;
-      // history_visualization(img_history, left_right);
+      var temp = todo_list[i].cloneNode();
+      history_list_left.push(temp);
     }
     else if(todo_list[i].parentNode.className=='right'){
-      // var img_history = todo_list[i].cloneNode();
-      // console.log(img_history);
       left_right = -1;
-      // history_visualization(img_history, left_right);
+      var temp = todo_list[i].cloneNode();
+      history_list_right.push(temp);
     }
     else{
-/*      var img_history = todo_list[i].cloneNode();
-      console.log(img_history);
-*/      left_right = 0;
-      // history_visualization(img_history, left_right);
+      left_right = 0;
+      var temp = todo_list[i].cloneNode();
+      history_list_middle.push(temp);
     }
     let jObject = new Object();
     console.log(user_id);
@@ -738,6 +742,14 @@ function displayImages(queue){
 
 function init(){
   clearAll();
+  console.log(history_list_left);
+  console.log(history_list_right);
+  console.log(history_list_middle);
+
+  history_visualization(history_list_left);
+  history_visualization(history_list_right);
+  history_visualization(history_list_middle);
+
   timeStart = Date.now();
   var getLists = new selectList(total_queue,blue_test_number,neutral_test_number,red_test_number);
   var blue_list = getLists[0];
