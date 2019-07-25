@@ -423,6 +423,7 @@ function checkKeyUp(e) {
   }
   else if (e.keyCode == "65"){
   console.log("pressed");
+  if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
   let multi_list = document.querySelectorAll('.over');
   let areas = document.getElementsByClassName("red-blue");
   
@@ -433,6 +434,7 @@ function checkKeyUp(e) {
   }
   else if (e.keyCode == "83"){
     console.log("pressed");
+    if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
   let multi_list = document.querySelectorAll('.over');  
   let areas = document.getElementsByClassName("red-blue");
     for(let i=0;i<multi_list.length;i++){
@@ -442,6 +444,7 @@ function checkKeyUp(e) {
   }
   else if (e.keyCode == "68"){
   console.log("pressed");
+  if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
   let multi_list = document.querySelectorAll('.over');
   let areas = document.getElementsByClassName("red-blue");
     for(let i=0;i<multi_list.length;i++){
