@@ -504,7 +504,7 @@ function logout_click(){
 // 백엔드 ajax 통신 
 function classifyImages(){
   
-  let todo_list =  document.getElementsByClassName("todo-item");
+  let todo_list = document.getElementsByClassName("row")[0].getElementsByClassName("todo-item");
   let Jarray = new Array();
   let timeStamp= timeEnd - timeStart;
   timeStamp = JSON.stringify(timeStamp);
