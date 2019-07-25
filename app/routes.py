@@ -29,8 +29,8 @@ result = []
 batch_number = 14
 
 
-client = pymongo.MongoClient('mongodb://localhost:27017/')
-# client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
+#client = pymongo.MongoClient('mongodb://localhost:27017/')
+client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.davian
 
 collection_labeled = db.labeled
@@ -42,6 +42,7 @@ if "images" in collist:
     db.images.drop()
 if "user" in collist:
     db.user.drop()
+
 
 collection_user = db.user
 collection_user.insert([{'_id':'asdf','pwd':'asdf','isDone':False}, {'_id':'user101','pwd':'davian101','isDone':False}])
@@ -62,6 +63,7 @@ total_image_list = sorted(os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SA
 total_num = len(total_image_list)
 
 collection_image.insert([{"image_id" : total_image_list[i], "image_index" : i} for i in range(len(total_image_list))])
+
 
 
 
