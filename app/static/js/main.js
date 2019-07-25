@@ -309,6 +309,7 @@ function snapTodo(todo, container,index) {
   
   let jObject = new Object();
   jObject.Time = js_yyyy_mm_dd_hh_mm_ss ();
+  jObject.adjective = keyword;
   jObject.What = todo.src.split(/[/]+/).pop();
   if(todo.getAttribute('id') == 0){
     jObject.From = "left"
@@ -373,6 +374,7 @@ function snapTodo(todo, container,index) {
           todo_clone = todo.cloneNode();
           todo.remove();
           new_slot.append(todo_clone);
+          todo_clone.className = todo_clone.className.replace(" over","");  
           setListener(todo_clone);
           todo_clone.style.left = 0 + "px";
           todo_clone.style.top = 0 + "px";
@@ -651,18 +653,21 @@ function displayImages(queue){
       var img_node = document.createElement('img');
       img_node.setAttribute("class","todo-item");
       img_node.src = 'static/image/FFHQ_SAMPLE2/' + queue._arr[i-1];
-      var side = ""
+      var side = "";
 
       if(queue == blue_queue){
-        side = "L"
+        side = "L";
+        img_node.setAttribute("id",0);
       }
       else if(queue == red_queue){
-        side = "R"
+        side = "R";
+        img_node.setAttribute("id",2);
       }
       else{
-        side = "N"
+        side = "N";
+        img_node.setAttribute("id",1);
       }
-      var ID = '#'.concat(side,String(i))
+      var ID = '#'.concat(side,String(i));
       $(ID).append(img_node);
     }
   }
