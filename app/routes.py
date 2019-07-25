@@ -115,6 +115,7 @@ def appendImage(toList,possible_temp,Feature, query_indexes):
     removeTemp(query_indexes,possible_temp,Feature)
 
 def removeTemp(index,possible_temp,Feature):
+
     for i in sorted(index, reverse = True):
         del possible_temp[i]
         del Feature[i]
@@ -131,6 +132,7 @@ def removeFeature(Feature, labeledList):
 
 
     for i in sorted(temp, reverse = True):
+        print(len(Feature))
         del Feature[i]
 
     return np.array(Feature)
@@ -271,6 +273,7 @@ def getData():
             possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
 
             possible_temp = copy.deepcopy(possible_images)
+            print(len(possible_temp))
             feature_temp = copy.deepcopy(feature_list)
                         
             appendImage(blue_list, possible_temp, feature_temp, [0,1,2,3,4,5])
