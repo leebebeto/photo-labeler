@@ -10,6 +10,16 @@ body{
   border-width: 1px;
 }
 
+.history-red-blue{
+  width: 579px;
+  height: 150px;
+  margin: 0px;
+  border: inset;
+  border-color: #707070;
+  border-width: 1px;
+}
+
+
 .image_row{
   width: auto;
   height: 146.7px;
