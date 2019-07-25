@@ -2,8 +2,9 @@
 let itemsContainer = document.getElementById("items-container");
 let todosContainer = document.getElementById("todos-container");
 let temp = document.getElementsByClassName("img_temp")[0];
-
-
+let confirm_button = document.getElementsByClassName("button-confirm")[0];
+confirm_button.disabled = false;
+console.log("dis",confirm_button.disabled);
 
 let mouseOffset_list = []
 let mouseOffset = {x:0, y:0};
@@ -15,6 +16,8 @@ let tempTodo_list = [];
 let ctrlPressed = false;
 let multiChoice = false;
 let outData = null;
+let onLoadcount = 0;
+let totalDisplay = 14;
 
 let doElsCollide = function(el1, el2) { 
   if(el1 != null && el2 != null){
@@ -413,14 +416,14 @@ function checkMousedown(e) {
 }
 
 function checkKeyPressed(e) {
-  if (e.keyCode == "17") {
+  if (e.keyCode == "17" || e.keyCode == "91") {
       ctrlPressed = true;
       console.log(ctrlPressed);
   }
 }
 function checkKeyUp(e) {
 
-  if (e.keyCode == "17") {
+  if (e.keyCode == "17"|| e.keyCode == "91") {
     ctrlPressed = false;
   }
   else if (e.keyCode == "65"){
@@ -455,7 +458,9 @@ function checkKeyUp(e) {
     }
   }
   else if (e.keyCode == "32"){
-    confirm_click();
+    if(confirm_button.disabled == false){
+      confirm_click();
+    }
   }
 }
 
@@ -486,9 +491,13 @@ class Queue {
 
 function confirm_click(){
   timeEnd = Date.now();
-
+    confirm_button.disabled = true;
     classifyImages();
-  
+}
+
+function logout_click(){
+  window.location = "http://130.211.240.166:5000//logout";
+  // window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
 
@@ -536,7 +545,7 @@ function classifyImages(){
         init(data);
       }
       else{
-        window.location = "logIn" 
+        window.location = "http://127.0.0.1:5000/logIn";
       }
     },
     error: function(x, e) {
@@ -547,7 +556,21 @@ function classifyImages(){
 
 };
 
+$(document).ready(function() {
+  var imagesLoaded = 0;
+  var totalImages = $('img').length;
 
+  $('img').each(function(idx, img) {
+    $('<img>').on('load', imageLoaded).attr('src', $(img).attr('src'));
+  });
+  function imageLoaded() {
+    imagesLoaded++;
+    if (imagesLoaded == totalImages) {
+      confirm_button.disabled = false;
+      console.log("good");
+    }
+  }
+});
 
 function getSyncScriptParams() {
    var scripts = document.getElementsByTagName('script');
@@ -647,7 +670,8 @@ function js_yyyy_mm_dd_hh_mm_ss () {
 
 
 function displayImages(queue){
-    
+  onLoadcount = 0;
+  let displaycount = queue.cnt;
   for(var i=1;i<=queue.cnt;i++){
     if(queue._arr[i-1] != null){
       var img_node = document.createElement('img');
@@ -669,6 +693,12 @@ function displayImages(queue){
       }
       var ID = '#'.concat(side,String(i));
       $(ID).append(img_node);
+      img_node.onload = function(){
+        console.log(onLoadcount, totalDisplay);
+        onLoadcount++;
+      if(onLoadcount == totalDisplay){
+        confirm_button.disabled = false;
+      }};
     }
   }
 }
@@ -722,7 +752,8 @@ function init(data){
 
 
   enQueues(blue_queue,blue_list,neutral_queue,neutral_list, red_queue,red_list);
-  
+  totalDisplay = blue_queue.cnt + neutral_queue.cnt + red_queue.cnt;
+
   displayImages(blue_queue);
   displayImages(red_queue);
   displayImages(neutral_queue);

@@ -14,7 +14,7 @@ import copy
 from datetime import datetime
 import csv
 
-import pandas as pd
+import pandas as pd 
 import numpy as np
 import os
 
@@ -57,7 +57,7 @@ collection_current = db.Current_toLabel
 collection_before = db.Before_toLabel
 
 
-adjective = ["ATTRACTIVE", "CONFIDENTIAL","RATIONAL","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
+adjective = ["ATTRACTIVE", "CONFIDENTIAL","GOODNESS","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
 
 total_image_list = sorted(os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2')))
 total_num = len(total_image_list)
@@ -196,7 +196,6 @@ client.close()
 @app.route('/logIn', methods = ['GET','POST'])
 def logIn():
     if request.method == 'GET':
-        print("get")
         session.pop("logged_in",None)
         session.pop("user_id",None)
         print(session.get('logged_in'), session.get("user_id"))
@@ -209,6 +208,8 @@ def logIn():
             result = [item for item in collection_user.find({'_id': str(user_id), "pwd":str(password), "isDone":False})]
             print(result)
             if result:    
+                
+                collection_user.update({'_id':user_id}, {'$set':{'isLogOn' : True}})
                 session['logged_in'] = True 
                 session['user_id'] = user_id
                 
@@ -224,9 +225,13 @@ def logIn():
             print("except")
             return render_template('loginFail.html')
 
-@app.route('/logout')
+@app.route('/logout', methods = ['GET','POST'])
 def logout():
-    return render_template('logout.html')
+    if request.method == 'GET':
+        user_id = session.get("user_id")
+        time = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+        collection_log.insert({"Time":time,"user_id": user_id, "What":"Logout"})
+        return redirect(url_for('logIn'))
 
 @app.route('/getLog', methods = ['GET','POST'])
 def getLog():
@@ -271,7 +276,7 @@ def getData():
             db_image_list = [item['image_id'] for item in collection_image.find()]
             prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : adjective[keyword_index]})]        
             possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
-
+            
             possible_temp = copy.deepcopy(possible_images)
             print(len(possible_temp))
             feature_temp = copy.deepcopy(feature_list)

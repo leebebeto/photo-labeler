@@ -103,6 +103,19 @@ div.left1{
   font-size: 20px;
   font-family: Roboto;
 }
+
+.button-logout{
+  width: 260px;
+  height: 50px;
+  background-color: #fff;
+  border-color:  #333333;
+  border-radius: 8px;
+  border-width: 1px;
+  text-align: center; 
+  color: #000000;
+  font-size: 20px;
+  font-family: Roboto;
+}
       
 #style-3::-webkit-scrollbar-track
 {
