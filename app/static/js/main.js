@@ -536,7 +536,7 @@ function classifyImages(){
         init(data);
       }
       else{
-        window.location = "http://127.0.0.1:5000/logIn" 
+        window.location = "logIn" 
       }
     },
     error: function(x, e) {
