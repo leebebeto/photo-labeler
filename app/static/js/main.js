@@ -500,6 +500,29 @@ function logout_click(){
   // window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
+function history_visualization(img_history, left_right){
+  var divNode = document.createElement("div");
+  divNode.style.width = "136px";
+  divNode.style.height = "146.7px";
+  divNode.style.position = "relative";
+  divNode.style.border = "solid";
+  divNode.style.float = "left";
+  console.log('in');
+  if(left_right== 1){
+    $('.history_image_left').append(divNode);
+    console.log($('.history_image_left').children());
+    $('.history_image_left').children().append(img_history);
+  }
+  else if(left_right== -1){
+    $('.history_image_right').append(divNode);
+    console.log($('.history_image_right').children());
+    $('.history_image_right').children().append(img_history);
+  }
+  else{
+    $('.history_image_middle').append(divNode);
+    $('.history_image_middle').children().append(img_history);
+  }
+}
 
 // 백엔드 ajax 통신 
 function classifyImages(){
@@ -513,15 +536,24 @@ function classifyImages(){
   console.log(timeStamp);
 
   for(let i=0;i<todo_list.length;i++){
-    let left_right = 0
+    let left_right = 0;
     if(todo_list[i].parentNode.className=='left'){
+      // var img_history = todo_list[i].cloneNode();
+      // console.log(img_history);
       left_right = 1;
+      // history_visualization(img_history, left_right);
     }
     else if(todo_list[i].parentNode.className=='right'){
+      // var img_history = todo_list[i].cloneNode();
+      // console.log(img_history);
       left_right = -1;
+      // history_visualization(img_history, left_right);
     }
     else{
-      left_right = 0;
+/*      var img_history = todo_list[i].cloneNode();
+      console.log(img_history);
+*/      left_right = 0;
+      // history_visualization(img_history, left_right);
     }
     let jObject = new Object();
     console.log(user_id);
