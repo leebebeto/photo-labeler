@@ -58,6 +58,8 @@ function onMouseDown_clone(e, item) {
       console.log("ctrl down");
       multiChoice = true;
       tempTodo.className +=' over';
+      let multi_list = document.getElementsByClassName('over');   
+      console.log(multi_list);
     }
   }
   else{
@@ -348,7 +350,7 @@ function snapTodo(todo, container,index) {
         todo_clone = todo.cloneNode();
         todo.remove();
         item.append(todo_clone);
-        console.log("appending" , todo_clone);
+        todo_clone.className = todo_clone.className.replace(" over","");
         setListener(todo_clone);
         todo_clone.style.left = 0 + "px";
         todo_clone.style.top = 0 + "px";
@@ -420,31 +422,31 @@ function checkKeyUp(e) {
     ctrlPressed = false;
   }
   else if (e.keyCode == "65"){
-    
-  let multi_list = document.getElementsByClassName('over');  
+  console.log("pressed");
+  let multi_list = document.querySelectorAll('.over');
   let areas = document.getElementsByClassName("red-blue");
   
   for(let i=0;i<multi_list.length;i++){
+    console.log(multi_list.item(i));
       snapTodo(multi_list.item(i),areas[0],0);
-      console.log(multi_list[i]);
     }
   }
   else if (e.keyCode == "83"){
-    
-  let multi_list = document.getElementsByClassName('over');  
+    console.log("pressed");
+  let multi_list = document.querySelectorAll('.over');  
   let areas = document.getElementsByClassName("red-blue");
     for(let i=0;i<multi_list.length;i++){
+      console.log(multi_list.item(i));
       snapTodo(multi_list.item(i),areas[1],1);
-      console.log(multi_list[i]);
     }
   }
   else if (e.keyCode == "68"){
-    
-  let multi_list = document.getElementsByClassName('over');  
+  console.log("pressed");
+  let multi_list = document.querySelectorAll('.over');
   let areas = document.getElementsByClassName("red-blue");
     for(let i=0;i<multi_list.length;i++){
+      console.log(multi_list.item(i));
       snapTodo(multi_list.item(i),areas[2],2);
-      console.log(multi_list[i]);
     }
   }
   else if (e.keyCode == "32"){
