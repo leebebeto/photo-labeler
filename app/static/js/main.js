@@ -500,46 +500,48 @@ function confirm_click(){
 }
 
 function logout_click(){
-  window.location = "http://130.211.240.166:5000//logout";
-  // window.location.href = "http://127.0.0.1:5000/logout";
+  // window.location = "http://130.211.240.166:5000//logout";
+  window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
-function history_visualization(list){
+function history_visualization(list, newcnt){
   var divNode = document.createElement("div");
   divNode.style.width = "136px";
   divNode.style.height = "146.7px";
   divNode.style.position = "relative";
+  // divNode.style.border = "solid";
   divNode.style.float = "left";
   divNode.style.margin = "0px";
-  for (var i=0; i<list.length; i++){
+  for (var i=0; i<newcnt; i++){
+    let idx = list.length-newcnt+i;
     var temp = divNode.cloneNode();
+    list[idx].classList.remove("todo-item");
+    list[idx].setAttribute("class","history-image");
+    list[idx].style.padding = '0px';
+    list[idx].style.margin = '0px';
     if (list == history_list_left){
-      list[i].classList.remove("todo-item");
-      list[i].setAttribute("class","history-image");
-      list[i].style.margin = '0px';
       $('.history_image_left').append(temp);
-      $('.history_image_left').children()[i].append(list[i]);
+      $('.history_image_left').children()[idx].append(list[idx]);
+      console.log(list.length-newcnt+i);
     }
     else if (list == history_list_right){
-      list[i].classList.remove("todo-item");
-      list[i].setAttribute("class","history-image");
-      list[i].style.margin = '0px';
       $('.history_image_right').append(temp);
-      $('.history_image_right').children()[i].append(list[i]);
+      $('.history_image_right').children()[idx].append(list[idx]);
+      console.log(list.length-newcnt+i);
     }
     else {
-      list[i].classList.remove("todo-item");
-      list[i].setAttribute("class","history-image");
-      list[i].style.margin = '0px';
       $('.history_image_middle').append(temp);
-      $('.history_image_middle').children()[i].append(list[i]);
+      $('.history_image_middle').children()[idx].append(list[idx]);
+      console.log(list.length-newcnt+i);
     }
   }
 }
 
 // 백엔드 ajax 통신 
 function classifyImages(){
-  
+  let cnt_l = 0;
+  let cnt_n = 0;
+  let cnt_r = 0;
   let todo_list = document.getElementsByClassName("row")[0].getElementsByClassName("todo-item");
   let Jarray = new Array();
   let timeStamp= timeEnd - timeStart;
@@ -555,17 +557,19 @@ function classifyImages(){
       left_right = 1;
       var temp = todo_list[i].cloneNode();
       history_list_left.push(temp);
+      cnt_l = cnt_l + 1;
     }
     else if(todo_list[i].parentNode.className=='right'){
       left_right = -1;
       var temp = todo_list[i].cloneNode();
       history_list_right.push(temp);
-
+      cnt_r = cnt_r + 1;
     }
     else{
       left_right = 0;
       var temp = todo_list[i].cloneNode();
       history_list_middle.push(temp);
+      cnt_n = cnt_n + 1;
     }
 
     let jObject = new Object();
@@ -578,9 +582,9 @@ function classifyImages(){
     Jarray.push(jObject);
     console.log(jObject);
   }
-  history_visualization(history_list_left);  
-  history_visualization(history_list_right);
-  history_visualization(history_list_middle);
+  history_visualization(history_list_left, cnt_l);  
+  history_visualization(history_list_right, cnt_r);
+  history_visualization(history_list_middle, cnt_n);
 
   let outParam = JSON.stringify(Jarray);
   jQuery.ajaxSettings.traditional = true;
@@ -594,8 +598,8 @@ function classifyImages(){
         init(data);
       }
       else{
-        // window.location = "http://127.0.0.1:5000/logIn";
-        window.location = "http://130.211.240.166:5000/logIn";
+        window.location = "http://127.0.0.1:5000/logIn";
+        // window.location = "http://130.211.240.166:5000/logIn";
       }
     },
     error: function(x, e) {
