@@ -463,6 +463,7 @@ function checkKeyUp(e) {
   else if (e.keyCode == "32"){
     if(confirm_button.disabled == false){
       confirm_click();
+
     }
   }
 }
@@ -508,25 +509,31 @@ function history_visualization(list){
   divNode.style.width = "136px";
   divNode.style.height = "146.7px";
   divNode.style.position = "relative";
-  divNode.style.border = "solid";
   divNode.style.float = "left";
-  console.log('in');
+  divNode.style.margin = "0px";
   for (var i=0; i<list.length; i++){
     var temp = divNode.cloneNode();
     if (list == history_list_left){
+      list[i].classList.remove("todo-item");
+      list[i].setAttribute("class","history-image");
+      list[i].style.margin = '0px';
       $('.history_image_left').append(temp);
-      $('.history_image_left').children().append(list[i]);
+      $('.history_image_left').children()[i].append(list[i]);
     }
-    if (list == history_list_right){
+    else if (list == history_list_right){
+      list[i].classList.remove("todo-item");
+      list[i].setAttribute("class","history-image");
+      list[i].style.margin = '0px';
       $('.history_image_right').append(temp);
-      $('.history_image_right').children().append(list[i]);
+      $('.history_image_right').children()[i].append(list[i]);
     }
-    if (list == history_list_middle){
+    else {
+      list[i].classList.remove("todo-item");
+      list[i].setAttribute("class","history-image");
+      list[i].style.margin = '0px';
       $('.history_image_middle').append(temp);
-      $('.history_image_middle').children().append(list[i]);
+      $('.history_image_middle').children()[i].append(list[i]);
     }
-
-    // $('.history_image_left').children().append(list[i]);    
   }
 }
 
@@ -553,12 +560,14 @@ function classifyImages(){
       left_right = -1;
       var temp = todo_list[i].cloneNode();
       history_list_right.push(temp);
+
     }
     else{
       left_right = 0;
       var temp = todo_list[i].cloneNode();
       history_list_middle.push(temp);
     }
+
     let jObject = new Object();
     console.log(user_id);
     jObject.user_id = user_id;
@@ -569,6 +578,10 @@ function classifyImages(){
     Jarray.push(jObject);
     console.log(jObject);
   }
+  history_visualization(history_list_left);  
+  history_visualization(history_list_right);
+  history_visualization(history_list_middle);
+
   let outParam = JSON.stringify(Jarray);
   jQuery.ajaxSettings.traditional = true;
   $.ajax({
@@ -581,7 +594,8 @@ function classifyImages(){
         init(data);
       }
       else{
-        window.location = "http://127.0.0.1:5000/logIn";
+        // window.location = "http://127.0.0.1:5000/logIn";
+        window.location = "http://130.211.240.166:5000/logIn";
       }
     },
     error: function(x, e) {
@@ -741,14 +755,9 @@ function displayImages(queue){
 
 
 function init(){
-  clearAll();
-  console.log(history_list_left);
-  console.log(history_list_right);
-  console.log(history_list_middle);
 
-  history_visualization(history_list_left);
-  history_visualization(history_list_right);
-  history_visualization(history_list_middle);
+  clearAll();
+
 
   timeStart = Date.now();
   var getLists = new selectList(total_queue,blue_test_number,neutral_test_number,red_test_number);
