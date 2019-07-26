@@ -152,7 +152,7 @@ def removeFeature(Feature, labeledList):
 #     feature_np = np.array(feature_list)
 
 
-def choosingImage(data):
+def choosingImage(data,adjective):
     posi_temp = []
     nega_temp = []
     neu_temp = []
@@ -163,9 +163,16 @@ def choosingImage(data):
             nega_temp.append(item)
         else:
             neu_temp.append(item)
-    posi_name = posi_temp[random.randint(0,len(posi_temp)-1)]['image_id']
-    print(posi_name)
-    nega_name = nega_temp[random.randint(0,len(nega_temp)-1)]['image_id']
+    if posi_temp:
+        posi_name = posi_temp[random.randint(0,len(posi_temp)-1)]['image_id']
+    else:
+        posi_list = collection_labeled.find({"user_id":session.get("user_id"), "adjective":adjective, "label":1})
+        posi_name = posi_list[random.randint(0,posi_list.count()-1)]['image_id']
+    if nega_temp:
+        nega_name = nega_temp[random.randint(0,len(nega_temp)-1)]['image_id']
+    else:
+        nega_list = collection_labeled.find({"user_id":session.get("user_id"), "adjective":adjective, "label":-1})
+        nega_name = nega_list[random.randint(0,nega_list.count()-1)]['image_id']
     print(nega_name)
     return [posi_name, nega_name]
 
@@ -263,7 +270,7 @@ def getData():
 
         keyword_index = collection_current.find({"user_id": user_id})[0]['adjective']
         print('main keyword' , keyword_index)
-        imageStandard = choosingImage(data_list)
+        imageStandard = choosingImage(data_list, adjective[keyword_index])
 
         db_image_list = [item['image_id'] for item in collection_image.find()]
         prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : adjective[keyword_index]})]        
