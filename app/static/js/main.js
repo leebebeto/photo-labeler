@@ -1,3 +1,132 @@
+// d3.tsv("static/dots.tsv", dottype, function (error, dots) {
+// dot = container.append("g")
+//     .attr("class", "dot")
+//     .selectAll("circle")
+//     .data(dots)
+//     .enter().append("circle")
+//     .attr("r", 5)
+//     .attr("cx", function (d) { return d.x; })
+//     .attr("cy", function (d) { return d.y; })
+//     .call(drag);
+// });
+
+function dottype(d) {
+d.x = +d.x;
+d.y = +d.y;
+return d;
+}
+
+function dragstarted(d) {
+d3.event.sourceEvent.stopPropagation();
+d3.select(this).classed("dragging", true);
+}
+
+function dragged(d) {
+d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+}
+
+function dragended(d) {
+d3.select(this).classed("dragging", false);
+}
+
+/*
+console.log("good");
+// set the dimensions and margins of the graph
+var margin = {top: 70, right: 30, bottom: 30, left: 10},
+    width = 601 - margin.left - margin.right,
+    height = 700 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+//Read the data
+d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv", function(data) {
+
+  // Add X axis
+  var x = d3.scaleLinear()
+    .domain([4, 8])
+    .range([ 0, width ]);
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
+
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, 9])
+    .range([ height, 0]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+    
+  // Add Y axis
+  var l3 = d3.scaleLinear()
+    .range([ 0, width ]);
+  svg.append("g")
+    .call(d3.axisTop(l3));
+
+  
+  // Add Y axis
+  var l4 = d3.scaleLinear()
+    .range([ height, 0]);
+  svg.append("g")
+    .call(d3.axisRight(l4));
+
+  // Color scale: give me a specie name, I return a color
+  var color = d3.scaleOrdinal()
+    .domain(["setosa", "versicolor", "virginica" ])
+    .range([ "#440154ff", "#21908dff", "#fde725ff"])
+
+
+  // Highlight the specie that is hovered
+  var highlight = function(d){
+
+    selected_specie = d.Species
+
+    d3.selectAll(".dot")
+      .transition()
+      .duration(200)
+      .style("fill", "lightgrey")
+      .attr("r", 3)
+
+    d3.selectAll("." + selected_specie)
+      .transition()
+      .duration(200)
+      .style("fill", color(selected_specie))
+      .attr("r", 7)
+  }
+
+  // Highlight the specie that is hovered
+  var doNotHighlight = function(){
+    d3.selectAll(".dot")
+      .transition()
+      .duration(200)
+      .style("fill", "lightgrey")
+      .attr("r", 5 )
+  }
+
+  // Add dots
+  svg.append('g')
+    .selectAll("dot")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("class", function (d) { return "dot " + d.Species } )
+      .attr("cx", function (d) { return x(d.Sepal_Length); } )
+      .attr("cy", function (d) { return y(d.Petal_Length); } )
+      .attr("r", 5)
+      .style("fill", function (d) { return color(d.Species) } )
+    .on("mouseover", highlight)
+    .on("mouseleave", doNotHighlight )
+
+})
+*/
+
+
 /*마우스 기능 */
 let itemsContainer = document.getElementById("items-container");
 let todosContainer = document.getElementById("todos-container");
@@ -21,6 +150,9 @@ let multiChoice = false;
 let outData = null;
 let onLoadcount = 0;
 let totalDisplay = 14;
+
+let currentLabel = []
+let beforeLabel = []
 
 let doElsCollide = function(el1, el2) { 
   if(el1 != null && el2 != null){
@@ -546,10 +678,7 @@ function classifyImages(){
   let Jarray = new Array();
   let timeStamp= timeEnd - timeStart;
   timeStamp = JSON.stringify(timeStamp);
-  console.log(timeStart);
-  console.log(timeEnd);
-  console.log(timeStamp);
-
+  
 
   for(let i=0;i<todo_list.length;i++){
     let left_right = 0;
@@ -573,15 +702,16 @@ function classifyImages(){
     }
 
     let jObject = new Object();
-    console.log(user_id);
     jObject.user_id = user_id;
     jObject.image_id = todo_list[i].src.split(/[/]+/).pop();
     jObject.adjective = keyword;
     jObject.label = left_right;
     jObject.time = timeStamp;
     Jarray.push(jObject);
-    console.log(jObject);
   }
+
+  markLabel(Jarray);
+
   history_visualization(history_list_left, cnt_l);  
   history_visualization(history_list_right, cnt_r);
   history_visualization(history_list_middle, cnt_n);
@@ -636,7 +766,9 @@ function getSyncScriptParams() {
        user_id : scriptName.getAttribute('user_id'),
        test : scriptName.getAttribute("test"),
        total_num : scriptName.getAttribute("total_num"),
-       count_num : scriptName.getAttribute("count_num")
+       count_num : scriptName.getAttribute("count_num"),
+       dots : scriptName.getAttribute("dots"),
+       label : scriptName.getAttribute("label")
    };
  }
 
@@ -645,6 +777,8 @@ var red_test_number = 6;
 var neutral_test_number = 2;
 var params = new getSyncScriptParams();
 var images = JSON.parse(params.images);
+var label = JSON.parse(params.label);
+console.log(label);
 var user_id = params.user_id;
 var batch_count=1;
 var total_num = JSON.parse(params.total_num);
@@ -792,7 +926,14 @@ function init(data){
     red_list = data['red'];
     keyword = data['keyword'];
     count_num = data['image_count'];
+    
+    console.log([data['blue']+data['neutral']+data['red']]);
 
+    returnCurrent(beforeLabel);
+    let unionArr = data['blue'].concat(data['neutral'],data['red']);
+    console.log(unionArr);
+    currentLabeling(unionArr);
+    
   }
   else{
   
@@ -844,3 +985,189 @@ var pageLoader = (function()
 })();
 
 init();
+
+
+/* tsne 그래프 */
+console.log("2");
+var margin = { top: 0, right: 30, bottom: 0, left: 0},
+width = 600 - margin.left - margin.right,
+height = 640 - margin.top - margin.bottom;
+
+// var svg = d3.select("#tsne_div").append("svg")
+// .attr("width", 570 + "px")
+// .attr("height", height + margin.top + margin.bottom + "px")
+// .append("g")    
+// .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
+// .call(zoom);
+
+
+var svg = d3.select("#tsne_div")
+          .append("svg")
+          .attr("width", 570 + "px")
+          .attr("height",  height + margin.top + margin.bottom + "px")
+          .style("border","none") 
+          .style("background-color", "none")
+          .call(d3.zoom()
+                 .on("zoom", function () {
+          svg.attr("transform", d3.event.transform)
+                 })
+                 .scaleExtent([1,4])
+                 .translateExtent([[0,0],[570,640]])
+            )
+          .append("g");
+
+var drag = d3.drag()
+.subject(function (d) { return d; })
+.on("start", dragstarted)
+.on("drag", dragged)
+.on("end", dragended);
+
+
+var rect = svg.append("rect")
+.attr("width", width)
+.attr("height", height)
+.style("fill", "none")
+.style("pointer-events", "all");
+
+var container = svg.append("g");
+
+container.append("g")
+.attr("class", "x axis")
+.selectAll("line")
+.data(d3.range(0, width, 10))
+.enter().append("line")
+.attr("x1", function (d) { return d; })
+.attr("y1", 0)
+.attr("x2", function (d) { return d; })
+.attr("y2", height);
+
+container.append("g")
+.attr("class", "y axis")
+.selectAll("line")
+.data(d3.range(0, height, 10))
+.enter().append("line")
+.attr("x1", 0)
+.attr("y1", function (d) { return d; })
+.attr("x2", width)
+.attr("y2", function (d) { return d; });
+
+xList = [];
+yList = [];
+
+dots = JSON.parse(params.dots)
+for(let i=0;i<dots.length;i++){
+  dots[i].x = parseFloat(dots[i].x);
+  xList.push(dots[i].x);
+  dots[i].y = parseFloat(dots[i].y);
+  yList.push(dots[i].y);
+}
+
+function scaleData(data,xList,yList){
+  for(let i =0;i<data.length;i++){
+    data[i].x = ( data[i].x - d3.min(xList) ) / (d3.max(xList) - d3.min(xList)) * 500 + d3.quantile(xList,0.15);
+    data[i].y = ( data[i].y - d3.min(yList) ) / (d3.max(yList) - d3.min(yList)) * 600 + d3.quantile(yList,0.15);
+  }
+}
+
+scaleData(dots,xList,yList);
+
+// dots = [{x:127,y:127}, {x:133,y:133} , {x:155,y:155}, {x:156.5,y:156.5}];
+
+
+dot = container.append("g")
+    .attr("class", "dot")
+    .selectAll("circle")
+    .data(dots)
+    .enter().append("circle")
+    .attr("r", 5)
+    .attr("id", function (d) { return d.image_id;})
+    .attr("cx", function (d) { return d.x; })
+    .attr("cy", function (d) { return d.y; })
+    .style("fill","#AAAAAA")
+    .style("stroke", "transparent")
+    .style("stroke-width", 2);
+    // .on("mouseover",function(d){
+    //   var xPosition = parseFloat(d3.select(this).attr('cx'))
+    //   var yPosition = parseFloat(d3.select(this).attr('cy'))
+
+    //   console.log(xPosition, yPosition);
+
+    //   d3.select('#tsne_img').style({
+    //     left : xPosition + 'px',
+    //     top : yPosition + 'px'
+    //   });
+
+    //   d3.select('#tsne_img')
+    //   .append('img')
+    //   .attr('src','static/image/FFHQ_SAMPLE2/'+d.image_id)
+    //   .attr('width',50+"px")
+    //   .attr('height',50+"px")
+    //   .attr('x',xPosition)
+    //   .attr('y',yPosition);
+
+    //   d3.select('#tsne_img').classed('hidden', false);
+    // });
+
+function currentLabeling(data){
+  for(let i=0;i<data.length;i++){
+    var circle = container.select('[id="'.concat(data[i],'"]'));
+   
+    circle
+        .transition()
+        .duration(750)
+        .style("stroke", "#FF0000")
+        .style("stroke-width", 2);  
+  }
+  beforeLabel = data;
+}
+
+function returnCurrent(data){
+  for(let i=0;i<data.length;i++){
+    var circle = container.select('[id="'.concat(data[i],'"]'));
+    
+    circle
+        .transition()
+        .duration(750)
+        .style("stroke", "transparent")
+        .style("stroke-width", 2);
+  }
+}
+
+
+
+
+function markLabel(data){
+  for(let i=0;i<data.length;i++){
+    var circle = container.select('[id="'.concat(data[i].image_id,'"]'));
+    console.log('[id="'.concat(data[i].image_id,'"]'));
+    let color = null;
+    if(data[i].label == 1){
+      // color = "blue";
+      color = "rgb(65,122,255,1)";
+      console.log("blue");
+    }
+    else if(data[i].label == -1){
+      // color = "red";
+      color = "rgb(242,108,108,1)";
+      console.log("red");
+    }
+    else{
+      // color = "black";
+      color = "rgb(242,112,242,1)";
+      console.log("neutral");
+    }
+    
+    circle
+        .transition()
+        .style("fill",color);
+        
+        console.log("done");
+      }
+}
+
+
+
+
+currentLabeling(Object.values(images));
+markLabel(label);
+

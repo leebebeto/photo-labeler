@@ -10,13 +10,17 @@ import pickle
 import time
 import random
 import copy
+from operator import itemgetter
+
 
 from datetime import datetime
 import csv
 
+from sklearn.manifold import TSNE
 import pandas as pd 
 import numpy as np
 import os
+
 
 # from facenet_pytorch import InceptionResnetV1
 # from PIL import Image
@@ -33,8 +37,9 @@ batch_number = 14
 client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.davian
 
-collection_labeled = db.labeled
 
+
+collection_labeled = db.labeled
 
 collist = db.list_collection_names()
 if "images" in collist:
@@ -61,6 +66,8 @@ adjective = ["ATTRACTIVE", "CONFIDENTIAL","GOODNESS","OUT-GOING", "KIND","ADVENT
 total_image_list = sorted(os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2')))
 total_num = len(total_image_list)
 
+
+
 collection_image.insert([{"image_id" : total_image_list[i], "image_index" : i} for i in range(len(total_image_list))])
 
 
@@ -78,6 +85,7 @@ collection_image.insert([{"image_id" : total_image_list[i], "image_index" : i} f
 
 image_name_list = []
 feature_list = []
+key_list = []
 
 def read_pck(filename):
     objects = []
@@ -90,9 +98,16 @@ def read_pck(filename):
         return objects
 
 features = read_pck("ffhq600_facenet_vggface2.pkl")[0]
+
+
 for each_key in sorted(features):
     feature_list.append(features[each_key])
+    key_list.append(each_key)
 feature_np = np.array(feature_list)
+
+points = TSNE(n_components = 2, random_state=2019).fit_transform(feature_list)
+d3Dots = [{"x":str(points[i][0]), "y":str(points[i][1]), "image_id":key_list[i]} for i in range(len(points))]
+
 
     
 def get_similar_images(image_name,feature_np,k):
@@ -332,7 +347,10 @@ def getData():
             collection_user.update({'_id':user_id}, {'$set':{'isDone' : True}})
 
 
-        return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list, "keyword": adjective[keyword_index], "image_count" : (int((total_num - len(possible_images))/batch_number)+1), "index": keyword_index})
+        return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list,
+                     "keyword": adjective[keyword_index],
+                    "image_count" : (int((total_num - len(possible_images))/batch_number)+1), 
+                    "index": keyword_index})
         
 
 @app.route('/index', methods = ['GET', 'POST'])
@@ -364,15 +382,24 @@ def index():
             keyword_index = 0
             collection_current.insert([{'user_id' : user_id, "adjective" : 0, 'index' : i, 'image_id' : db_image_list[i]} for i in range(0,14)])
         
-        count = int(collection_labeled.find({'user_id':user_id,'adjective':adjective[keyword_index]}).count()/batch_number)+1
+        labeled_data = list(collection_labeled.find({'user_id':user_id,'adjective':adjective[keyword_index]},{'_id':0,'user_id':0,'adjective':0,'time':0}))
+        count = int(len(labeled_data)/batch_number)+1
 
         # 여기서 첫 세트 사진 결정
         # 형용사 결정
         # user_id = str(user_id)
 
         images = json.dumps(dictOfImg)
+        label = json.dumps(labeled_data)
+        d3Dots_json = json.dumps(d3Dots)    
         print(adjective[keyword_index])
-        return render_template('photolabeling.html', keyword = adjective[keyword_index], images = images, user_id = user_id, total_num = int(total_num/batch_number)+1, count_num = count)
+        return render_template('photolabeling.html', keyword = adjective[keyword_index],
+                                                     images = images, user_id = user_id, 
+                                                     total_num = int(total_num/batch_number)+1, 
+                                                     count_num = count,
+                                                     dots = d3Dots_json, 
+                                                     label = label
+                                                     )
     
     else:
         return redirect(url_for('logIn'))
