@@ -33,8 +33,8 @@ result = []
 batch_number = 14
 
 
-client = pymongo.MongoClient('mongodb://localhost:27017/')
-# client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
+# client = pymongo.MongoClient('mongodb://localhost:27017/')
+client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.davian
 
 
@@ -50,6 +50,12 @@ if "user" in collist:
 
 collection_user = db.user
 collection_user.insert([{'_id':'asdf','pwd':'asdf','isDone':False}, {'_id':'user101','pwd':'davian101','isDone':False}])
+collection_user.insert(
+    [{'_id':'temp1','pwd':'temp1','isDone':False}, 
+    {'_id':'temp2','pwd':'temp2','isDone':False},
+    {'_id':'temp3','pwd':'temp3','isDone':False},
+    {'_id':'temp4','pwd':'temp4','isDone':False},
+    {'_id':'temp5','pwd':'temp5','isDone':False}])
 id_list = [items['_id'] for items in collection_user.find()]
 pwd_list = [items['pwd'] for items in collection_user.find()]
 

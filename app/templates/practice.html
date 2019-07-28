@@ -71,78 +71,78 @@
 <html lang="ko">
   <head>
   	<style>
-#menu {
-    width: 460px;
-    /*margin: 40px auto;*/
-    background: #f3f3f3;
-    border: 1px solid #d8d8d8;
-    text-align: center;
-}
-#menu div {
-    position: relative;
-    display: inline-block;
-}
-.arrow_box {
-  display: none;
-  position: absolute;
-  width: 80px;
-  padding: 5px;
-  left: 0;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;  
-  border-radius: 8px;
-  background: #333;
-  color: #fff;
-  font-size: 5px;
-
-}
-
-.arrow_box:after {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  margin-left: -40px;
-  border: solid transparent;
-  border-color: rgba(51, 51, 51, 0);
-  border-bottom-color: #333;
-  border-width: 10px;
-  pointer-events: none;
-  content: " ";
-}
-img:hover + p.arrow_box {
-  display: block;
-}
 
 	</style>            
   </head>
   <body>
+  <div id="my_dataviz"></div>
 
-<div id="menu">
-  <div class = "big"> <img src="C:\Users\SAMSUNG\Desktop\이정수\기타\이정수사진.jpg" width="30" height="30">
-    <p class="arrow_box">beard beard beard beard beard</p>
-  </div>
+<!-- Color scale -->
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
-  <div class = "big"> <img src="C:\Users\SAMSUNG\Desktop\이정수\기타\이정수사진.jpg" width="30" height="30">
-    <p class="arrow_box">ふきだし2</p>
-  </div>
-  <div class = "big"> <img src="C:\Users\SAMSUNG\Desktop\이정수\기타\이정수사진.jpg" width="30" height="30">
-    <p class="arrow_box">ふきだし3</p>
-  </div>
-</div>
-<div id="menu">
-  <div> <img src="C:\Users\SAMSUNG\Desktop\이정수\기타\이정수사진.jpg" width="30" height="30">
-    <p class="arrow_box">beard beard beard beard beard</p>
-  </div>
-  <div> <img src="C:\Users\SAMSUNG\Desktop\이정수\기타\이정수사진.jpg" width="30" height="30">
-    <p class="arrow_box">ふきだし2</p>
-  </div>
-  <div> <img src="C:\Users\SAMSUNG\Desktop\이정수\기타\이정수사진.jpg" width="30" height="30">
-    <p class="arrow_box">ふきだし3</p>
-  </div>
-</div>
- <div style="width: 100px; height: 100px; visibility: visible" class="arrow_box"> here</div>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script>
 
-  </body>
+  var width = 450
+    height = 450
+    margin = 40
+
+// The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+var radius = Math.min(width, height) / 2 - margin
+
+// append the svg object to the div called 'my_dataviz'
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+// Create dummy data
+var data = {labeled: 5, unlabeled: 43-5}
+
+// set the color scale
+var color = d3.scaleOrdinal()
+  .domain(data)
+  .range(d3.schemeSet2);
+
+// Compute the position of each group on the pie:
+var pie = d3.pie()
+  .value(function(d) {return d.value; })
+var data_ready = pie(d3.entries(data))
+// Now I know that group A goes from 0 degrees to x degrees and so on.
+
+// shape helper to build arcs:
+var arcGenerator = d3.arc()
+  .innerRadius(0)
+  .outerRadius(radius)
+
+// Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+svg
+  .selectAll('mySlices')
+  .data(data_ready)
+  .enter()
+  .append('path')
+    .attr('d', arcGenerator)
+    .attr('fill', function(d){ return(color(d.data.key)) })
+    .attr("stroke", "black")
+    .style("stroke-width", "2px")
+    .style("opacity", 0.7)
+
+// Now add the annotation. Use the centroid method to get the best coordinates
+svg
+  .selectAll('mySlices')
+  .data(data_ready)
+  .enter()
+  .append('text')
+  .text(function(d){ return d.data.key})
+  .attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
+  .style("text-anchor", "middle")
+  .style("font-size", 17)
+
+
+</script>  
+</body>
+
+
 </html>
