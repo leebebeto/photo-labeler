@@ -151,8 +151,9 @@ let outData = null;
 let onLoadcount = 0;
 let totalDisplay = 14;
 
-let currentLabel = []
-let beforeLabel = []
+let currentLabel = [];
+let beforeLabel = [];
+let beforekeyword = [];
 
 let doElsCollide = function(el1, el2) { 
   if(el1 != null && el2 != null){
@@ -926,6 +927,7 @@ function init(data){
     red_list = data['red'];
     keyword = data['keyword'];
     count_num = data['image_count'];
+    isNewset = data['isNewset'];
     
     console.log([data['blue']+data['neutral']+data['red']]);
 
@@ -933,7 +935,10 @@ function init(data){
     let unionArr = data['blue'].concat(data['neutral'],data['red']);
     console.log(unionArr);
     currentLabeling(unionArr);
-    
+
+    if(isNewset){
+      returnMark();
+    }
   }
   else{
   
@@ -1016,6 +1021,49 @@ var svg = d3.select("#tsne_div")
             )
           .append("g");
 
+var svg1 = d3.select('svg')
+svg1.append('rect')
+    .attr('x',1)
+    .attr('y',height-100)
+    // .attr('r',10)
+    .attr("width",130)
+    .attr("height",100)
+    .attr("stroke","#151515")
+    .attr("stroke-width",1)
+    .style("fill","#FFFFFF");
+
+                  
+                  
+                  출처: https://yehongj.tistory.com/19 [functional full-stack programming]
+
+var legend = svg1.selectAll(".legend")
+                 .data([{text:'Positive', color:'rgb(65,122,255,1)', border:"transparent"},
+                       {text:'Negative', color:'rgb(242,108,108,1)', border:"transparent"},
+                      {text: 'Not labeled', color:'#AAAAAA', border:"transparent"},
+                      {text: 'Current Image', color:'#FFFFFF', border:"#FF0000"}])
+                 .enter().append("g")
+                 .attr("class","legend")
+                 .attr("transform", function(d, i) {return "translate(0," + i*20 + ")";});
+
+legend.append("circle").attr("cx",15)
+                       .attr("cy",height - 80)
+                       .attr("r", 6)
+                       .style("fill", function(d){return d.color})
+                       .attr("stroke-width", 2)
+                       .attr("stroke", function(d){return d.border});
+
+
+legend.append("text").attr("x", 30)
+                     .attr("y", height - 80)
+                     .attr("dy", ".35em")
+                     .attr("font-size",13)
+                     .text(function(d) { return d.text});
+
+// svg.append("text").attr("x", 220).attr("y", 130).text("variable A").style("font-size", "15px").attr("alignment-baseline","middle")
+// svg.append("text").attr("x", 220).attr("y", 160).text("variable B").style("font-size", "15px").attr("alignment-baseline","middle")
+          
+
+
 var drag = d3.drag()
 .subject(function (d) { return d; })
 .on("start", dragstarted)
@@ -1028,6 +1076,8 @@ var rect = svg.append("rect")
 .attr("height", height)
 .style("fill", "none")
 .style("pointer-events", "all");
+
+
 
 var container = svg.append("g");
 
@@ -1050,6 +1100,8 @@ container.append("g")
 .attr("y1", function (d) { return d; })
 .attr("x2", width)
 .attr("y2", function (d) { return d; });
+
+
 
 xList = [];
 yList = [];
@@ -1108,6 +1160,8 @@ dot = container.append("g")
     //   d3.select('#tsne_img').classed('hidden', false);
     // });
 
+
+
 function currentLabeling(data){
   for(let i=0;i<data.length;i++){
     var circle = container.select('[id="'.concat(data[i],'"]'));
@@ -1131,6 +1185,12 @@ function returnCurrent(data){
         .style("stroke", "transparent")
         .style("stroke-width", 2);
   }
+}
+
+function returnMark(){
+  var circle = container.selectAll('circle');
+  circle
+        .style("fill","#AAAAAA");
 }
 
 
@@ -1158,7 +1218,6 @@ function markLabel(data){
     }
     
     circle
-        .transition()
         .style("fill",color);
         
         console.log("done");

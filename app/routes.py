@@ -270,7 +270,7 @@ def getData():
         blue_list = []
         red_list = []
         neutral_list = []
-
+        isNewset = None
         time = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
         json_received = request.form
@@ -292,6 +292,7 @@ def getData():
         possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
 
         if not possible_images:
+            isNewset = True
             keyword_index = keyword_index + 1
             db_image_list = [item['image_id'] for item in collection_image.find()]
             prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : adjective[keyword_index]})]        
@@ -307,7 +308,7 @@ def getData():
             feature_removed = np.array(feature_temp)
             appendImage(red_list, possible_temp, feature_temp, [0,1,2,3,4,5])
         else:
-
+            isNewset = False
             print("possible_images", len(possible_images))
             possible_temp = copy.deepcopy(possible_images)
             feature_temp = copy.deepcopy(feature_list)
@@ -350,7 +351,8 @@ def getData():
         return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list,
                      "keyword": adjective[keyword_index],
                     "image_count" : (int((total_num - len(possible_images))/batch_number)+1), 
-                    "index": keyword_index})
+                    "index": keyword_index,
+                    "isNewset" : isNewset})
         
 
 @app.route('/index', methods = ['GET', 'POST'])
