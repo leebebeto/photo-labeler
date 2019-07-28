@@ -10,6 +10,19 @@ body{
   border-width: 1px;
 }
 
+.attr-tag{
+  width:200px;
+  text-align: center;
+  height:50px;
+  margin: 10px;
+  border-radius: 8px;
+  background-color: #9197B5;
+  color: white;
+  font-size: 20px;
+  line-height: 45px;
+  float: left;
+}
+
 .history-image{
   width: 139.99px;
   width: 139.99px;

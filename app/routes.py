@@ -386,11 +386,13 @@ def index():
         
         labeled_data = list(collection_labeled.find({'user_id':user_id,'adjective':adjective[keyword_index]},{'_id':0,'user_id':0,'adjective':0,'time':0}))
         count = int(len(labeled_data)/batch_number)+1
-
+        attr_list = []
+        with open('attr_list.pickle', 'rb') as f:
+            attr_list = pickle.load(f)
         # 여기서 첫 세트 사진 결정
         # 형용사 결정
         # user_id = str(user_id)
-
+        attr_list = json.dumps(attr_list)
         images = json.dumps(dictOfImg)
         label = json.dumps(labeled_data)
         d3Dots_json = json.dumps(d3Dots)    
@@ -400,7 +402,8 @@ def index():
                                                      total_num = int(total_num/batch_number)+1, 
                                                      count_num = count,
                                                      dots = d3Dots_json, 
-                                                     label = label
+                                                     label = label,
+                                                     attr_list = attr_list
                                                      )
     
     else:

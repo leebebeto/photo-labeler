@@ -297,7 +297,6 @@ function onMouseOver(e, item) {
     tempTodo = item;
     
     if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
-
     $(".img_temp").append(todo_clone);
     setListener_clone(todo_clone);
   }
@@ -325,9 +324,33 @@ function cloneImage(item){
     return todo_clone;
 }
 
+function createAttributes(item){
+  // console.log(item.src);
+  var item_src = item.src.split("/").pop(-1);
+  console.log(item_src);
+  var temp = attr_list[String(item_src)];
+  console.log(temp);
+  for (var i =0; i< temp.length; i++){
+    var tag_node = document.createElement('div');
+    tag_node.setAttribute('class', 'attr-tag');
+    tag_node.innerText = temp[i];     
+    $('#attribute1').append(tag_node);
+  }
+  // console.log(temp);
+
+
+  //             <div class = "attr-tag">Mouth_Slightly_Open</div>
+  //             <div class = "attr-tag">beard</div>
+  //             <div class = "attr-tag">Mouth_Slightly_Open</div>
+  //             <div class = "attr-tag">Pointy_Nose</div>
+  //             <div class = "attr-tag">No_Smiling</div>
+}
+
 function onMouseOver_clone(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(130%)";
+    // console.log(item.src);
+    createAttributes(item);
   }
 }
 
@@ -342,6 +365,8 @@ function onMouseOut_clone(e, item) {
     item.style.filter = "brightness(100%)";
     item.remove();
     if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
+    $('#attribute1').children().remove();
+ 
   }
 }
 
@@ -769,7 +794,8 @@ function getSyncScriptParams() {
        total_num : scriptName.getAttribute("total_num"),
        count_num : scriptName.getAttribute("count_num"),
        dots : scriptName.getAttribute("dots"),
-       label : scriptName.getAttribute("label")
+       label : scriptName.getAttribute("label"),
+       attr_list : scriptName.getAttribute("attr_list")
    };
  }
 
@@ -779,7 +805,7 @@ var neutral_test_number = 2;
 var params = new getSyncScriptParams();
 var images = JSON.parse(params.images);
 var label = JSON.parse(params.label);
-console.log(label);
+var attr_list = JSON.parse(params.attr_list);
 var user_id = params.user_id;
 var batch_count=1;
 var total_num = JSON.parse(params.total_num);
@@ -866,6 +892,9 @@ function displayImages(queue){
       var img_node = document.createElement('img');
       img_node.setAttribute("class","todo-item");
       img_node.src = 'static/image/FFHQ_SAMPLE2/' + queue._arr[i-1];
+      // var temp = attr_list[String(queue._arr[i-1])];
+      // img_node.setAttribute("attr",temp);
+      console.log(img_node);
       var side = "";
 
       if(queue == blue_queue){
