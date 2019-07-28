@@ -110,7 +110,7 @@ d3Dots = [{"x":str(points[i][0]), "y":str(points[i][1]), "image_id":key_list[i]}
 
 
     
-def get_similar_images(image_name,feature_np,k):
+def get_similar_images(image_name,feature_np,start,number):
     query_feature = np.expand_dims(np.array(features[image_name]), 0)
 
     ret = cosine_similarity(query_feature, feature_np)
@@ -118,7 +118,7 @@ def get_similar_images(image_name,feature_np,k):
     
     print("ret shape",ret.shape, ret.shape[0])
 
-    sort_ret = np.argsort(ret)[::-1][1:k+1]
+    sort_ret = np.argsort(ret)[::-1][start:number+start]
     print("sort_ret", sort_ret)
     return sort_ret
 
@@ -262,6 +262,51 @@ def getLog():
         data_list['user_id'] = session.get('user_id')
         collection_log.insert(data_list)
         return jsonify("good")
+        
+@app.route('/getCurrent', methods = ['GET','POST'])
+def getCurrent():
+    blue_list = []
+    red_list = []
+    neutral_list = []
+    user_id = session.get("user_id")
+    if request.method == "POST":
+        json_received = request.form
+        data = json_received.to_dict(flat=False)
+        selectedImage = data['image_id'][0]
+
+        keyword_index = collection_current.find({"user_id": user_id})[0]['adjective']
+
+        db_image_list = [item['image_id'] for item in collection_image.find()]
+        prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : adjective[keyword_index]})]        
+        possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
+
+        possible_temp = copy.deepcopy(possible_images)
+        feature_temp = copy.deepcopy(feature_list)
+
+        feature_removed = removeFeature(feature_temp, prelabeled_image_list)
+
+        
+        appendImage(blue_list, possible_temp, feature_temp, get_similar_images(selectedImage,feature_removed,0,6))
+        feature_removed = np.array(feature_temp)
+
+        appendImage(red_list, possible_temp, feature_temp, get_similar_images(selectedImage,feature_removed,0,6))
+        feature_removed = np.array(feature_temp)
+
+        appendImage(neutral_list, possible_temp, feature_temp, get_similar_images(selectedImage,feature_removed,0,2))
+
+        current_todo = blue_list + neutral_list + red_list
+        for i in range(batch_number):
+            if len(current_todo) > i:
+                collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i, "adjective": keyword_index, "image_id" : current_todo[i]})
+            else:
+                collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i, "adjective": keyword_index, "image_id" : None})
+
+    return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list,
+                     "keyword": adjective[keyword_index],
+                    "image_count" : (int((total_num - len(possible_images))/batch_number)+1), 
+                    "index": keyword_index,
+                    "isNewset" : False})
+
 @app.route('/getData', methods = ['GET','POST'])
 def getData():
     user_id = session.get("user_id")
@@ -323,11 +368,11 @@ def getData():
 
             # 여기서 모델로 사진 결정
 
-            appendImage(blue_list, possible_temp, feature_temp, get_similar_images(imageStandard[0],feature_removed,6))
+            appendImage(blue_list, possible_temp, feature_temp, get_similar_images(imageStandard[0],feature_removed,1,6))
             feature_removed = np.array(feature_temp)
             # print(len(possible_temp))
             # print(feature_removed.shape)
-            appendImage(red_list, possible_temp, feature_temp, get_similar_images(imageStandard[1],feature_removed,6))
+            appendImage(red_list, possible_temp, feature_temp, get_similar_images(imageStandard[1],feature_removed,1,6))
             feature_removed = np.array(feature_temp)
             # print(feature_removed.shape)
             
