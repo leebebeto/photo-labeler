@@ -138,14 +138,12 @@ def removeTemp(index,possible_temp,Feature):
 def removeFeature(Feature, labeledList):
     global total_image_list
 
-    print(len(total_image_list))
     temp = []
     for item in labeledList:
         temp.append(total_image_list.index(item))
 
 
     for i in sorted(temp, reverse = True):
-        print(len(Feature))
         del Feature[i]
 
     return np.array(Feature)
@@ -181,13 +179,17 @@ def choosingImage(data,adjective):
     if posi_temp:
         posi_name = posi_temp[random.randint(0,len(posi_temp)-1)]['image_id']
     else:
-        posi_list = collection_labeled.find({"user_id":session.get("user_id"), "adjective":adjective, "label":1})
-        posi_name = posi_list[random.randint(0,posi_list.count()-1)]['image_id']
+        posi_list = list(collection_labeled.find({"user_id":session.get("user_id"), "adjective":adjective, "label":1}))
+        if not posi_list:
+            posi_list= list(collection_image.find())
+        posi_name = posi_list[random.randint(0,len(posi_list)-1)]['image_id']
     if nega_temp:
         nega_name = nega_temp[random.randint(0,len(nega_temp)-1)]['image_id']
     else:
-        nega_list = collection_labeled.find({"user_id":session.get("user_id"), "adjective":adjective, "label":-1})
-        nega_name = nega_list[random.randint(0,nega_list.count()-1)]['image_id']
+        nega_list = list(collection_labeled.find({"user_id":session.get("user_id"), "adjective":adjective, "label":-1}))
+        if not nega_list:
+            nega_list = list(collection_image.find())
+        nega_name = nega_list[random.randint(0,len(nega_list)-1)]['image_id']
     print(nega_name)
     return [posi_name, nega_name]
 
@@ -270,9 +272,15 @@ def getCurrent():
     neutral_list = []
     user_id = session.get("user_id")
     if request.method == "POST":
+        
+        
+        time = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+
         json_received = request.form
         data = json_received.to_dict(flat=False)
         selectedImage = data['image_id'][0]
+
+        collection_log.insert({"Time":time,"user_id": user_id, "What":"explore", "To":selectedImage})
 
         keyword_index = collection_current.find({"user_id": user_id})[0]['adjective']
 
