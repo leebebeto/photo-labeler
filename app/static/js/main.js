@@ -1032,10 +1032,14 @@ svg1.append('rect')
     .attr("stroke-width",1)
     .style("fill","#FFFFFF");
 
-                  
-                  
-                  출처: https://yehongj.tistory.com/19 [functional full-stack programming]
 
+    tsne_img = d3.select('body').append('div')
+    .attr("class","tsne_img")
+    .style("opacity",0);
+
+                
+
+                
 var legend = svg1.selectAll(".legend")
                  .data([{text:'Positive', color:'rgb(65,122,255,1)', border:"transparent"},
                        {text:'Negative', color:'rgb(242,108,108,1)', border:"transparent"},
@@ -1125,6 +1129,7 @@ scaleData(dots,xList,yList);
 
 // dots = [{x:127,y:127}, {x:133,y:133} , {x:155,y:155}, {x:156.5,y:156.5}];
 
+var tempStroke = null;
 
 dot = container.append("g")
     .attr("class", "dot")
@@ -1137,28 +1142,55 @@ dot = container.append("g")
     .attr("cy", function (d) { return d.y; })
     .style("fill","#AAAAAA")
     .style("stroke", "transparent")
-    .style("stroke-width", 2);
-    // .on("mouseover",function(d){
-    //   var xPosition = parseFloat(d3.select(this).attr('cx'))
-    //   var yPosition = parseFloat(d3.select(this).attr('cy'))
+    .style("stroke-width", 2)
+    .on("mouseover",function(d){
+      tempStroke = d3.select(this).style("stroke");
+      
+      d3.select(this).style("cursor","pointer");
+      d3.select(this).style("stroke","green");
+      
+      var xPosition = parseFloat(d3.select(this).attr('cx'));
+      var yPosition = parseFloat(d3.select(this).attr('cy'));
 
-    //   console.log(xPosition, yPosition);
+      tsne_img
+        .style('opacity',0.9)
+        .style('left',d3.event.pageX + "px")
+        .style('top',d3.event.pageY + "px");
 
-    //   d3.select('#tsne_img').style({
-    //     left : xPosition + 'px',
-    //     top : yPosition + 'px'
-    //   });
+      console.log(xPosition);
+      console.log(yPosition);
 
-    //   d3.select('#tsne_img')
-    //   .append('img')
-    //   .attr('src','static/image/FFHQ_SAMPLE2/'+d.image_id)
-    //   .attr('width',50+"px")
-    //   .attr('height',50+"px")
-    //   .attr('x',xPosition)
-    //   .attr('y',yPosition);
+      tsne_img
+      .append('img')
+      .transition().duration(500)
+      .attr('src','static/image/FFHQ_SAMPLE2/'+d.image_id)
+      .attr('width',100)
+      .attr('height',100);
+    })
+    .on("mouseout", function(d) {      
+      d3.select(this).style("stroke",tempStroke);
 
-    //   d3.select('#tsne_img').classed('hidden', false);
-    // });
+      tsne_img.select('img').remove();
+      tsne_img.style("opacity", 0);  
+
+    })
+    .on("click", function(d) {
+      console.log("clicked");
+      let jObject = new Object(); 
+      jObject.image_id = d.image_id;
+      $.ajax({
+        url : "/getCurrent",
+        type: 'POST',
+        data: jObject,
+        dataType:'json',
+        success: function(data) {
+          init(data);
+        },
+        error: function(x, e) {
+            alert("error");
+        }
+    });
+    });
 
 
 
@@ -1219,8 +1251,6 @@ function markLabel(data){
     
     circle
         .style("fill",color);
-        
-        console.log("done");
       }
 }
 

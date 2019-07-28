@@ -31,16 +31,19 @@ body{
   padding: 0;
 }
 
-#tsne_img {
-  position: absolute;
-  height: auto;
-  padding: 10px;
-  background-color: white;
+div.tsne_img {
+  position: absolute;           
+  text-align: center;          
+  pointer-events: none; 
 }
 
-#tsne_img.hidden{
-  display: none;
+div.block {
+  position: absolute;           
+  width: 60px;                  
+  height: 60px;                 
+  background: black;   
 }
+
 
 .history-red-blue{
   width: 579px;
