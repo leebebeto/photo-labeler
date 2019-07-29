@@ -736,8 +736,6 @@ function classifyImages(){
     Jarray.push(jObject);
   }
 
-  markLabel(Jarray);
-
   history_visualization(history_list_left, cnt_l);  
   history_visualization(history_list_right, cnt_r);
   history_visualization(history_list_middle, cnt_n);
@@ -793,7 +791,8 @@ function getSyncScriptParams() {
        test : scriptName.getAttribute("test"),
        total_num : scriptName.getAttribute("total_num"),
        count_num : scriptName.getAttribute("count_num"),
-       dots : scriptName.getAttribute("dots"),
+       cluster : scriptName.getAttribute("cluster"),
+       current_cluster : scriptName.getAttribute("current_cluster"),
        label : scriptName.getAttribute("label"),
        attr_list : scriptName.getAttribute("attr_list")
    };
@@ -804,6 +803,7 @@ var red_test_number = 6;
 var neutral_test_number = 2;
 var params = new getSyncScriptParams();
 var images = JSON.parse(params.images);
+var current_cluster = JSON.parse(params.current_cluster);
 var label = JSON.parse(params.label);
 var attr_list = JSON.parse(params.attr_list);
 var user_id = params.user_id;
@@ -894,7 +894,7 @@ function displayImages(queue){
       img_node.src = 'static/image/FFHQ_SAMPLE2/' + queue._arr[i-1];
       // var temp = attr_list[String(queue._arr[i-1])];
       // img_node.setAttribute("attr",temp);
-      console.log(img_node);
+      // console.log(img_node);
       var side = "";
 
       if(queue == blue_queue){
@@ -912,7 +912,7 @@ function displayImages(queue){
       var ID = '#'.concat(side,String(i));
       $(ID).append(img_node);
       img_node.onload = function(){
-        console.log(onLoadcount, totalDisplay);
+        // console.log(onLoadcount, totalDisplay);
         onLoadcount++;
       if(onLoadcount == totalDisplay){
         confirm_button.disabled = false;
@@ -948,7 +948,6 @@ function init(data){
   var neutral_list = null;
   var red_list = null;
 
-
   if(typeof data != "undefined"){
     
     blue_list = data['blue'];
@@ -957,13 +956,24 @@ function init(data){
     keyword = data['keyword'];
     count_num = data['image_count'];
     isNewset = data['isNewset'];
-    
-    console.log([data['blue']+data['neutral']+data['red']]);
+    score = data['score'];
+    current_cluster = data['current_cluster'];
 
+    var temp_dots = []
+    for(x in dots)
+    temp_dots.push(dots[x].image_id);
+
+    for(let i=0;i<score.length;i++){
+      score[i].score = parseFloat(dots[temp_dots.indexOf(score[i].image_id)].score) + score[i].score;
+      dots[temp_dots.indexOf(score[i].image_id)].score = score[i].score;
+    }   
+    console.log(score);
+    markLabel(score);
+    
     returnCurrent(beforeLabel);
-    let unionArr = data['blue'].concat(data['neutral'],data['red']);
-    console.log(unionArr);
-    currentLabeling(unionArr);
+    // let unionArr = data['blue'].concat(data['neutral'],data['red']);
+    // console.log(unionArr);
+    currentLabeling(current_cluster);
 
     if(isNewset){
       returnMark();
@@ -977,7 +987,6 @@ function init(data){
     red_list = getLists[2];
     
   }
-  console.log(keyword);
   $('.keyword').text(keyword);
   $('.count').text(count_num);
   $('.total').text(total_num);
@@ -1022,7 +1031,7 @@ init();
 
 
 /* tsne 그래프 */
-console.log("2");
+
 var margin = { top: 0, right: 30, bottom: 0, left: 0},
 width = 600 - margin.left - margin.right,
 height = 640 - margin.top - margin.bottom;
@@ -1094,15 +1103,7 @@ legend.append("text").attr("x", 30)
 
 // svg.append("text").attr("x", 220).attr("y", 130).text("variable A").style("font-size", "15px").attr("alignment-baseline","middle")
 // svg.append("text").attr("x", 220).attr("y", 160).text("variable B").style("font-size", "15px").attr("alignment-baseline","middle")
-          
-
-
-var drag = d3.drag()
-.subject(function (d) { return d; })
-.on("start", dragstarted)
-.on("drag", dragged)
-.on("end", dragended);
-
+        
 
 var rect = svg.append("rect")
 .attr("width", width)
@@ -1139,7 +1140,8 @@ container.append("g")
 xList = [];
 yList = [];
 
-dots = JSON.parse(params.dots)
+dots = JSON.parse(params.cluster);
+
 for(let i=0;i<dots.length;i++){
   dots[i].x = parseFloat(dots[i].x);
   xList.push(dots[i].x);
@@ -1155,6 +1157,11 @@ function scaleData(data,xList,yList){
 }
 
 scaleData(dots,xList,yList);
+
+var color_scale = d3.scaleLinear()
+                    .domain([-1,1])
+                    .range(['#F26C6C', "#417AFF"]);
+
 
 // dots = [{x:127,y:127}, {x:133,y:133} , {x:155,y:155}, {x:156.5,y:156.5}];
 
@@ -1185,9 +1192,6 @@ dot = container.append("g")
         .style('opacity',0.9)
         .style('left',d3.event.pageX + "px")
         .style('top',d3.event.pageY + "px");
-
-      console.log(xPosition);
-      console.log(yPosition);
 
       tsne_img
       .append('img')
@@ -1259,33 +1263,16 @@ function returnMark(){
 
 function markLabel(data){
   for(let i=0;i<data.length;i++){
-    var circle = container.select('[id="'.concat(data[i].image_id,'"]'));
-    console.log('[id="'.concat(data[i].image_id,'"]'));
-    let color = null;
-    if(data[i].label == 1){
-      // color = "blue";
-      color = "rgb(65,122,255,1)";
-      console.log("blue");
-    }
-    else if(data[i].label == -1){
-      // color = "red";
-      color = "rgb(242,108,108,1)";
-      console.log("red");
-    }
-    else{
-      // color = "black";
-      color = "rgb(242,112,242,1)";
-      console.log("neutral");
-    }
-    
-    circle
-        .style("fill",color);
+    if(data[i].labeled){
+      var circle = container.select('[id="'.concat(data[i].image_id,'"]'));
+      let color = color_scale(parseFloat(data[i]['score']));
+      circle
+        .style("fill",color);  
+    }  
       }
 }
 
 
-
-
-currentLabeling(Object.values(images));
-markLabel(label);
+currentLabeling(current_cluster);
+markLabel(dots);
 
