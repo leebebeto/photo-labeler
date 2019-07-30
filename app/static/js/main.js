@@ -1,159 +1,35 @@
-// d3.tsv("static/dots.tsv", dottype, function (error, dots) {
-// dot = container.append("g")
-//     .attr("class", "dot")
-//     .selectAll("circle")
-//     .data(dots)
-//     .enter().append("circle")
-//     .attr("r", 5)
-//     .attr("cx", function (d) { return d.x; })
-//     .attr("cy", function (d) { return d.y; })
-//     .call(drag);
-// });
-
-function dottype(d) {
-d.x = +d.x;
-d.y = +d.y;
-return d;
-}
-
-function dragstarted(d) {
-d3.event.sourceEvent.stopPropagation();
-d3.select(this).classed("dragging", true);
-}
-
-function dragged(d) {
-d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-}
-
-function dragended(d) {
-d3.select(this).classed("dragging", false);
-}
-
-/*
-console.log("good");
-// set the dimensions and margins of the graph
-var margin = {top: 70, right: 30, bottom: 30, left: 10},
-    width = 601 - margin.left - margin.right,
-    height = 700 - margin.top - margin.bottom;
-
-// append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
-  .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-
-//Read the data
-d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv", function(data) {
-
-  // Add X axis
-  var x = d3.scaleLinear()
-    .domain([4, 8])
-    .range([ 0, width ]);
-  svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
-
-  // Add Y axis
-  var y = d3.scaleLinear()
-    .domain([0, 9])
-    .range([ height, 0]);
-  svg.append("g")
-    .call(d3.axisLeft(y));
-    
-  // Add Y axis
-  var l3 = d3.scaleLinear()
-    .range([ 0, width ]);
-  svg.append("g")
-    .call(d3.axisTop(l3));
-
-  
-  // Add Y axis
-  var l4 = d3.scaleLinear()
-    .range([ height, 0]);
-  svg.append("g")
-    .call(d3.axisRight(l4));
-
-  // Color scale: give me a specie name, I return a color
-  var color = d3.scaleOrdinal()
-    .domain(["setosa", "versicolor", "virginica" ])
-    .range([ "#440154ff", "#21908dff", "#fde725ff"])
+/* 패러미터 */
+const NUMBER_OF_ADJECTIVE = 3;
+const BLUE_IMAGE_NUMBER = 6;
+const RED_IMAGE_NUMBER = 6;
+const NEUTRAL_IMAGE_NUMBER = 2;
+const IMAGE_PATH ="static/image/FFHQ_SAMPLE2/"
 
 
-  // Highlight the specie that is hovered
-  var highlight = function(d){
+/* Tool 기능 관련 변수들 */
 
-    selected_specie = d.Species
-
-    d3.selectAll(".dot")
-      .transition()
-      .duration(200)
-      .style("fill", "lightgrey")
-      .attr("r", 3)
-
-    d3.selectAll("." + selected_specie)
-      .transition()
-      .duration(200)
-      .style("fill", color(selected_specie))
-      .attr("r", 7)
-  }
-
-  // Highlight the specie that is hovered
-  var doNotHighlight = function(){
-    d3.selectAll(".dot")
-      .transition()
-      .duration(200)
-      .style("fill", "lightgrey")
-      .attr("r", 5 )
-  }
-
-  // Add dots
-  svg.append('g')
-    .selectAll("dot")
-    .data(data)
-    .enter()
-    .append("circle")
-      .attr("class", function (d) { return "dot " + d.Species } )
-      .attr("cx", function (d) { return x(d.Sepal_Length); } )
-      .attr("cy", function (d) { return y(d.Petal_Length); } )
-      .attr("r", 5)
-      .style("fill", function (d) { return color(d.Species) } )
-    .on("mouseover", highlight)
-    .on("mouseleave", doNotHighlight )
-
-})
-*/
-
-
-/*마우스 기능 */
 let itemsContainer = document.getElementById("items-container");
 let todosContainer = document.getElementById("todos-container");
 let temp = document.getElementsByClassName("img_temp")[0];
 let confirm_button = document.getElementsByClassName("button-confirm")[0];
 confirm_button.disabled = false;
-console.log("dis",confirm_button.disabled);
 
 let history_list_left = [];
 let history_list_right = [];
 let history_list_middle = [];
-let mouseOffset_list = [];
 let mouseOffset = {x:0, y:0};
 let isMouseDown = false;
+
 let currentTodo = null;
 let currentList = [];
 let tempTodo = null;
 let tempTodo_list = [];
+
 let ctrlPressed = false;
 let multiChoice = false;
-let outData = null;
-let onLoadcount = 0;
-let totalDisplay = 14;
+let totalDisplay = null;
 
-let currentLabel = [];
 let beforeLabel = [];
-let beforekeyword = [];
 
 let doElsCollide = function(el1, el2) { 
   if(el1 != null && el2 != null){
@@ -171,30 +47,16 @@ let doElsCollide = function(el1, el2) {
 
 };
 
-
-
-function onMouseDown(e, item) {
-  console.log("bug?");
-  e.preventDefault();  
-  isMouseDown = true;
-  currentTodo = item;
-  currentTodo.style.zIndex = "2";
-  mouseOffset = {x: item.offsetLeft - e.clientX, y: item.offsetTop - e.clientY};
-  item.style.filter = "brightness(50%)";
-}
-
 function onMouseDown_clone(e, item) {
   
   let isOver = tempTodo.className.includes("over");
   if(ctrlPressed){
     if(isOver){
-      console.log("ctrl down over");
       tempTodo.className = tempTodo.className.replace(" over","");
       item.className = tempTodo.className.replace(" over","");
 
     }
     else{
-      console.log("ctrl down");
       multiChoice = true;
       tempTodo.className +=' over';
       let multi_list = document.getElementsByClassName('over');   
@@ -234,9 +96,7 @@ function onMouseDown_clone(e, item) {
   }
 }
     else{
-  console.log("down");
   e.preventDefault();
-  console.log(multiChoice);
   isMouseDown = true;
   item.style.zIndex = "2";
   currentList = [];
@@ -250,32 +110,14 @@ function onMouseDown_clone(e, item) {
   }
 }
 
-function onMouseMove(e) {
-  e.preventDefault();
-  if(isMouseDown) {
-    // if($('.img_temp').children().length == 1){
-    //   currentTodo.style.left = e.clientX + mouseOffset.x + "px";
-    //   currentTodo.style.top = e.clientY + mouseOffset.y + "px";
-    // }
-  }  
-}
-
 function onMouseMove_clone(e) {
   e.preventDefault();
   if(isMouseDown) {
     for(let i=0;i<currentList.length;i++){
       currentList[i].style.left = e.clientX + mouseOffset_list[i].x + "px";
-      currentList[i].style.top = e.clientY + mouseOffset_list[i].y + "px";  
-    
+      currentList[i].style.top = e.clientY + mouseOffset_list[i].y + "px";      
+    }
   }
-  }
-}
-
-function onMouseUp(e, item) {
-  currentTodo.style.zIndex = "1";
-  isMouseDown = false;
-  item.style.filter = "brightness(100%)";
-  console.log('up1');
 }
 
 function onMouseUp_clone(e, item) {
@@ -325,7 +167,6 @@ function cloneImage(item){
 }
 
 function createAttributes(item){
-  // console.log(item.src);
   var item_src = item.src.split("/").pop(-1);
   console.log(item_src);
   var temp = attr_list[String(item_src)];
@@ -336,27 +177,12 @@ function createAttributes(item){
     tag_node.innerText = temp[i];     
     $('#attribute1').append(tag_node);
   }
-  // console.log(temp);
-
-
-  //             <div class = "attr-tag">Mouth_Slightly_Open</div>
-  //             <div class = "attr-tag">beard</div>
-  //             <div class = "attr-tag">Mouth_Slightly_Open</div>
-  //             <div class = "attr-tag">Pointy_Nose</div>
-  //             <div class = "attr-tag">No_Smiling</div>
 }
 
 function onMouseOver_clone(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(130%)";
-    // console.log(item.src);
     createAttributes(item);
-  }
-}
-
-function onMouseOut(e, item) {
-  if(!isMouseDown){
-    item.style.filter = "brightness(100%)";
   }
 }
 
@@ -366,39 +192,18 @@ function onMouseOut_clone(e, item) {
     item.remove();
     if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
     $('#attribute1').children().remove();
- 
   }
 }
 
 function setListeners(todoItems) {
   for(let i = 0; i < todoItems.length; i++) {
   let item = todoItems[i];
-  item.setAttribute('multi', 'false');
-  item.addEventListener("mousedown", (e) => { onMouseDown(e, item); });
   item.addEventListener("mouseover", (e) => { onMouseOver(e, item); });
-  item.addEventListener("mouseout", (e) => { onMouseOut(e, item); });
-  document.body.addEventListener("mousemove", (e) => {
-    onMouseMove(e);
-  });
-  item.addEventListener("mouseup", (e) => {
-    onMouseUp(e, item);
-  });
   }
 }
  
 function setListener(todoItem) {
-
-  todoItem.addEventListener("mousedown", (e) => { onMouseDown(e, todoItem); });
   todoItem.addEventListener("mouseover", (e) => { onMouseOver(e, todoItem); });
-  todoItem.addEventListener("mouseout", (e) => { onMouseOut(e, todoItem); });
-  document.body.addEventListener("mousemove", (e) => {
-    onMouseMove(e);
-  });
-  todoItem.addEventListener("mouseup", (e) => {
-    onMouseUp(e, todoItem);
-  });
-  console.log(0);
-
 }
   
 function setListener_clone(todoItem) {
@@ -412,13 +217,13 @@ function setListener_clone(todoItem) {
   todoItem.addEventListener("mouseup", (e) => {
     onMouseUp_clone(e, todoItem);
   }); 
-
-
 }
 
+/* 매 0.1초마다 실행하는 함수 */
 setInterval(() => {
   let areas = document.getElementsByClassName("red-blue");
   
+  /* 매 0.1초마다 emptyCheck 변수로 마지막 row가 비어있으면 image row를 삭제해 동적으로 container의 크기를 결정*/
   let check = 0;
   for(let i = 0; i < areas.length; i++) {
     emptyCheck = 0;
@@ -436,6 +241,9 @@ setInterval(() => {
     
 
     //check : 아이템이 속한 container의 수를 체크하는 변수
+    // doElsCollide 함수로 현재 드래그 중인 아이템과 container area가 위치상 겹쳐지게 되면 container area에 빨간 줄을 띄우고
+    // 그 상태에서 마우스 버튼이 올라가게 되면 그 container로 드래그 중인 이미지를 삽입
+
     areas[i].className = areas[i].className.replace("cont_on", "");
     
       if(doElsCollide(currentTodo, areas[i])) {
@@ -452,7 +260,8 @@ setInterval(() => {
   }  
     
 
-  //다른 곳 놨을 때, 원래 자리로 놓는 코드
+  //check ==0, 드래그 중인 이미지가 겹쳐지는 container가 없을 때, 마우스 버튼이 올라가게 되면
+  // 해당 이미지의 원래 container로 이미지를 삽입
     if(check == 0 && currentTodo != null) {
       if(!isMouseDown) {
         let i = currentTodo.getAttribute('id');
@@ -467,10 +276,12 @@ setInterval(() => {
   
 }, 100);
 
+//container에 todo이미지를 삽입하는 함수
 function snapTodo(todo, container,index) {
   area_list = ["left","center","right"];
   id_list = ["L","N","R"];
   
+//log data를 저장하기 위한 jObject 선언
   let jObject = new Object();
   jObject.Time = js_yyyy_mm_dd_hh_mm_ss ();
   jObject.adjective = keyword;
@@ -486,7 +297,8 @@ function snapTodo(todo, container,index) {
   }
   jObject.To = area_list[index]
   logParam = JSON.stringify(jObject)
-  
+
+//ajax 통신을 통해 이미지가 어디서 어디로 옮겨졌는지 데이터베이스에 로그데이터 저장
   jQuery.ajaxSettings.traditional = true;
   $.ajax({
     url : "/getLog",
@@ -494,12 +306,13 @@ function snapTodo(todo, container,index) {
     data: {"jsonData" : logParam},
     dataType:'json',
     success: function(data) {
-
     },
     error: function(x, e) {
         alert("error");
     }
 });
+
+  // 드래그 중인 이미지가 image row에 여유 공간이 있으면 해당 image row에 image를 append
   let fullCount = 0;
   let lastID = "";
   let row_count = container.getElementsByClassName('image_row')[0].childElementCount;
@@ -511,7 +324,6 @@ function snapTodo(todo, container,index) {
         lastID = item.id;
       }
       if(!item.hasChildNodes()){
-        let box = item.getBoundingClientRect();
         todo_clone = todo.cloneNode();
         todo.remove();
         item.append(todo_clone);
@@ -526,6 +338,7 @@ function snapTodo(todo, container,index) {
       }
     }
 
+    // 만약 full count가 전체 row의 개수와 같다(모든 image row가 image로 가득 찼다면) 새로운 image row를 만들어 div 확장
     if(fullCount == temp_list.length){
       console.log(row_count);
       new_row = document.createElement('div');
@@ -545,16 +358,10 @@ function snapTodo(todo, container,index) {
           currentTodo = null;
           fullCount = 0; 
         }
-        
         new_row.append(new_slot); 
-        
       }
       new_row.className = "image_row";
       container.append(new_row);
-      
-
-
-      console.log("full");
     }
   }
 /*------------------------------------------------------------------*/
@@ -564,31 +371,37 @@ document.addEventListener("keydown", checkKeyPressed, false);
 document.addEventListener("keyup", checkKeyUp, false);
 document.addEventListener("mousedown", checkMousedown, false);
 
+//multiChoice 상태에서 외부 지점을 클릭하면 multiChoice된 image 모두 해제
 function checkMousedown(e) {
   if(multiChoice && !ctrlPressed){
     let multi_list = document.getElementsByClassName('over');
     let multi_length = multi_list.length;
     console.log(multi_length);
     for(let i=0;i<multi_length;i++){
-      multi_list[0].className = multi_list[0].className.replace(" over","");
-      
+      multi_list[0].className = multi_list[0].className.replace(" over",""); 
     }
   }
 }
 
+//키보드 관련 컨트롤 함수
+
+//control 키 눌림
 function checkKeyPressed(e) {
   if (e.keyCode == "17" || e.keyCode == "91") {
       ctrlPressed = true;
       console.log(ctrlPressed);
   }
 }
+
 function checkKeyUp(e) {
 
+//control 키 떼짐
   if (e.keyCode == "17"|| e.keyCode == "91") {
     ctrlPressed = false;
   }
+
+//multi_choice된 상태에서 'a' key가 떼지면 모두 왼쪽으로 이동
   else if (e.keyCode == "65"){
-  console.log("pressed");
   if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
   let multi_list = document.querySelectorAll('.over');
   let areas = document.getElementsByClassName("red-blue");
@@ -598,8 +411,9 @@ function checkKeyUp(e) {
       snapTodo(multi_list.item(i),areas[0],0);
     }
   }
+
+//multi_choice된 상태에서 's' key가 떼지면 모두 가운데쪽으로 이동
   else if (e.keyCode == "83"){
-    console.log("pressed");
     if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
   let multi_list = document.querySelectorAll('.over');  
   let areas = document.getElementsByClassName("red-blue");
@@ -608,8 +422,9 @@ function checkKeyUp(e) {
       snapTodo(multi_list.item(i),areas[1],1);
     }
   }
+  
+//multi_choice된 상태에서 'd' key가 떼지면 모두 오른쪽으로 이동
   else if (e.keyCode == "68"){
-  console.log("pressed");
   if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
   let multi_list = document.querySelectorAll('.over');
   let areas = document.getElementsByClassName("red-blue");
@@ -618,6 +433,8 @@ function checkKeyUp(e) {
       snapTodo(multi_list.item(i),areas[2],2);
     }
   }
+
+//'space bar' key가 떼지면 confirm
   else if (e.keyCode == "32"){
     if(confirm_button.disabled == false){
       confirm_click();
@@ -625,8 +442,6 @@ function checkKeyUp(e) {
     }
   }
 }
-
-
 
 /*------------------------------------------------------------------*/
 
@@ -651,17 +466,55 @@ class Queue {
   }
 }
 
+//백엔드의 변수를 가져오는 함수
+function getSyncScriptParams() {
+  var scripts = document.getElementsByTagName('script');
+  var lastScript = scripts[scripts.length-1];
+  var scriptName = lastScript;
+  return {
+      keyword : scriptName.getAttribute('keyword'),
+      images : scriptName.getAttribute('images'),
+      user_id : scriptName.getAttribute('user_id'),
+      test : scriptName.getAttribute("test"),
+      total_num : scriptName.getAttribute("total_num"),
+      count_num : scriptName.getAttribute("count_num"),
+      cluster : scriptName.getAttribute("cluster"),
+      current_cluster : scriptName.getAttribute("current_cluster"),
+      label : scriptName.getAttribute("label"),
+      attr_list : scriptName.getAttribute("attr_list")
+  };
+}
+
+//화면 image 로딩 완료하면 confirm 버튼 활성화
+$(document).ready(function() {
+  var imagesLoaded = 0;
+  var totalImages = $('img').length;
+
+  $('img').each(function(idx, img) {
+    $('<img>').on('load', imageLoaded).attr('src', $(img).attr('src'));
+  });
+  function imageLoaded() {
+    imagesLoaded++;
+    if (imagesLoaded == totalImages) {
+      confirm_button.disabled = false;
+    }
+  }
+});
+
+//confirm 누름
 function confirm_click(){
   timeEnd = Date.now();
     confirm_button.disabled = true;
     classifyImages();
 }
 
+//logout 누름
 function logout_click(){
-  window.location = "http://130.211.240.166:5000//logout";
-  // window.location.href = "http://127.0.0.1:5000/logout";
+  // window.location = "http://130.211.240.166:5000//logout";
+  window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
+//
 function history_visualization(list, newcnt){
   var divNode = document.createElement("div");
   divNode.style.width = "136px";
@@ -695,11 +548,12 @@ function history_visualization(list, newcnt){
   }
 }
 
-// 백엔드 ajax 통신 
 function classifyImages(){
   let cnt_l = 0;
   let cnt_n = 0;
   let cnt_r = 0;
+
+  // 배치된 image를 jarray형식으로 백엔드(/getData)로 전송
   let todo_list = document.getElementsByClassName("row")[0].getElementsByClassName("todo-item");
   let Jarray = new Array();
   let timeStamp= timeEnd - timeStart;
@@ -748,12 +602,14 @@ function classifyImages(){
     data: {"jsonData" : outParam},
     dataType:'json',
     success: function(data) {
-      if(data['index'] < 3){
+      //NUMBER_OF_ADJECTIVE만큼 실험을 안 했다면 화면 초기화(init)
+      //NUMBER_OF_ADJECTIVE만큼 실험을 했다면 로그아웃 (이 때, user db의 isDone 필드가 True로 바뀌며 재접속 불가능)
+      if(data['index'] < NUMBER_OF_ADJECTIVE){
         init(data);
       }
       else{
-        // window.location = "http://127.0.0.1:5000/logIn";
-        window.location = "http://130.211.240.166:5000/logIn";
+        window.location = "http://127.0.0.1:5000/logIn";
+        // window.location = "http://130.211.240.166:5000/logIn";
       }
     },
     error: function(x, e) {
@@ -764,52 +620,18 @@ function classifyImages(){
 
 };
 
-$(document).ready(function() {
-  var imagesLoaded = 0;
-  var totalImages = $('img').length;
-
-  $('img').each(function(idx, img) {
-    $('<img>').on('load', imageLoaded).attr('src', $(img).attr('src'));
-  });
-  function imageLoaded() {
-    imagesLoaded++;
-    if (imagesLoaded == totalImages) {
-      confirm_button.disabled = false;
-      console.log("good");
-    }
-  }
-});
-
-function getSyncScriptParams() {
-   var scripts = document.getElementsByTagName('script');
-   var lastScript = scripts[scripts.length-1];
-   var scriptName = lastScript;
-   return {
-       keyword : scriptName.getAttribute('keyword'),
-       images : scriptName.getAttribute('images'),
-       user_id : scriptName.getAttribute('user_id'),
-       test : scriptName.getAttribute("test"),
-       total_num : scriptName.getAttribute("total_num"),
-       count_num : scriptName.getAttribute("count_num"),
-       cluster : scriptName.getAttribute("cluster"),
-       current_cluster : scriptName.getAttribute("current_cluster"),
-       label : scriptName.getAttribute("label"),
-       attr_list : scriptName.getAttribute("attr_list")
-   };
- }
-
-var blue_test_number = 6;
-var red_test_number = 6;
-var neutral_test_number = 2;
+/* 백엔드 parameter 받는 변수 선언 */
 var params = new getSyncScriptParams();
+
 var images = JSON.parse(params.images);
 var current_cluster = JSON.parse(params.current_cluster);
 var label = JSON.parse(params.label);
 var attr_list = JSON.parse(params.attr_list);
-var user_id = params.user_id;
-var batch_count=1;
 var total_num = JSON.parse(params.total_num);
 var count_num = JSON.parse(params.count_num);
+var keyword =params.keyword;
+var user_id = params.user_id;
+
 var timeEnd = 0;
 var timeStart = 0;
 
@@ -817,60 +639,44 @@ var timeStart = 0;
 var total_queue = new Queue();
 total_queue._arr = Object.values(images);
 total_queue.cnt = total_queue._arr.length;
-const neutral_queue = new Queue();
-const blue_queue = new Queue();
-const red_queue = new Queue();
-var keyword =params.keyword;
+let neutral_queue = [];
+let blue_queue = [];
+let red_queue = [];
 
 
 function selectList(total_queue,b,n,r)
   {
-    blue_temp = []
-    neutral_temp = []
-    red_temp = []
-    
     for(var i=0;i<b;i++){
-      blue_temp.push(total_queue.dequeue());
+      blue_queue.push(total_queue.dequeue());
     }
     for(var i=0;i<n;i++){
-      neutral_temp.push(total_queue.dequeue());
+      neutral_queue.push(total_queue.dequeue());
     }
     for(var i=0;i<r;i++){
-      red_temp.push(total_queue.dequeue());
-    }
-    
-    return [blue_temp, neutral_temp, red_temp]
+      red_queue.push(total_queue.dequeue());
+    } 
   }
-/* selectList에서 연산 결과값 반환*/
-
-  
-function clearQueue(queue){
-  queue._arr = [];
-  queue.cnt = 0;
-}
-
 
 function clearAll(){
-  clearQueue(blue_queue);
-  clearQueue(neutral_queue);
-  clearQueue(red_queue);
+  blue_queue = [];
+  red_queue = [];
+  neutral_queue = [];
   
   $('.todo-item').remove();
 }
 
-function reloadQueue(queue, nextComponents){
-  for(var i=0; i < nextComponents.length; i++){
-    queue.enqueue(nextComponents[i]);
-  }
-}
+// function reloadQueue(queue, nextComponents){
+//   for(var i=0; i < nextComponents.length; i++){
+//     queue.enqueue(nextComponents[i]);
+//   }
+// }
 
-function enQueues(blue_queue, blue_list, neutral_queue, neutral_list, red_queue,red_list) {
-  /* 나중에 백엔드 구축 나눠야함*/
-  reloadQueue(blue_queue, blue_list);
-  reloadQueue(red_queue, red_list);
-  reloadQueue(neutral_queue, neutral_list);
-  return blue_queue, neutral_queue, red_queue;
-}
+// function enQueues(blue_queue, blue_list, neutral_queue, neutral_list, red_queue,red_list) {
+//   reloadQueue(blue_queue, blue_list);
+//   reloadQueue(red_queue, red_list);
+//   reloadQueue(neutral_queue, neutral_list);
+//   return blue_queue, neutral_queue, red_queue;
+// }
 
 function js_yyyy_mm_dd_hh_mm_ss () {
   now = new Date();
@@ -883,18 +689,15 @@ function js_yyyy_mm_dd_hh_mm_ss () {
   return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
 }
 
-
+/* array에 있는 image를 보여주는 함수 */
 function displayImages(queue){
   onLoadcount = 0;
-  let displaycount = queue.cnt;
-  for(var i=1;i<=queue.cnt;i++){
-    if(queue._arr[i-1] != null){
+  for(var i=1;i<=queue.length;i++){
+    if(queue[i-1] != null){
       var img_node = document.createElement('img');
       img_node.setAttribute("class","todo-item");
-      img_node.src = 'static/image/FFHQ_SAMPLE2/' + queue._arr[i-1];
-      // var temp = attr_list[String(queue._arr[i-1])];
-      // img_node.setAttribute("attr",temp);
-      // console.log(img_node);
+      img_node.src = IMAGE_PATH + queue[i-1];
+
       var side = "";
 
       if(queue == blue_queue){
@@ -912,47 +715,23 @@ function displayImages(queue){
       var ID = '#'.concat(side,String(i));
       $(ID).append(img_node);
       img_node.onload = function(){
-        // console.log(onLoadcount, totalDisplay);
         onLoadcount++;
       if(onLoadcount == totalDisplay){
-        confirm_button.disabled = false;
+        confirm_button.disabled = false;  
+        timeStart = Date.now();
       }};
     }
   }
 }
 
-
-function init(){
-
-  clearAll();
-
-
-  timeStart = Date.now();
-  var getLists = new selectList(total_queue,blue_test_number,neutral_test_number,red_test_number);
-  var blue_list = getLists[0];
-  var neutral_list = getLists[1];
-  var red_list = getLists[2];
-  enQueues(blue_queue,blue_list,neutral_queue,neutral_list, red_queue,red_list);
-  displayImages(blue_queue);
-  displayImages(red_queue);
-  displayImages(neutral_queue);
-  todoItems = document.getElementsByClassName("todo-item");
-  setListeners(todoItems);
-}
-
 function init(data){
   clearAll();
-  timeStart = Date.now();
-  var getLists = null;
-  var blue_list = null;
-  var neutral_list = null;
-  var red_list = null;
 
   if(typeof data != "undefined"){
     
-    blue_list = data['blue'];
-    neutral_list = data['neutral'];  
-    red_list = data['red'];
+    blue_queue = data['blue'];
+    neutral_queue = data['neutral'];  
+    red_queue = data['red'];
     keyword = data['keyword'];
     count_num = data['image_count'];
     isNewset = data['isNewset'];
@@ -967,12 +746,9 @@ function init(data){
       score[i].score = parseFloat(dots[temp_dots.indexOf(score[i].image_id)].score) + score[i].score;
       dots[temp_dots.indexOf(score[i].image_id)].score = score[i].score;
     }   
-    console.log(score);
+
     markLabel(score);
-    
     returnCurrent(beforeLabel);
-    // let unionArr = data['blue'].concat(data['neutral'],data['red']);
-    // console.log(unionArr);
     currentLabeling(current_cluster);
 
     if(isNewset){
@@ -980,20 +756,15 @@ function init(data){
     }
   }
   else{
-  
-    getLists = new selectList(total_queue,blue_test_number,neutral_test_number,red_test_number);
-    blue_list = getLists[0];
-    neutral_list = getLists[1];
-    red_list = getLists[2];
-    
+    selectList(total_queue,BLUE_IMAGE_NUMBER,NEUTRAL_IMAGE_NUMBER,RED_IMAGE_NUMBER);
   }
+
   $('.keyword').text(keyword);
   $('.count').text(count_num);
   $('.total').text(total_num);
 
 
-  enQueues(blue_queue,blue_list,neutral_queue,neutral_list, red_queue,red_list);
-  totalDisplay = blue_queue.cnt + neutral_queue.cnt + red_queue.cnt;
+  totalDisplay = blue_queue.length + neutral_queue.length + red_queue.length;
 
   displayImages(blue_queue);
   displayImages(red_queue);
@@ -1002,47 +773,11 @@ function init(data){
   setListeners(todoItems);
 }
 
-var pageLoader = (function()
-{ var ov = document.createElement("div");
-  ov.className = "page-loader";
-  ov.innerHTML = '<div class="loader"><p></p></div>';
-  document.getElementsByTagName('body')[0].appendChild(ov);
-  
-  var info = document.createElement("div");
-  info.className = "info";
-  ov.appendChild(info);
-
-  return {  
-    show: function() 
-    { ov.style.display = 'block';
-      setTimeout (function(){ ov.className = "page-loader"; }, 500);
-    },
-    hide: function() 
-    { ov.className = "page-loader hidden";
-      setTimeout (function(){ ov.style.display = 'none'; }, 500);
-    },
-    info: function(i)
-    { info.innerHTML = i || "";
-    }
-  };
-})();
-
-init();
-
-
-/* tsne 그래프 */
+/*--------------------------- tsne 그래프 ----------------------------------------*/
 
 var margin = { top: 0, right: 30, bottom: 0, left: 0},
 width = 600 - margin.left - margin.right,
 height = 640 - margin.top - margin.bottom;
-
-// var svg = d3.select("#tsne_div").append("svg")
-// .attr("width", 570 + "px")
-// .attr("height", height + margin.top + margin.bottom + "px")
-// .append("g")    
-// .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
-// .call(zoom);
-
 
 var svg = d3.select("#tsne_div")
           .append("svg")
@@ -1060,10 +795,10 @@ var svg = d3.select("#tsne_div")
           .append("g");
 
 var svg1 = d3.select('svg')
+
 svg1.append('rect')
     .attr('x',1)
     .attr('y',height-100)
-    // .attr('r',10)
     .attr("width",130)
     .attr("height",100)
     .attr("stroke","#151515")
@@ -1072,12 +807,11 @@ svg1.append('rect')
 
 
     tsne_img = d3.select('body').append('div')
-    .attr("class","tsne_img")
-    .style("opacity",0);
+    .attr("class","tsne_img");
 
                 
 
-                
+// legend 정의
 var legend = svg1.selectAll(".legend")
                  .data([{text:'Positive', color:'rgb(65,122,255,1)', border:"transparent"},
                        {text:'Negative', color:'rgb(242,108,108,1)', border:"transparent"},
@@ -1101,17 +835,11 @@ legend.append("text").attr("x", 30)
                      .attr("font-size",13)
                      .text(function(d) { return d.text});
 
-// svg.append("text").attr("x", 220).attr("y", 130).text("variable A").style("font-size", "15px").attr("alignment-baseline","middle")
-// svg.append("text").attr("x", 220).attr("y", 160).text("variable B").style("font-size", "15px").attr("alignment-baseline","middle")
-        
-
 var rect = svg.append("rect")
 .attr("width", width)
 .attr("height", height)
 .style("fill", "none")
 .style("pointer-events", "all");
-
-
 
 var container = svg.append("g");
 
@@ -1135,8 +863,6 @@ container.append("g")
 .attr("x2", width)
 .attr("y2", function (d) { return d; });
 
-
-
 xList = [];
 yList = [];
 
@@ -1155,8 +881,6 @@ function scaleData(data,xList,yList){
     data[i].y = ( data[i].y - d3.min(yList) ) / (d3.max(yList) - d3.min(yList)) * 600 + d3.quantile(yList,0.15);
   }
 }
-
-scaleData(dots,xList,yList);
 
 var color_scale = d3.scaleLinear()
                     .domain([-1,1])
@@ -1185,9 +909,6 @@ dot = container.append("g")
       d3.select(this).style("cursor","pointer");
       d3.select(this).style("stroke","green");
       
-      var xPosition = parseFloat(d3.select(this).attr('cx'));
-      var yPosition = parseFloat(d3.select(this).attr('cy'));
-
       tsne_img
         .style('opacity',0.9)
         .style('left',d3.event.pageX + "px")
@@ -1258,9 +979,6 @@ function returnMark(){
         .style("fill","#AAAAAA");
 }
 
-
-
-
 function markLabel(data){
   for(let i=0;i<data.length;i++){
     if(data[i].labeled){
@@ -1269,10 +987,13 @@ function markLabel(data){
       circle
         .style("fill",color);  
     }  
-      }
+  }
 }
 
 
+/* main */
+
+init();
 currentLabeling(current_cluster);
 markLabel(dots);
 
