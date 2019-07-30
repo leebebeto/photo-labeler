@@ -15,84 +15,44 @@
     <link href="https://fonts.googleapis.com/css?family=Merriweather|Roboto+Condensed:300,400&display=swap" rel="stylesheet">
     <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='image/ku.png') }}" />
   </head>
-  <body style="width: 150%">
+  <body style="width: 150%; overflow: auto">
 
     <div class ="img_temp" style = "position : absolute; z-index: 10"></div>
 
     <div class="row" style = "width: auto;">
      
         <!-- TSNE SELECTOR -->
-        <div id="tsne_div" class= "col-sm-3" style= "width: 600px; height: 647px">
-              <!-- <div class =adjective style="height:60px">
-                SELECTOR
-              </div>
-              <div class="tsne">
-                <div style="position:absolute; left:32%; top:35%; font-size:40px">T-SNE VIEW</div>
-              </div>
-              <div style="width: 100%; height:24px; text-align: center"> </div>
-              <div style="height: 100px; text-align: left">
-                <svg xmlns="http://www.w3.org/2000/svg" width="364" height="50" viewBox="0 0 364 50">
-                <text id="Labeled_adjective_1_" data-name="Labeled (adjective 1)" transform="translate(28 19)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">Labeled</tspan></text>
-                <text id="Unlabeled" transform="translate(250 19)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">Unlabeled</tspan></text>
-                <text id="Currently_shown" data-name="Currently shown" transform="translate(250 45)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">Currently shown</tspan></text>
-                <text id="Labeled_adjective_2_" data-name="Labeled (adjective 2)" transform="translate(28 45)" fill="#707070" font-size="18" font-family="RobotoCondensed-Light, Roboto" font-weight="300"><tspan x="0" y="0">Labeled</tspan></text>
-                <rect id="사각형_69" data-name="사각형 69" width="18" height="22" transform="translate(0 2)" fill="#417aff"/>
-                <g id="사각형_72" data-name="사각형 72" transform="translate(222 2)" fill="none" stroke="#707070" stroke-width="1">
-                  <rect width="18" height="22" stroke="none"/>
-                  <rect x="0.5" y="0.5" width="17" height="21" fill="none"/>
-                </g>
-                <g id="사각형_73" data-name="사각형 73" transform="translate(222 28)" fill="none" stroke="#8af52d" stroke-width="1">
-                  <rect width="18" height="22" stroke="none"/>
-                  <rect x="0.5" y="0.5" width="17" height="21" fill="none"/>
-                </g>
-                <rect id="사각형_70" data-name="사각형 70" width="18" height="22" transform="translate(0 28)" fill="#f26c6c"/>
-                </svg>
-              </div>    -->
-        </div>
-      
-      <div class="col-sm-12" style="width: auto; height: auto;">
-        <div style="width: 100%; height:auto; min-height:511px; display: inline-block;">
-
-          <div class=description id = "description0" style ="font-size:20px">
-              Review the images below in a way that the images are placed in the right category.
+    <div id="tsne_div" class= "col-sm-3" style= "width: 350px; height: 1017px">
+    </div>
+    <div class="col-sm-12" style="width: auto; height: auto;">
+      <div style="width: 100%; height:auto; min-height:511px; display: inline-block;">
+       <!-- ADJ1 -->
+        <!-- 286 / 53 -->
+        <div class=left1 style="width: 579px; height: auto; min-height: 503px; margin:10px">
+          <div class =adjective id ="adjective1" style= "text-align: left">
+            <p>more likely <span class = "keyword"></span></p>
           </div>
- 
-          <!-- ADJ1 -->
-          <!-- 286 / 53 -->
-          <div class=left1 style="width: 579px; height: auto; min-height: 503px; margin:10px">
-            <div class =adjective id ="adjective1" style= "text-align: left">
-              <p>more likely <span class = "keyword"></span></p>
+          <div class = "red-blue blue" id="style-3" style=" background-color: rgba(65,122,255,0.2)">
+            <div class = "image_row" style = "height: 146.7px;">
+              <div class="left" id = "L1"></div>
+              <div class="left" id = "L4"></div>
+              <div class="left" id = "L7"></div>
+              <div class="left" id = "L10"></div>
             </div>
-            <div class = "red-blue blue" id="style-3" style=" background-color: rgba(65,122,255,0.2)">
-              <div class = "image_row" style = "height: 146.7px;">
-                <div class="left" id = "L1"></div>
-                <div class="left" id = "L4"></div>
-                <div class="left" id = "L7"></div>
-                <div class="left" id = "L10"></div>
-              </div>
-              <div class = "image_row" style = "height: 146.7px;">
-                <div class="left" id = "L2"></div>
-                <div class="left" id = "L5"></div>
-                <div class="left" id = "L8"></div>
-                <div class="left" id = "L11"></div>
-              </div>
-              <div class = "image_row" style = "height: 146.7px;">
-                <div class="left" id = "L3"></div>
-                <div class="left" id = "L6"></div>
-                <div class="left" id = "L9"></div>
-                <div class="left" id = "L12"></div>
-              </div>
+            <div class = "image_row" style = "height: 146.7px;">
+              <div class="left" id = "L2"></div>
+              <div class="left" id = "L5"></div>
+              <div class="left" id = "L8"></div>
+              <div class="left" id = "L11"></div>
             </div>
-            <!-- <div class =adjective id ="adjective1" style= "text-align: left">
-              <p>YOUR HISTORY</p>
+            <div class = "image_row" style = "height: 146.7px;">
+              <div class="left" id = "L3"></div>
+              <div class="left" id = "L6"></div>
+              <div class="left" id = "L9"></div>
+              <div class="left" id = "L12"></div>
             </div>
-            <div class =history-red-blue id="history-blue" style= "text-align: left; background-color: rgba(65,122,255,0.05)">
-              <div class = "history_image_left" style = "height: 146.7px; overflow: auto">
-              </div>
-            </div> -->
           </div>
-
-
+          </div>
           <!-- NEUTRAL -->
           <!-- 152 / 53 -->
           <div class = left1 style="width: 310px; height: auto; margin:10px">
@@ -113,12 +73,7 @@
                   <div class="center" id = "N6"></div>
                 </div>
             </div>
-              <!-- <div class =adjective id ="adjective1" style= "text-align: left"> </div>
-            <div class =history-red-blue id="history-neutral" style= "width: 310px; text-align: left">
-              <div class = "history_image_middle" style = "height: 146.7px; overflow: auto"> </div>
-            </div> -->
           </div>
-
           <!-- ADJ2 -->
           <!-- 286 / 53 -->
           <div class= left1 style="margin:10px">
@@ -145,26 +100,23 @@
                   <div class="right" id = "R1"></div>
                 </div>
             </div>
-              <!-- <div class =adjective id ="adjective1" style= "text-align: left"> </div>
-              <div class =history-red-blue id="history-red" style= "text-align: left; background-color: rgba(242,108,108,0.05)">
-                  <div class = "history_image_right" style = "height: 146.7px; overflow: auto"> </div>
-              </div> -->
           </div>
         
         </div>
-      
-
         <!-- Description -->
-        <div class=description id = "description1" style="text-align: right"><span class="count"></span>/<span class="total"></span></div>
-        <!-- <div class=description id = "description2">
-            Images in the left box will be labeled as "<span class="keyword"></span>", in the middle box as "NEUTRAL", and in the right box as "not <span class="keyword"></span>".
-        </div> -->
-        <div class=description id = "description2"style ="font-size:20px">
-            HOW TO MOVE: you can drag and drop, or select images use directional keys (Left or Right)
-          <!-- You can change the category of an image by hovering over. When you ready, confirm your label" -->
-        </div>
-
-
+      <div class=description id = "description0" style="text-align: left"><span class="count"></span>/<span class="total"></span></div>
+      <div class=description id = "description1">
+        Please review the images above in a way that the images are placed in the right category.
+      </div>
+      <div class=description id = "description2">
+          Images in the left box will be labeled as "<span class="keyword"></span>", in the middle box as "NEUTRAL", and in the right box as "not <span class="keyword"></span>".
+      </div>
+      <h4><b>
+      <div class=description id = "description3">
+      <p>You can choose multiple images by clicking with 'control' button pressed.</p>
+      You can also move the images using your keyboard. A: <span class="keyword"></span>, D: not <span class="keyword"></span>, S: Neutral, SPACE BAR: Confirm
+      <h4></b>
+      </div>
         <!-- Buttons -->
         <div style="width: 100%; text-align: center; margin: 10px">
             <button class= "button-confirm" onclick="confirm_click();">
@@ -180,61 +132,32 @@
         <!-- Your History -->
         <div class="row" style = "width: auto;">
               
-            <div class=left1 style="width: 579px; height: auto; min-height: 503px; margin:10px">
+            <div class=left1 style="width: 579px; height: 503px; margin:10px">
               <div class =adjective style= "text-align: left">
                 <p>YOUR HISTORY</p>
               </div>
               <div class =history-red-blue id="history-blue" style= "text-align: left; background-color: rgba(65,122,255,0.05)">
-                <div class = "history_image_left" style = "height: 146.7px; overflow: auto"> </div>
+                <div class = "history_image_left" style = "height: 294px; overflow: auto"> </div>
               </div>
             </div> 
 
             <div class = left1 style="width: 310px; height: auto; margin:10px">
               <div class =adjective style= "text-align: center"> </div>
               <div class =history-red-blue id="history-neutral" style= "width: 310px; text-align: center">
-                <div class = "history_image_middle" style = "height: 146.7px; overflow: auto"> </div>
+                <div class = "history_image_middle" style = "height: 294px; overflow: auto"> </div>
               </div>
             </div>
 
             <div class= left1 style="margin:10px">
               <div class =adjective style= "text-align: right"> </div>
               <div class =history-red-blue id="history-red" style= "text-align: right; background-color: rgba(242,108,108,0.05)">
-                  <div class = "history_image_right" style = "height: 146.7px; overflow: auto"> </div>
+                  <div class = "history_image_right" style = "height: 294px; overflow: auto"> </div>
               </div>
           </div>
       </div>
       </div>
-      <div class=description id = "description0" style="text-align: left"><span class="count"></span>/<span class="total"></span></div>
-      <div class=description id = "description1">
-        Please review the images above in a way that the images are placed in the right category.
-      </div>
-      <div class=description id = "description2">
-          Images in the left box will be labeled as "<span class="keyword"></span>", in the middle box as "NEUTRAL", and in the right box as "not <span class="keyword"></span>".
-      </div>
-      <div class=description id = "description3">
-      You can change the category of an image by hovering over. When you ready, confirm your label"
-      </div>
-      <div style="width: 100%; text-align: center; margin: 10px">
-          <button class= "button-confirm" onclick="confirm_click();">
-              CONFIRM
-               </button>
-          <!-- <button class= "button-logout" onclick= "location.href='http://127.0.0.1:5000/logout';"> -->
-          <button class= "button-logout" onclick= "location.href='http://130.211.240.166:5000/logout';">
-            LOGOUT
-              </button>
         </div>
-            
-        </div>
-        
-    <!-- Attribute tag -->
-    <!-- <div style = "width: 600px; height: 800px; float : right"></div>
-      <div id = "attribute_box" style="width: 600px; height: 50px">         
-        <div class =adjective>
-            <p id ="attribute1" style="float: left">Attribute of Current Image <br> </p>
-        </div>
-      </div> -->
-
-      
+              
     <script type = "text/javascript" src = "{{url_for('static', filename='js/main.js') }}" keyword = "{{keyword}}" 
                                                                                           images = "{{images}}" 
                                                                                           user_id = "{{user_id}}" 

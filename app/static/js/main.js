@@ -510,8 +510,8 @@ function confirm_click(){
 
 //logout 누름
 function logout_click(){
-  // window.location = "http://130.211.240.166:5000//logout";
-  window.location.href = "http://127.0.0.1:5000/logout";
+  window.location = "http://130.211.240.166:5000//logout";
+  // window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
 //
@@ -608,8 +608,8 @@ function classifyImages(){
         init(data);
       }
       else{
-        window.location = "http://127.0.0.1:5000/logIn";
-        // window.location = "http://130.211.240.166:5000/logIn";
+        // window.location = "http://127.0.0.1:5000/logIn";
+        window.location = "http://130.211.240.166:5000/logIn";
       }
     },
     error: function(x, e) {
@@ -776,13 +776,16 @@ function init(data){
 /*--------------------------- tsne 그래프 ----------------------------------------*/
 
 var margin = { top: 0, right: 30, bottom: 0, left: 0},
-width = 600 - margin.left - margin.right,
-height = 640 - margin.top - margin.bottom;
-
+// width = 600 - margin.left - margin.right,
+// height = 640 - margin.top - margin.bottom;
+width = 350;
+height = 1017;
 var svg = d3.select("#tsne_div")
           .append("svg")
-          .attr("width", 570 + "px")
-          .attr("height",  height + margin.top + margin.bottom + "px")
+          // .attr("width", 570 + "px")
+          // .attr("height",  height + margin.top + margin.bottom + "px")
+          .attr("width", 330 + "px")
+          .attr("height",  1017 + "px")
           .style("border","none") 
           .style("background-color", "none")
           .call(d3.zoom()
@@ -790,7 +793,8 @@ var svg = d3.select("#tsne_div")
           svg.attr("transform", d3.event.transform)
                  })
                  .scaleExtent([1,4])
-                 .translateExtent([[0,0],[570,640]])
+                 // .translateExtent([[0,0],[570,640]])
+                 .translateExtent([[0,0],[350,1017]])
             )
           .append("g");
 
@@ -877,8 +881,11 @@ for(let i=0;i<dots.length;i++){
 
 function scaleData(data,xList,yList){
   for(let i =0;i<data.length;i++){
-    data[i].x = ( data[i].x - d3.min(xList) ) / (d3.max(xList) - d3.min(xList)) * 500 + d3.quantile(xList,0.15);
-    data[i].y = ( data[i].y - d3.min(yList) ) / (d3.max(yList) - d3.min(yList)) * 600 + d3.quantile(yList,0.15);
+    // data[i].x = ( data[i].x - d3.min(xList) ) / (d3.max(xList) - d3.min(xList)) * 500 d3.quantile(xList,0.15);
+    // data[i].y = ( data[i].y - d3.min(yList) ) / (d3.max(yList) - d3.min(yList)) * 600 + d3.quantile(yList,0.15);
+
+    data[i].x = ( data[i].x - d3.min(xList) ) / (d3.max(xList) - d3.min(xList)) * 300 + d3.quantile(xList,0.15);
+    data[i].y = ( data[i].y - d3.min(yList) ) / (d3.max(yList) - d3.min(yList)) * 1000 + d3.quantile(yList,0.15);
   }
 }
 scaleData(dots,xList,yList);
