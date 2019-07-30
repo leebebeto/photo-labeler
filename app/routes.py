@@ -1,6 +1,4 @@
-from flask import render_template, request, url_for, jsonify, redirect, flash, session
-import flask_login
-from flask_login import LoginManager
+from flask import render_template, request, url_for, jsonify, redirect, session
 from flask_pymongo import PyMongo
 from app import app
 import pymongo
@@ -10,90 +8,36 @@ import pickle
 import time
 import random
 import copy
-from operator import itemgetter
-
 
 from datetime import datetime
 import csv
 
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.manifold import TSNE
-import pandas as pd 
-import numpy as np
-import os
-
-
-# from facenet_pytorch import InceptionResnetV1
-# from PIL import Image
-# from torchvision import transforms
-# from tqdm import tqdm
 from sklearn.metrics.pairwise import cosine_similarity
 
+import pandas as pd 
+import numpy as np
+
+
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-result = []
-batch_number = 14
 
+#-------------------------------Parameter---------------------------------------------------
+CONST_BLUE_NUMBER = 10
+CONST_RED_NUMBER = 10
+CONST_NEUTRAL_NUMBER= 5
+CONST_BATCH_NUMBER = CONST_BLUE_NUMBER + CONST_NEUTRAL_NUMBER + CONST_RED_NUMBER
 
-client = pymongo.MongoClient('mongodb://localhost:27017/')
-# client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
-db = client.davian
+CONST_ADJECTIVE = ["ATTRACTIVE", "CONFIDENTIAL","GOODNESS", "padding"]
+CONST_IMAGE_PATH = 'static/image/FFHQ_SAMPLE2'
+CONST_PRETRAINED_FEATURE = "ffhq600_facenet_vggface2.pkl"
+CONST_CLUSTER_NUMBER = 200
+CONST_CLUSTER_AFFINITY = "euclidean"
+CONST_CLUSTER_LINKAGE = "ward"
 
+#--------------------------------------------------------------------------------------------
 
-
-collection_labeled = db.labeled
-
-collist = db.list_collection_names()
-if "images" in collist:
-    print("check")
-    db.images.drop()
-if "user" in collist:
-    db.user.drop()
-
-collection_user = db.user
-collection_user.insert([{'_id':'asdf','pwd':'asdf','isDone':False}, {'_id':'user101','pwd':'davian101','isDone':False}])
-collection_user.insert(
-    [{'_id':'temp1','pwd':'temp1','isDone':False}, 
-    {'_id':'temp2','pwd':'temp2','isDone':False},
-    {'_id':'temp3','pwd':'temp3','isDone':False},
-    {'_id':'temp4','pwd':'temp4','isDone':False},
-    {'_id':'temp5','pwd':'temp5','isDone':False}])
-id_list = [items['_id'] for items in collection_user.find()]
-pwd_list = [items['pwd'] for items in collection_user.find()]
-
-
-
-collection_image = db.images
-collection_log = db.log
-collection_current = db.Current_toLabel
-collection_before = db.Before_toLabel
-
-
-adjective = ["ATTRACTIVE", "CONFIDENTIAL","GOODNESS","OUT-GOING", "KIND","ADVENTUROUS","STUBBORN"]
-
-total_image_list = sorted(os.listdir(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2')))
-total_num = len(total_image_list)
-
-
-
-collection_image.insert([{"image_id" : total_image_list[i], "image_index" : i} for i in range(len(total_image_list))])
-
-
-
-# resnet = InceptionResnetV1(pretrained='vggface2').eval()
-# print(resnet)
-
-# train = {}
-# for each_img_name in tqdm(total_image_list):
-#     img = Image.open(os.path.join(os.path.join(APP_ROOT,'static/image/FFHQ_SAMPLE2'), each_img_name))
-#     img = transforms.ToTensor()(img)
-#     img_embedding = resnet(img.unsqueeze(0))
-#     # print("img_embedding : {}".format(img_embedding.shape))
-#     train[each_img_name] = img_embedding.squeeze(0).data.numpy()
-
-image_name_list = []
-feature_list = []
-key_list = []
-
+#--------------------------------Function----------------------------------------------------
 def read_pck(filename):
     objects = []
     with (open(filename, "rb")) as openfile:
@@ -104,49 +48,12 @@ def read_pck(filename):
                 break
         return objects
 
-features = read_pck("ffhq600_facenet_vggface2.pkl")[0]
-
-
-for each_key in sorted(features):
-    feature_list.append(features[each_key])
-    key_list.append(each_key)
-feature_np = np.array(feature_list)
-
-cluster = AgglomerativeClustering(n_clusters=200, affinity='euclidean', linkage='ward').fit_predict(feature_list)
-
-
-cluster = np.array(cluster)
-points = TSNE(n_components = 2, random_state=2019).fit_transform(feature_list)
-
-
 def centeroidnp(arr):
     length = arr.shape[0]
     sum_x = np.sum(arr[:, 0])
     sum_y = np.sum(arr[:, 1])
     return sum_x/length, sum_y/length
-    
-centeroid = []
-cluster_data = []
 
-for i in range(0,200):
-    arr = np.array([points[item] for item in np.where(cluster==i)])
-    idx = np.array([item for item in np.where(cluster==i)])
-    center = centeroidnp(arr[0])
-    dist = [np.linalg.norm(arr[0][j] - center) for j in range(len(arr[0]))]   
-    # print(np.argmax(dist))
-    # print(index[0])
-    # print(arr[0].shape)
-    cluster_data.append({"image_id":key_list[idx[0][np.argmax(dist)]], 
-                         "image_list": [str(item) for item in list(idx[0])],
-                         "image_id_list": [total_image_list[item] for item in list(idx[0])],
-                         "x":str(center[0]), 
-                         "y":str(center[1]), 
-                         "count":str(len(list(idx[0])))
-                         })
-
-
-
-d3Dots = [{"x":str(points[i][0]), "y":str(points[i][1]), "image_id":key_list[i]} for i in range(len(points))]
 
 def get_similar_images(image_name,feature_np,start,number):
     query_feature = np.expand_dims(np.array(features[image_name]), 0)
@@ -210,40 +117,80 @@ def choosingImage(data,adjective):
     if posi_temp:
         posi_name = posi_temp[random.randint(0,len(posi_temp)-1)]['image_id']
     else:
-        posi_list = list(collection_labeled.find({"user_id":session.get("user_id"), "adjective":adjective, "label":1}))
+        posi_list = list(collection_labeled.find({"user_id":session.get("user_id"), "adjective":CONST_ADJECTIVE, "label":1}))
         if not posi_list:
             posi_list= list(collection_image.find())
         posi_name = posi_list[random.randint(0,len(posi_list)-1)]['image_id']
     if nega_temp:
         nega_name = nega_temp[random.randint(0,len(nega_temp)-1)]['image_id']
     else:
-        nega_list = list(collection_labeled.find({"user_id":session.get("user_id"), "adjective":adjective, "label":-1}))
+        nega_list = list(collection_labeled.find({"user_id":session.get("user_id"), "adjective":CONST_ADJECTIVE, "label":-1}))
         if not nega_list:
             nega_list = list(collection_image.find())
         nega_name = nega_list[random.randint(0,len(nega_list)-1)]['image_id']
     print(nega_name)
     return [posi_name, nega_name]
 
+#-----------------------------------main----------------------------------------------------
+client = pymongo.MongoClient('mongodb://localhost:27017/')
+# client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
+db = client.davian
 
-# a = get_similar_images("00340.png",5)
-# appended_features(blue_list,a)
+collection_labeled = db.labeled
 
-# b = get_similar_images("00340.png",5)
+collist = db.list_collection_names()
+if "images" in collist:
+    print("check")
+    db.images.drop()
+if "user" in collist:
+    db.user.drop()
 
-# for items in collection_user.find():
-#     print(items['pwd'])
+collection_user = db.user
+collection_user.insert([{'_id':'asdf','pwd':'asdf','isDone':False}, {'_id':'user101','pwd':'davian101','isDone':False}])
+collection_image = db.images
+collection_log = db.log
+collection_current = db.Current_toLabel
+collection_before = db.Before_toLabel
 
-# USERS = [
-#     {"_id": "user101", "pwd": "davian101"},
-#     {"_id": "user102", "pwd": "davian102"},
-#     {"_id": "user103", "pwd": "davian103"},
-#     {"_id": "user104", "pwd": "davian104"},
-#     {"_id": "user105", "pwd": "davian105"}
-# ]
+total_image_list = sorted(os.listdir(os.path.join(APP_ROOT,CONST_IMAGE_PATH)))
+total_num = len(total_image_list)
 
+collection_image.insert([{"image_id" : total_image_list[i], "image_index" : i} for i in range(len(total_image_list))])
 
+feature_list = []
+key_list = []
+
+features = read_pck(CONST_PRETRAINED_FEATURE)[0]
+
+for each_key in sorted(features):
+    feature_list.append(features[each_key])
+    key_list.append(each_key)
+feature_np = np.array(feature_list)
+
+cluster = AgglomerativeClustering(n_clusters=CONST_CLUSTER_NUMBER, affinity=CONST_CLUSTER_AFFINITY, linkage=CONST_CLUSTER_LINKAGE).fit_predict(feature_list)
+cluster = np.array(cluster)
+points = TSNE(n_components = 2, random_state=2019).fit_transform(feature_list)
+    
+centeroid = []
+cluster_data = []
+
+for i in range(0,CONST_CLUSTER_NUMBER):
+    arr = np.array([points[item] for item in np.where(cluster==i)])
+    idx = np.array([item for item in np.where(cluster==i)])
+    center = centeroidnp(arr[0])
+    dist = [np.linalg.norm(arr[0][j] - center) for j in range(len(arr[0]))]   
+    cluster_data.append({"image_id":key_list[idx[0][np.argmax(dist)]], 
+                         "image_list": [str(item) for item in list(idx[0])],
+                         "image_id_list": [total_image_list[item] for item in list(idx[0])],
+                         "x":str(center[0]), 
+                         "y":str(center[1]), 
+                         "count":str(len(list(idx[0])))
+                         })
 
 client.close()
+#---------------------------------------------------------------------------------------------------
+
+#-------------------------------FRONT END - BACK END TRANSITION-------------------------------------
 
 @app.route('/')
 @app.route('/logIn', methods = ['GET','POST'])
@@ -251,15 +198,12 @@ def logIn():
     if request.method == 'GET':
         session.pop("logged_in",None)
         session.pop("user_id",None)
-        print(session.get('logged_in'), session.get("user_id"))
         return render_template('logIn.html')
     else:
         user_id = request.form['user']
         password = request.form['password']
-        print(user_id, password)
         try:
             result = [item for item in collection_user.find({'_id': str(user_id), "pwd":str(password), "isDone":False})]
-            print(result)
             if result:    
                 
                 collection_user.update({'_id':user_id}, {'$set':{'isLogOn' : True}})
@@ -269,13 +213,10 @@ def logIn():
                 time = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
                 collection_log.insert({"Time":time,"user_id": user_id, "What":"Login"})
 
-                print(session.get('logged_in'))
                 return redirect(url_for('index'))
             else:
-                print("fail")
                 return render_template('loginFail.html')
         except:
-            print("except")
             return render_template('loginFail.html')
 
 @app.route('/logout', methods = ['GET','POST'])
@@ -304,8 +245,6 @@ def getCurrent():
 
     user_id = session.get("user_id")
     if request.method == "POST":
-        
-        
         time = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
         json_received = request.form
@@ -317,7 +256,7 @@ def getCurrent():
         keyword_index = collection_current.find({"user_id": user_id})[0]['adjective']
 
         db_image_list = [item['image_id'] for item in collection_image.find()]
-        prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : adjective[keyword_index]})]        
+        prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : CONST_ADJECTIVE[keyword_index]})]        
         possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
 
         possible_temp = copy.deepcopy(possible_images)
@@ -326,13 +265,13 @@ def getCurrent():
         feature_removed = removeFeature(feature_temp, prelabeled_image_list)
 
         
-        appendImage(blue_list, possible_temp, feature_temp, get_similar_images(selectedImage,feature_removed,0,6))
+        appendImage(blue_list, possible_temp, feature_temp, get_similar_images(selectedImage,feature_removed,0,CONST_BLUE_NUMBER))
         feature_removed = np.array(feature_temp)
 
-        appendImage(red_list, possible_temp, feature_temp, get_similar_images(selectedImage,feature_removed,0,6))
+        appendImage(red_list, possible_temp, feature_temp, get_similar_images(selectedImage,feature_removed,0,CONST_RED_NUMBER))
         feature_removed = np.array(feature_temp)
 
-        appendImage(neutral_list, possible_temp, feature_temp, get_similar_images(selectedImage,feature_removed,0,2))
+        appendImage(neutral_list, possible_temp, feature_temp, get_similar_images(selectedImage,feature_removed,0,CONST_NEUTRAL_NUMBER))
 
         current_todo = blue_list + neutral_list + red_list
 
@@ -351,15 +290,15 @@ def getCurrent():
         #             outCluster[i]['labeled'] = True
         
 
-        for i in range(batch_number):
+        for i in range(CONST_BATCH_NUMBER):
             if len(current_todo) > i:
                 collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i, "adjective": keyword_index, "image_id" : current_todo[i]})
             else:
                 collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i, "adjective": keyword_index, "image_id" : None})
 
     return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list,
-                     "keyword": adjective[keyword_index],
-                    "image_count" : (int((total_num - len(possible_images))/batch_number)+1), 
+                     "keyword": CONST_ADJECTIVE[keyword_index],
+                    "image_count" : (int((total_num - len(possible_images))/CONST_BATCH_NUMBER)+1), 
                     "index": keyword_index,
                     "isNewset" : False,
                     "score" : [],
@@ -388,28 +327,28 @@ def getData():
 
         keyword_index = collection_current.find({"user_id": user_id})[0]['adjective']
         print('main keyword' , keyword_index)
-        imageStandard = choosingImage(data_list, adjective[keyword_index])
+        imageStandard = choosingImage(data_list, CONST_ADJECTIVE[keyword_index])
 
         db_image_list = [item['image_id'] for item in collection_image.find()]
-        prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : adjective[keyword_index]})]        
+        prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : CONST_ADJECTIVE[keyword_index]})]        
         possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
 
         if not possible_images:
             isNewset = True
             keyword_index = keyword_index + 1
             db_image_list = [item['image_id'] for item in collection_image.find()]
-            prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : adjective[keyword_index]})]        
+            prelabeled_image_list = [item['image_id'] for item in collection_labeled.find({"user_id" : user_id, "adjective" : CONST_ADJECTIVE[keyword_index]})]        
             possible_images = sorted(list(set(db_image_list) - set(prelabeled_image_list)))
             
             possible_temp = copy.deepcopy(possible_images)
             print(len(possible_temp))
             feature_temp = copy.deepcopy(feature_list)
                         
-            appendImage(blue_list, possible_temp, feature_temp, [0,1,2,3,4,5])
+            appendImage(blue_list, possible_temp, feature_temp, [i for i in range(0,CONST_BLUE_NUMBER)])
             feature_removed = np.array(feature_temp)
-            appendImage(neutral_list, possible_temp, feature_temp, [0,1])
+            appendImage(neutral_list, possible_temp, feature_temp, [i for i in range(0,CONST_NEUTRAL_NUMBER)])
             feature_removed = np.array(feature_temp)
-            appendImage(red_list, possible_temp, feature_temp, [0,1,2,3,4,5])
+            appendImage(red_list, possible_temp, feature_temp, [i for i in range(0,CONST_RED_NUMBER)])
         else:
             isNewset = False
             print("possible_images", len(possible_images))
@@ -426,23 +365,23 @@ def getData():
 
             # 여기서 모델로 사진 결정
 
-            appendImage(blue_list, possible_temp, feature_temp, get_similar_images(imageStandard[0],feature_removed,1,6))
+            appendImage(blue_list, possible_temp, feature_temp, get_similar_images(imageStandard[0],feature_removed,1,CONST_BLUE_NUMBER))
             feature_removed = np.array(feature_temp)
             # print(len(possible_temp))
             # print(feature_removed.shape)
-            appendImage(red_list, possible_temp, feature_temp, get_similar_images(imageStandard[1],feature_removed,1,6))
+            appendImage(red_list, possible_temp, feature_temp, get_similar_images(imageStandard[1],feature_removed,1,CONST_RED_NUMBER))
             feature_removed = np.array(feature_temp)
             # print(feature_removed.shape)
             
-            if len(possible_temp) >= 2:
-                appendImage(neutral_list, possible_temp, feature_temp, random.sample(range(len(possible_temp)),2))
+            if len(possible_temp) >= CONST_NEUTRAL_NUMBER:
+                appendImage(neutral_list, possible_temp, feature_temp, random.sample(range(len(possible_temp)),CONST_NEUTRAL_NUMBER))
             else:
                 appendImage(neutral_list, possible_temp, feature_temp, random.sample(range(len(possible_temp)),len(possible_temp)))
 
             # print(len(possible_temp))
             # print(feature_removed.shape)
         current_todo = blue_list + neutral_list + red_list
-        for i in range(batch_number):
+        for i in range(0,CONST_BATCH_NUMBER):
             if len(current_todo) > i:
                 collection_current.update({"user_id":user_id , "index":i}, {"user_id":user_id , "index":i, "adjective": keyword_index, "image_id" : current_todo[i]})
             else:
@@ -472,8 +411,8 @@ def getData():
 
         print(outScore)
         return jsonify({"blue":blue_list, "neutral":neutral_list, "red": red_list,
-                     "keyword": adjective[keyword_index],
-                    "image_count" : (int((total_num - len(possible_images))/batch_number)+1), 
+                     "keyword": CONST_ADJECTIVE[keyword_index],
+                    "image_count" : (int((total_num - len(possible_images))/CONST_BATCH_NUMBER)+1), 
                     "index": keyword_index,
                     "isNewset" : isNewset,
                     "score" : outScore,
@@ -483,9 +422,6 @@ def getData():
 
 @app.route('/index', methods = ['GET', 'POST'])
 def index():
-    # global blue_list
-    # global red_list
-    # global neutral_list
 
     blue_list = []
     red_list = []
@@ -501,14 +437,14 @@ def index():
         todo_images = [item for item in collection_current.find({"user_id" : user_id})]
         if todo_images:
             print("old")
-            dictOfImg = { i : todo_images[i]['image_id'] for i in range(0,14)}
+            dictOfImg = { i : todo_images[i]['image_id'] for i in range(0,CONST_BATCH_NUMBER)}
             keyword_index = todo_images[-1]["adjective"]
             print("keyword",keyword_index)
         else:
             print("new")
-            dictOfImg = { i : db_image_list[i] for i in range(0,14)}
+            dictOfImg = { i : db_image_list[i] for i in range(0,CONST_BATCH_NUMBER)}
             keyword_index = 0
-            collection_current.insert([{'user_id' : user_id, "adjective" : 0, 'index' : i, 'image_id' : db_image_list[i]} for i in range(0,14)])
+            collection_current.insert([{'user_id' : user_id, "adjective" : 0, 'index' : i, 'image_id' : db_image_list[i]} for i in range(0,CONST_BATCH_NUMBER)])
 
         outCluster = copy.deepcopy(cluster_data)
 
@@ -516,12 +452,12 @@ def index():
         current_cluster_index = [total_image_list.index(dictOfImg[item]) for item in dictOfImg.keys()]
         current_cluster = extractCluster(current_cluster_index,"image_id")
 
-        labeled_data = list(collection_labeled.find({'user_id':user_id,'adjective':adjective[keyword_index]},{'_id':0,'user_id':0,'adjective':0,'time':0}))
+        labeled_data = list(collection_labeled.find({'user_id':user_id,'adjective':CONST_ADJECTIVE[keyword_index]},{'_id':0,'user_id':0,'adjective':0,'time':0}))
         labeled = [total_image_list.index(item['image_id']) for item in labeled_data]
         labeled_cluster = extractCluster(labeled,'index')
         print(labeled_cluster)
 
-        for i in range(0,200):
+        for i in range(0,CONST_CLUSTER_NUMBER):
             sum_score = 0
             for j in range(len(labeled_cluster)):
                 if labeled_cluster[j] == i:
@@ -530,9 +466,7 @@ def index():
             outCluster[i]['score'] = str(sum_score/len(outCluster[i]['image_list']))
         print(outCluster[0])
 
-        
-
-        count = int(len(labeled_data)/batch_number)+1
+        count = int(len(labeled_data)/CONST_BATCH_NUMBER)+1
         attr_list = []
         with open('attr_list.pickle', 'rb') as f:
             attr_list = pickle.load(f)
@@ -542,13 +476,11 @@ def index():
         attr_list = json.dumps(attr_list)
         images = json.dumps(dictOfImg)
         label = json.dumps(labeled_data)
-        d3Dots_json = json.dumps(d3Dots)
         current_cluster_json = json.dumps(current_cluster)
         cluster_json = json.dumps(outCluster)  
-        print(adjective[keyword_index])
-        return render_template('photolabeling.html', keyword = adjective[keyword_index],
+        return render_template('photolabeling.html', keyword = CONST_ADJECTIVE[keyword_index],
                                                      images = images, user_id = user_id, 
-                                                     total_num = int(total_num/batch_number)+1, 
+                                                     total_num = int(total_num/CONST_BATCH_NUMBER)+1, 
                                                      count_num = count,
                                                      label = label,
                                                      attr_list = attr_list,

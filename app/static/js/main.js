@@ -1,8 +1,8 @@
 /* 패러미터 */
 const NUMBER_OF_ADJECTIVE = 3;
-const BLUE_IMAGE_NUMBER = 6;
-const RED_IMAGE_NUMBER = 6;
-const NEUTRAL_IMAGE_NUMBER = 2;
+const BLUE_IMAGE_NUMBER = 10;
+const RED_IMAGE_NUMBER = 10;
+const NEUTRAL_IMAGE_NUMBER = 5;
 const IMAGE_PATH ="static/image/FFHQ_SAMPLE2/"
 
 
@@ -881,7 +881,7 @@ function scaleData(data,xList,yList){
     data[i].y = ( data[i].y - d3.min(yList) ) / (d3.max(yList) - d3.min(yList)) * 600 + d3.quantile(yList,0.15);
   }
 }
-
+scaleData(dots,xList,yList);
 var color_scale = d3.scaleLinear()
                     .domain([-1,1])
                     .range(['#F26C6C', "#417AFF"]);
