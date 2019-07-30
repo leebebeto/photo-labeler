@@ -1,8 +1,8 @@
 /* 패러미터 */
 const NUMBER_OF_ADJECTIVE = 3;
-const BLUE_IMAGE_NUMBER = 10;
-const RED_IMAGE_NUMBER = 10;
-const NEUTRAL_IMAGE_NUMBER = 5;
+const BLUE_IMAGE_NUMBER = 6;
+const RED_IMAGE_NUMBER = 6;
+const NEUTRAL_IMAGE_NUMBER = 2;
 const IMAGE_PATH ="static/image/FFHQ_SAMPLE2/"
 
 
@@ -510,8 +510,8 @@ function confirm_click(){
 
 //logout 누름
 function logout_click(){
-  // window.location = "http://130.211.240.166:5000//logout";
-  window.location.href = "http://127.0.0.1:5000/logout";
+  window.location = "http://130.211.240.166:5000//logout";
+  // window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
 //
@@ -608,8 +608,8 @@ function classifyImages(){
         init(data);
       }
       else{
-        window.location = "http://127.0.0.1:5000/logIn";
-        // window.location = "http://130.211.240.166:5000/logIn";
+        // window.location = "http://127.0.0.1:5000/logIn";
+        window.location = "http://130.211.240.166:5000/logIn";
       }
     },
     error: function(x, e) {
