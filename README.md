@@ -29,3 +29,6 @@ How to play with our system
 <p> 
 - If you want to change any parameters including but not limited to 'keyword, images, user_id, numbers, labels, attributes, clusters, and etc', you need to revise codes in routes.py, photolabeling.html, main.js where parameters are handled
 </p>
+<p> 
+- You must extract the feature vectors of images at first trial using the codes at route.py line 45 ~ 66, 
+Please use image feature vectors as a saved pickle file. </p>
