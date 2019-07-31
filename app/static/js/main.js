@@ -115,7 +115,7 @@ function onMouseMove_clone(e) {
   if(isMouseDown) {
     for(let i=0;i<currentList.length;i++){
       currentList[i].style.left = e.clientX + mouseOffset_list[i].x + "px";
-      currentList[i].style.top = e.clientY + mouseOffset_list[i].y + "px";      
+      currentList[i].style.top = e.clientY + mouseOffset_list[i].y + "px";
     }
   }
 }
@@ -148,18 +148,23 @@ function cloneImage(item){
   todo_clone = item.cloneNode();
     todo_clone.position = "absolute";
     todo_clone.className = todo_clone.className.replace(" over","");
-    todo_clone.style.left = item.parentNode.offsetLeft - 15 + "px";
-    
+    todo_clone.style.left = document.getElementsByClassName('col-sm-12')[0].offsetLeft
+                          + item.parentNode.offsetLeft - 15 + "px";
+    // console.log(item.parentNode, item.parentNode.left);
+    // console.log(item.parentNode.parentNode,item.parentNode.parentNode.left);
+
+    var top = document.body.scrollTop;
+
     if(item.parentNode.className == "left"){
-      todo_clone.style.top = item.parentNode.offsetTop - $('.blue').scrollTop() + "px";
+      todo_clone.style.top = item.parentNode.offsetTop - top + "px";
       todo_clone.setAttribute('id', 0);
     }
     else if(item.parentNode.className == "right"){
-      todo_clone.style.top = item.parentNode.offsetTop - $('.red').scrollTop() + "px";
+      todo_clone.style.top = item.parentNode.offsetTop - top + "px";
       todo_clone.setAttribute('id', 2);
     }
     else{
-      todo_clone.style.top = item.parentNode.offsetTop - $('.neutral').scrollTop() + "px";
+      todo_clone.style.top = item.parentNode.offsetTop - top + "px";
       todo_clone.setAttribute('id', 1);
     }
     todo_clone.setAttribute('slot', item.parentNode.id);
@@ -186,6 +191,13 @@ function onMouseOver_clone(e, item) {
   }
 }
 
+
+function onMouseOut(e, item) {
+  if(!isMouseDown){
+    item.style.filter = "brightness(100%)";
+  }
+}
+
 function onMouseOut_clone(e, item) {
   if(!isMouseDown){
     item.style.filter = "brightness(100%)";
@@ -198,11 +210,13 @@ function onMouseOut_clone(e, item) {
 function setListeners(todoItems) {
   for(let i = 0; i < todoItems.length; i++) {
   let item = todoItems[i];
+  item.addEventListener("mouseout", (e) => {onMouseOut(e, item); });
   item.addEventListener("mouseover", (e) => { onMouseOver(e, item); });
   }
 }
  
 function setListener(todoItem) {
+  todoItem.addEventListener("mouseout", (e) => {onMouseOut(e, todoItem); });
   todoItem.addEventListener("mouseover", (e) => { onMouseOver(e, todoItem); });
 }
   
@@ -510,8 +524,8 @@ function confirm_click(){
 
 //logout 누름
 function logout_click(){
-  window.location = "http://130.211.240.166:5000//logout";
-  // window.location.href = "http://127.0.0.1:5000/logout";
+  // window.location = "http://130.211.240.166:5000//logout";
+  window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
 //
@@ -608,8 +622,8 @@ function classifyImages(){
         init(data);
       }
       else{
-        // window.location = "http://127.0.0.1:5000/logIn";
-        window.location = "http://130.211.240.166:5000/logIn";
+        window.location = "http://127.0.0.1:5000/logIn";
+        // window.location = "http://130.211.240.166:5000/logIn";
       }
     },
     error: function(x, e) {
