@@ -11,6 +11,10 @@ How to install
 <p>
 2.Install all the required packages through 'pip install -r requirements.txt' in the directory
 </p>
+<p>
+3.Build mongodb environtment (If you want to use the system as cloud, you should use mongdb atlas)
+</p>
+
 <h2>
 How to play with our system
 </h2>
@@ -31,4 +35,5 @@ How to play with our system
 </p>
 <p> 
 - You must extract the feature vectors of images at first trial using the codes at route.py line 45 ~ 66, 
-Please use image feature vectors from a saved pickle file. </p>
+Please use image feature vectors from a saved pickle file. 
+</p>
