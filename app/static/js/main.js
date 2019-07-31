@@ -427,7 +427,7 @@ function checkKeyUp(e) {
   }
 
 //multi_choice된 상태에서 's' key가 떼지면 모두 가운데쪽으로 이동
-  else if (e.keyCode == "83"){
+  else if (e.keyCode == "87"){
     if ( temp.hasChildNodes() ) { temp.removeChild( temp.firstChild ); }
   let multi_list = document.querySelectorAll('.over');  
   let areas = document.getElementsByClassName("red-blue");
@@ -449,7 +449,7 @@ function checkKeyUp(e) {
   }
 
 //'space bar' key가 떼지면 confirm
-  else if (e.keyCode == "32"){
+  else if (e.keyCode == "83"){
     if(confirm_button.disabled == false){
       confirm_click();
 
@@ -524,8 +524,8 @@ function confirm_click(){
 
 //logout 누름
 function logout_click(){
-  // window.location = "http://130.211.240.166:5000//logout";
-  window.location.href = "http://127.0.0.1:5000/logout";
+  window.location = "http://130.211.240.166:5000//logout";
+  // window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
 //
@@ -622,8 +622,8 @@ function classifyImages(){
         init(data);
       }
       else{
-        window.location = "http://127.0.0.1:5000/logIn";
-        // window.location = "http://130.211.240.166:5000/logIn";
+        // window.location = "http://127.0.0.1:5000/logIn";
+        window.location = "http://130.211.240.166:5000/logIn";
       }
     },
     error: function(x, e) {

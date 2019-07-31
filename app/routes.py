@@ -135,8 +135,8 @@ def choosingImage(data,adjective):
     return [posi_name, nega_name]
 
 #-----------------------------------main----------------------------------------------------
-client = pymongo.MongoClient('mongodb://localhost:27017/')
-# client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
+# client = pymongo.MongoClient('mongodb://localhost:27017/')
+client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.davian
 
 collection_labeled = db.labeled
