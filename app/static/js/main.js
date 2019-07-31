@@ -33,16 +33,19 @@ let beforeLabel = [];
 
 let doElsCollide = function(el1, el2) { 
   if(el1 != null && el2 != null){
- 
-    el1.offsetBottom= el1.offsetTop + el1.offsetHeight;
-    el1.offsetRight = el1.offsetLeft + el1.offsetWidth;
-    el2.offsetBottom = el2.offsetTop + el2.offsetHeight;
-    el2.offsetRight = el2.offsetLeft + el2.offsetWidth;
+    
+    rect1 = new cumulativeOffset(el1);
+    rect2 = new cumulativeOffset(el2);
 
-    return !((el1.offsetBottom < el2.offsetTop) ||
-              (el1.offsetTop > el2.offsetBottom) ||
-              (el1.offsetRight < el2.offsetLeft) ||
-              (el1.offsetLeft > el2.offsetRight))
+    el1.offsetBottom= rect1.top + el1.offsetHeight;
+    el1.offsetRight = rect1.left + el1.offsetWidth;
+    el2.offsetBottom = rect2.top + 15 + el2.offsetHeight;
+    el2.offsetRight = rect2.left - 14 + el2.offsetWidth;
+
+    return !((el1.offsetBottom < rect2.top) ||
+              (rect1.top > el2.offsetBottom) ||
+              (el1.offsetRight < rect2.left) ||
+              (rect1.left > el2.offsetRight))
             }
 
 };
@@ -144,27 +147,40 @@ function onMouseOver(e, item) {
   }
 }
 
+var cumulativeOffset = function(element) {
+  var top = 0, left = 0;
+  do {
+      top += element.offsetTop  || 0;
+      left += element.offsetLeft || 0;
+      element = element.offsetParent;
+  } while(element);
+  console.log("good");
+  return {
+      top: top,
+      left: left
+  };
+};
+
 function cloneImage(item){
   todo_clone = item.cloneNode();
     todo_clone.position = "absolute";
     todo_clone.className = todo_clone.className.replace(" over","");
-    todo_clone.style.left = document.getElementsByClassName('col-sm-12')[0].offsetLeft
-                          + item.parentNode.offsetLeft - 15 + "px";
-    // console.log(item.parentNode, item.parentNode.left);
-    // console.log(item.parentNode.parentNode,item.parentNode.parentNode.left);
 
     var top = document.body.scrollTop;
 
+    rect = new cumulativeOffset(item);
+    todo_clone.style.left = rect.left - 14 + "px";
+    todo_clone.style.top = rect.top - 15 - top + "px";
+    console.log(cumulativeOffset(item).top , cumulativeOffset(item).left);
+    
+
     if(item.parentNode.className == "left"){
-      todo_clone.style.top = item.parentNode.offsetTop - top + "px";
       todo_clone.setAttribute('id', 0);
     }
     else if(item.parentNode.className == "right"){
-      todo_clone.style.top = item.parentNode.offsetTop - top + "px";
       todo_clone.setAttribute('id', 2);
     }
     else{
-      todo_clone.style.top = item.parentNode.offsetTop - top + "px";
       todo_clone.setAttribute('id', 1);
     }
     todo_clone.setAttribute('slot', item.parentNode.id);
