@@ -31,4 +31,4 @@ How to play with our system
 </p>
 <p> 
 - You must extract the feature vectors of images at first trial using the codes at route.py line 45 ~ 66, 
-Please use image feature vectors as a saved pickle file. </p>
+Please use image feature vectors from a saved pickle file. </p>
