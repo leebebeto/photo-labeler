@@ -22,8 +22,9 @@ import numpy as np
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-client = pymongo.MongoClient('mongodb://localhost:27017/')
-# client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
+# client = pymongo.MongoClient('mongodb://localhost:27017/')
+client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
+
 
 db = client.davian
 #-------------------------------Parameter---------------------------------------------------
@@ -37,8 +38,32 @@ CONST_PRETRAINED_FEATURE = "ffhq600_facenet_vggface2.pkl"
 CONST_CLUSTER_NUMBER = 200
 CONST_CLUSTER_AFFINITY = "euclidean"
 CONST_CLUSTER_LINKAGE = "ward"
+CONST_FEATUREFILE_NAME = 'ffhq600_facenet_vggface2.pkl'
 
 #--------------------------------------------------------------------------------------------
+
+# 처음 시작할 때, Vggface2 net으로 이미지의 feature를 추출한 뒤, pck 파일로 저장하여 활용합니다.
+
+# from facenet_pytorch import InceptionResnetV1
+# from PIL import Image
+# from torchvision import transforms
+# from tqdm import tqdm
+
+# resnet = InceptionResnetV1(pretrained='vggface2').eval()
+
+# image_names = os.listdir(os.path.join(APP_ROOT,CONST_IMAGE_PATH))
+# features = {}
+# for each_img_name in tqdm(image_names):
+#     img = Image.open(os.path.join(os.path.join(APP_ROOT,CONST_IMAGE_PATH), each_img_name))
+#     img = transforms.ToTensor()(img)
+#     img_embedding = resnet(img.unsqueeze(0))
+#     # print("img_embedding : {}".format(img_embedding.shape))
+#     features[each_img_name] = img_embedding.squeeze(0).data.numpy()
+
+# import pickle
+
+# with open(CONST_FEATUREFILE_NAME, 'wb') as fp:
+#     pickle.dump(features, fp)
 
 #--------------------------------Function----------------------------------------------------
 def read_pck(filename):
@@ -135,8 +160,6 @@ def choosingImage(data,adjective):
     return [posi_name, nega_name]
 
 #-----------------------------------main----------------------------------------------------
-# client = pymongo.MongoClient('mongodb://localhost:27017/')
-client = pymongo.MongoClient("mongodb+srv://admin:davian@daviandb-9rvqg.gcp.mongodb.net/test?retryWrites=true&w=majority")
 db = client.davian
 
 collection_labeled = db.labeled
