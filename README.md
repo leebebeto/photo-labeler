@@ -12,7 +12,7 @@ How to install
 2.Install all the required packages through 'pip install -r requirements.txt' in the directory
 </p>
 <p>
-3.Build mongodb environtment (If you want to use the system as cloud, you should use mongdb atlas)
+3.Build mongodb environment (If you want to use the system as cloud, you should use mongdb atlas)
 </p>
 
 <h2>
