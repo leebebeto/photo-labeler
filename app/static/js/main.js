@@ -524,8 +524,8 @@ function confirm_click(){
 
 //logout 누름
 function logout_click(){
-  window.location = "http://130.211.240.166:5000//logout";
-  // window.location.href = "http://127.0.0.1:5000/logout";
+  // window.location = "http://130.211.240.166:5000//logout";
+  window.location.href = "http://127.0.0.1:5000/logout";
 }  
 
 //
@@ -622,8 +622,8 @@ function classifyImages(){
         init(data);
       }
       else{
-        // window.location = "http://127.0.0.1:5000/logIn";
-        window.location = "http://130.211.240.166:5000/logIn";
+        window.location = "http://127.0.0.1:5000/logIn";
+        // window.location = "http://130.211.240.166:5000/logIn";
       }
     },
     error: function(x, e) {
